@@ -97,6 +97,10 @@ def init_db():
             c.execute("ALTER TABLE qflags ADD COLUMN by_name TEXT DEFAULT ''")
         except sqlite3.OperationalError:
             pass
+        try:  # 遷移：是否已自行改過密碼（0＝還在用初始密碼）
+            c.execute("ALTER TABLE users ADD COLUMN pw_changed INTEGER DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
         seed_path = APP_DIR / "seed_users.json"
         if seed_path.exists():
             for n, v in json.loads(seed_path.read_text()).items():
@@ -241,6 +245,7 @@ def me(request: Request):
         return err("未登入", 401)
     out = pub_user(u)
     out["state"] = json.loads(u["state"] or "{}")
+    out["pw_initial"] = not u["pw_changed"]
     return out
 
 
@@ -253,13 +258,14 @@ async def change_password(request: Request):
     if d is None:
         return err("格式錯誤")
     old, new = str(d.get("old", "")), str(d.get("new", ""))
-    if len(new) < 4 or len(new) > 64:
-        return err("新密碼要 4～64 個字")
+    # 自己改密碼：不設複雜度規則，習慣用什麼都可以（只要不是空的、不超過 64 字）
+    if len(new) < 1 or len(new) > 64:
+        return err("新密碼不能是空的（最多 64 個字）")
     if not hmac.compare_digest(pbkdf2(old, u["salt"], u["iters"]), u["hash"]):
         return err("舊密碼不對", 401)
     salt, h, it = make_hash(new)
     with _lock, db() as c:
-        c.execute("UPDATE users SET salt=?,hash=?,iters=?,ver=ver+1 WHERE id=?", (salt, h, it, u["id"]))
+        c.execute("UPDATE users SET salt=?,hash=?,iters=?,ver=ver+1,pw_changed=1 WHERE id=?", (salt, h, it, u["id"]))
         row = c.execute("SELECT * FROM users WHERE id=?", (u["id"],)).fetchone()
     resp = JSONResponse({"ok": True})
     resp.set_cookie(
@@ -533,7 +539,7 @@ async def parent_reset_pw(uid: int, request: Request):
     salt, h, it = make_hash(pw)
     with _lock, db() as c:
         n = c.execute(
-            "UPDATE users SET salt=?,hash=?,iters=?,ver=ver+1 WHERE id=? AND role='learner'", (salt, h, it, uid)
+            "UPDATE users SET salt=?,hash=?,iters=?,ver=ver+1,pw_changed=0 WHERE id=? AND role='learner'", (salt, h, it, uid)
         ).rowcount
     return {"ok": True} if n else err("找不到學員", 404)
 
@@ -679,7 +685,7 @@ async def coach_reset(cid: int, request: Request):
         return err("密碼要 4～64 個字")
     salt, h, it = make_hash(pw)
     with _lock, db() as c:
-        n = c.execute("UPDATE users SET salt=?,hash=?,iters=?,ver=ver+1 WHERE id=? AND role='coach'", (salt, h, it, cid)).rowcount
+        n = c.execute("UPDATE users SET salt=?,hash=?,iters=?,ver=ver+1,pw_changed=0 WHERE id=? AND role='coach'", (salt, h, it, cid)).rowcount
     return {"ok": True} if n else err("找不到教練", 404)
 
 

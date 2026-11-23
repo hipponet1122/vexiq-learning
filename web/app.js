@@ -386,6 +386,12 @@
       user ? h('a', { class: 'tab', href: '#/me' }, h('span', { class: 'ti' }, '👤'), user.display || user.name) : null,
       user ? h('button', { class: 'tab', style: 'background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-size:.72rem;cursor:pointer', onclick: doLogout }, h('span', { class: 'ti' }, '🚪'), '登出') : null);
     const parts = [bar];
+    let hidePw = false; try { hidePw = sessionStorage.getItem('vx_pwtip') === '1'; } catch (e) { /* ignore */ }
+    if (user && user.pw_initial && cur !== 'me' && !hidePw) {
+      const bn = h('div', { class: 'pwbanner' }, h('span', null, '🔑 你現在用的是初始密碼，可以改成自己習慣的密碼（不限格式）。'), h('a', { href: '#/me' }, '修改密碼'),
+        h('button', { class: 'pwx', title: '先不要', onclick: () => { try { sessionStorage.setItem('vx_pwtip', '1'); } catch (e) { /* ignore */ } bn.remove(); } }, '✕'));
+      parts.push(bn);
+    }
     if (opts.title) parts.push(h('div', { class: 'subbar' }, opts.icon ? h('span', { class: 'ic' }, opts.icon) : null, opts.title));
     let main = h('main', { class: 'content' }, content);
     if (opts.rail) {
@@ -566,13 +572,13 @@
 
   function viewMe() {
     const old = h('input', { type: 'password', placeholder: '舊密碼', autocomplete: 'current-password' });
-    const nw = h('input', { type: 'password', placeholder: '新密碼（至少 4 個字）', autocomplete: 'new-password' });
+    const nw = h('input', { type: 'password', placeholder: '新密碼（自己習慣的都可以）', autocomplete: 'new-password' });
     const msg = h('div', { class: 'errmsg' });
     $app.replaceChildren(shell(h('div', { class: 'panel' },
       h('h2', null, (user.display || user.name) + '（' + (user.role === 'parent' ? '家長' : user.role === 'coach' ? '教練（唯讀）' : '學員') + '）'),
       h('h3', null, '修改密碼'), old, nw, msg,
       h('div', { class: 'row gap' },
-        h('button', { class: 'btn primary', onclick: async () => { msg.className = 'errmsg'; try { await api('/api/password', { old: old.value, new: nw.value }); msg.className = 'okmsg'; msg.textContent = '密碼已更新'; old.value = nw.value = ''; } catch (e) { msg.textContent = e.message; } } }, '更新密碼'),
+        h('button', { class: 'btn primary', onclick: async () => { msg.className = 'errmsg'; try { await api('/api/password', { old: old.value, new: nw.value }); msg.className = 'okmsg'; msg.textContent = '密碼已更新，下次請用新密碼登入'; user.pw_initial = false; old.value = nw.value = ''; } catch (e) { msg.textContent = e.message; } } }, '更新密碼'),
         h('button', { class: 'btn', onclick: doLogout }, '登出')))));
   }
 
@@ -674,7 +680,7 @@
   async function loadMe() {
     try {
       const me = await api('/api/me');
-      user = { id: me.id, name: me.name, display: me.display, role: me.role };
+      user = { id: me.id, name: me.name, display: me.display, role: me.role, pw_initial: !!me.pw_initial };
       st = Object.assign(newState(), me.state || {});
     } catch (e) { user = null; st = null; }
   }

@@ -413,3 +413,8 @@ table.tbl input { margin: 0; padding: 6px 8px; min-width: 60px; }
 .okpill { color: var(--ok); font-weight: 600; } .badpill { color: var(--bad); font-weight: 600; }
 details { margin: 6px 0; } details h4 { margin: 10px 0 2px; font-size: .9rem; }
 @media print { .sitefoot { display: none; } }
+
+/* 初始密碼提醒 */
+.pwbanner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff8e1; border-bottom: 1px solid #f2d98a; color: #6b5200; padding: 8px 16px; font-size: .85rem; }
+.pwbanner a { color: #0062b6; font-weight: 600; }
+.pwbanner .pwx { margin-left: auto; background: none; border: 0; cursor: pointer; color: #6b5200; font-size: 1rem; }
