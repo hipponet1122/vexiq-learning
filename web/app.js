@@ -72,6 +72,7 @@
   }
   const toEn = window.VXEN.toEn;
   window.VXEN.localize(QS); // 題目裡的積木字樣改成 VEXcode 英文
+  window.VXEN.localizeDeep(SKILLS); window.VXEN.localizeDeep(CHALLENGES); // 課文與挑戰提示也一樣
   function oneBlock(text) {
     const zh = text.trim();
     const en = st && st.simLang === 'zh' ? zh : toEn(zh);

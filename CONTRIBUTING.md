@@ -31,6 +31,8 @@ node tests/run.js          # 題庫結構、挑戰解答、模擬引擎、.iqblo
 for f in web/*.js; do node --check "$f"; done
 ```
 
+審題用：`node tools/export_questions.js D F` 會產生手機也好讀的審題清單。換季更新見 [`docs/SEASON-UPDATE.md`](docs/SEASON-UPDATE.md)。
+
 方向與分工見 [`ROADMAP.md`](ROADMAP.md)、[`MAINTAINERS.md`](MAINTAINERS.md)；想找任務請看標籤 `good first issue`。
 
 請先讀 [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。

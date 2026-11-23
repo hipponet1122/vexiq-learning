@@ -21,7 +21,7 @@
     if (raw === '停止駕駛') return 'stop driving';
     if (raw === '永遠') return 'forever';
     if (raw === '別的' || raw === '否則') return 'else';
-    if ((m = raw.match(/^驅動\s*\[?(向前|反向|向後)\]?\s*(?:為\s*\(?(\d+(?:\.\d+)?|\w+)\)?\s*\[?(毫米|英寸)?\]?)?\s*$/))) return 'drive [' + enWord(m[1]) + ']' + (m[2] ? ' for (' + m[2] + ') [' + enWord(m[3] || '毫米') + ']' : '');
+    if ((m = raw.match(/^驅動\s*\[?(向前|反向|向後)\]?\s*(?:為\s*\(?(\d+(?:\.\d+)?|\w+|□)\)?\s*\[?(毫米|英寸)?\]?)?\s*$/))) return 'drive [' + enWord(m[1]) + ']' + (m[2] ? ' for (' + m[2] + ') [' + enWord(m[3] || '毫米') + ']' : '');
     if ((m = raw.match(/^旋轉\s*\[?(左邊|正確的|右邊|左|右)\]?\s*度\s*\(?(\d+(?:\.\d+)?|\w+)\)?\s*度?$/))) return 'turn [' + enWord(m[1]) + '] for (' + m[2] + ') [degrees]';
     if ((m = raw.match(/^重複直到\s*<(.+)>$/))) return 'repeat until <' + enCond(m[1]) + '>';
     if ((m = raw.match(/^而\s*<(.+)>$/))) return 'while <' + enCond(m[1]) + '>';
@@ -48,5 +48,13 @@
     });
     return qs;
   }
-  window.VXEN = { toEn, enProse, enItem, localize };
+  // 課文裡的 <code>…</code> 積木、挑戰提示裡的「…」積木，也改成英文（程式用的 code 陣列不動）
+  const enHtml = (s) => (typeof s !== 'string' ? s : enProse(s.replace(/<code>([^<]+)<\/code>/g, (m, x) => { if (NAMES[x.trim()]) return '<code>' + NAMES[x.trim()] + '</code>'; const e = toEn(x); return BLOCKY.test(x.trim()) && e !== x.trim() ? '<code>' + e.replace(/[\[\]()]/g, '') + '</code>' : m; })));
+  function localizeDeep(o, skip) {
+    skip = skip || ['code', 'path'];
+    if (Array.isArray(o)) { o.forEach((v, i) => { if (typeof v === 'string') o[i] = enHtml(v); else localizeDeep(v, skip); }); return o; }
+    if (o && typeof o === 'object') Object.keys(o).forEach((k) => { if (skip.includes(k)) return; const v = o[k]; if (typeof v === 'string') o[k] = enHtml(v); else localizeDeep(v, skip); });
+    return o;
+  }
+  window.VXEN = { toEn, enProse, enItem, enHtml, localize, localizeDeep };
 })();

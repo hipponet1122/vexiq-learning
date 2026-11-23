@@ -76,6 +76,29 @@ t('題目文字、選項、排序項目裡的積木也轉英文', () => {
   assert.strictEqual(copy.find((q) => q.id === 'C1-2').items[0], 'drive [forward] for (300) [mm]');
 });
 
+t('課文與挑戰提示裡的 <code>／「」積木也轉英文，且不動 code 陣列', () => {
+  const sk = JSON.parse(JSON.stringify(SKILLS)), ch = JSON.parse(JSON.stringify(content.CHALLENGES));
+  VXEN.localizeDeep(sk); VXEN.localizeDeep(ch);
+  const txt = JSON.stringify([sk, ch.map((c) => Object.assign({}, c, { code: null, path: null }))]);
+  const left = txt.match(/<code>[^<]*(驅動|旋轉|等待|重複|將驅動速度)[^<]*<\/code>|「(驅動|旋轉|重複)[^」：]*」/g) || [];
+  assert.strictEqual(left.length, 0, '還有：' + left.slice(0, 3).join(' | '));
+  assert.strictEqual(JSON.stringify(ch.map((c) => c.code)), JSON.stringify(content.CHALLENGES.map((c) => c.code)));
+});
+
+
+group('模擬引擎：我的積木與變數');
+const CH = (id) => content.CHALLENGES.find((c) => c.id === id);
+t('我的積木：square(100) 走 4 邊共 400 mm', () => { const { j } = run(['定義 sq (size)', '  重複 (4)', '    驅動 [向前] 為 (size) [毫米]', '    旋轉 [正確的] 度 (90) 度', '何時開始', 'sq (100)'], CH('ch4')); assert.strictEqual(j.dist, 400); });
+t('變數：d 從 100 每次加 50，重複 3 次 → 100+150+200 = 450', () => {
+  const prog = { main: [{ t: 'setvar', name: 'd', v: '100' }, { t: 'repeat', v: '3', kids: [{ t: 'drive', dir: '向前', v: 'd' }, { t: 'chvar', name: 'd', v: '50' }] }], defs: [] };
+  const w = S.makeWorld(CH('ch1')); const j = S.judge(S.simulate(prog, w)); assert.strictEqual(j.dist, 450);
+});
+t('撞牆會被偵測（往牆的方向走）', () => {
+  const ch = content.CHALLENGES.find((c) => c.id === 'ch12'); const { j } = run(['何時開始', '驅動 [向前] 為 (1000) [毫米]'], ch);
+  assert(!j.ok); assert(j.msgs.join('').includes('撞到'), j.msgs.join('/'));
+});
+
+
 group('程式碼轉換');
 t('Python 與 C++ 都有 drive 動作', () => {
   const p = S.parseDsl(['何時開始', '驅動 [向前] 為 (200) [毫米]']);
@@ -99,6 +122,21 @@ t('沒接「when started」會被抓到', () => {
 t('不是 JSON → 友善錯誤', () => assert.throws(() => IQ.parseIq('abc', 'x'), /不是 VEXcode/));
 t('缺 workspace → 友善錯誤', () => assert.throws(() => IQ.parseIq('{"mode":"Blocks"}', 'x'), /找不到積木/));
 t('Python 專案 → 說明目前只能檢查積木', () => assert.throws(() => IQ.parseIq(JSON.stringify({ mode: 'Python', workspace: '<xml/>' }), 'x'), /目前只能檢查積木/));
+
+group('.iqblocks 匯入：遙控程式');
+const motor = (type, name, dir) => `<block type="${type}"><field name="MOTOR">${name}</field><field name="DIRECTION">${dir || 'fwd'}</field></block>`;
+const pressed = (b) => `<block type="iq_sensing_pressing_controller"><field name="BUTTON">${b}</field></block>`;
+const cfg = (...names) => names.map((n) => ({ name: n, type: 'Motor' }));
+const TELE_OK = `<xml><block type="iq_events_when_started"><next><block type="iq_control_forever"><statement name="SUBSTACK"><block type="iq_control_if_then_else"><value name="CONDITION">${pressed('ButtonRUp')}</value><statement name="SUBSTACK">${motor('iq_motion_spin', 'Arm')}</statement><statement name="SUBSTACK2">${motor('iq_motion_stop_motor', 'Arm')}</statement></block></statement></block></next></block></xml>`;
+const TELE_BAD = `<xml><block type="iq_events_when_started"><next><block type="iq_control_if_then"><value name="CONDITION">${pressed('ButtonRUp')}</value><statement name="SUBSTACK">${motor('iq_motion_spin', 'Arm')}</statement></block></next></block></xml>`;
+const TELE_DEV = TELE_OK.replace(/Arm/g, 'Claw');
+const tele = (xml, devs) => IQ.analyzeTeleop(IQ.parseIq(iq(xml, { robotConfig: cfg(...devs) }), 't'));
+const ids = (a) => a.findings.map((f) => f.id);
+t('判成遙控程式', () => assert.strictEqual(IQ.detectKind(IQ.parseIq(iq(TELE_OK, { robotConfig: cfg('Arm') }), 't')), 'teleop'));
+t('寫得好的遙控程式：沒有「一定要改」的問題，且有對照表', () => { const a = tele(TELE_OK, ['Arm']); assert(!a.findings.some((f) => f.level === 'error'), ids(a).join(',')); assert(a.table.length >= 1); });
+t('只檢查一次按鈕、沒有 stop：抓到兩個錯誤', () => { const a = tele(TELE_BAD, ['Arm']); assert(ids(a).includes('t-noloop'), ids(a).join(',')); assert(ids(a).includes('t-nostop'), ids(a).join(',')); });
+t('用到沒設定的裝置：抓到', () => assert(ids(tele(TELE_DEV, ['Arm'])).includes('t-baddev')));
+t('空的工作區：抓到', () => assert(ids(IQ.analyzeTeleop(IQ.parseIq(iq('<xml></xml>'), 't'))).includes('t-empty')));
 
 console.log(`\n${pass} 通過、${fail} 失敗`);
 process.exit(fail ? 1 : 0);
