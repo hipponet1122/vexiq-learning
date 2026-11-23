@@ -9,6 +9,9 @@
 - SQLite 改 WAL，連線確實關閉；筆記草圖只收 `data:image/`；刪除學員一併清掉教練連結；異常型別不再造成 500。
 - 容器改以非 root 執行：`docker-entrypoint.sh` 啟動時降權成 `/data` 的擁有者（root 擁有則改成 UID 1000），NAS 現有資料夾不用手動 chown。補 `requirements.txt`、`HEALTHCHECK`、`.dockerignore`。
 - 筆記與 `.iqblocks` 上限統一為 500 KB（前後端一致）。
+- `docker-entrypoint.sh` 另外把 `/data` 內舊容器（root）留下的 `vexiq.sqlite`、`session.key` 轉交給資料夾擁有者，避免升級後讀不到。
+- `.dockerignore` 只放 ASCII 規則：NAS 的 Docker 會拒絕含中文的排除規則（build 失敗）。
+- 模擬器聲音：同幀最多播 2 個不重複音效；修正程式開頭（tick 0）的聲音被跳過。
 
 ### 前端
 - 定位測驗只重置技能熟練度，不再清掉模擬器存檔、挑戰紀錄與徽章。
