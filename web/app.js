@@ -559,6 +559,8 @@
     return h('button', { class: 'langsw ' + (cls || ''), type: 'button', title: 'Language / 語言', 'aria-label': 'Language / 語言', 'data-notrans': '1', onclick: () => window.VXI18N && window.VXI18N.setLang(cur === 'en' ? 'zh' : 'en') },
       h('span', { class: cur === 'zh' ? 'on' : '' }, '中'), h('span', { class: cur === 'en' ? 'on' : '' }, 'EN'));
   }
+  let savedTabsScroll = 0;
+  try { savedTabsScroll = parseFloat(sessionStorage.getItem('vx_tabs_x') || '0') || 0; } catch (e) { /* ignore */ }
   function shell(content, opts) {
     opts = opts || {};
     if (opts.bare) return h('div', null, content);
@@ -567,9 +569,41 @@
     if (user && user.role === 'learner') TABS.forEach(([href, ic, name, key]) => tabs.push(h('a', { class: 'tab' + (key === cur || (key === '' && (cur === '' || cur === 'skill' || cur === 'result')) ? ' on' : ''), href }, h('span', { class: 'ti' }, ic), name)));
     if (user && user.role === 'coach') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👥'), '學員狀況'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
     if (user && user.role === 'parent') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👪'), '家長頁'), h('a', { class: 'tab' + (cur === 'build' ? ' on' : ''), href: '#/build' }, h('span', { class: 'ti' }, '🔧'), '組裝'), h('a', { class: 'tab' + (cur === 'guide' ? ' on' : ''), href: '#/guide' }, h('span', { class: 'ti' }, '🧭'), '怎麼用'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
+    const tabsEl = h('div', { class: 'tabs' }, tabs);
+    const leftArr = h('button', { type: 'button', class: 'tabs-arr left', 'aria-label': '往左滑動選單', onclick: () => tabsEl.scrollBy({ left: -180, behavior: 'smooth' }) }, '‹');
+    const rightArr = h('button', { type: 'button', class: 'tabs-arr right', 'aria-label': '往右滑動選單', onclick: () => tabsEl.scrollBy({ left: 180, behavior: 'smooth' }) }, '›');
+    const tabsWrap = h('div', { class: 'tabs-wrap at-start' }, leftArr, tabsEl, rightArr);
+    const syncTabsScroll = () => {
+      const maxX = Math.max(0, tabsEl.scrollWidth - tabsEl.clientWidth);
+      const x = tabsEl.scrollLeft;
+      savedTabsScroll = x;
+      try { sessionStorage.setItem('vx_tabs_x', String(Math.round(x))); } catch (e) { /* ignore */ }
+      tabsWrap.classList.toggle('can-scroll', maxX > 6);
+      tabsWrap.classList.toggle('at-start', x <= 4);
+      tabsWrap.classList.toggle('at-end', x >= maxX - 4);
+    };
+    tabsEl.addEventListener('scroll', syncTabsScroll, { passive: true });
+    tabsEl.addEventListener('click', () => {
+      savedTabsScroll = tabsEl.scrollLeft;
+      try { sessionStorage.setItem('vx_tabs_x', String(Math.round(savedTabsScroll))); } catch (e) { /* ignore */ }
+    });
+    const restoreTabs = () => {
+      if (!document.body.contains(tabsEl)) return;
+      const maxX = Math.max(0, tabsEl.scrollWidth - tabsEl.clientWidth);
+      let targetX = Math.max(0, Math.min(maxX, savedTabsScroll));
+      const active = tabsEl.querySelector('.tab.on');
+      if (active && maxX > 6) {
+        const aL = active.offsetLeft, aR = aL + active.offsetWidth;
+        if (aL < targetX + 16) targetX = Math.max(0, aL - 28);
+        else if (aR > targetX + tabsEl.clientWidth - 16) targetX = Math.min(maxX, aR - tabsEl.clientWidth + 28);
+      }
+      tabsEl.scrollLeft = targetX;
+      syncTabsScroll();
+    };
+    requestAnimationFrame(restoreTabs);
     const bar = h('header', { class: 'topbar' },
       h('a', { class: 'logo', href: '#/' }, h('b', null, 'IQ'), h('span', null, '自學')),
-      h('div', { class: 'tabs' }, tabs),
+      tabsWrap,
       user ? h('a', { class: 'tab', href: '#/me' }, h('span', { class: 'ti' }, '👤'), h('span', { 'data-notrans': '1' }, user.display || user.name)) : null,
       langBtn('top'),
       user ? h('button', { class: 'tab', style: 'background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-size:.72rem;cursor:pointer', onclick: doLogout }, h('span', { class: 'ti' }, '🚪'), '登出') : null);

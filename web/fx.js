@@ -5,12 +5,16 @@
   const $app = document.getElementById('app');
   const fx = {};
 
-  /* 換頁：#app 的內容被整個換掉時，讓新內容淡入 */
+  /* 換頁：只讓頁面主內容淡入，絕不動到 .topbar 與手機底部固定選單列（避免閃爍與位移） */
   if ($app && !reduce) {
     let last = null;
     new MutationObserver(() => {
-      const el = $app.firstElementChild;
-      if (el && el !== last) { last = el; el.classList.remove('page-in'); void el.offsetWidth; el.classList.add('page-in'); }
+      const root = $app.firstElementChild;
+      if (!root || root === last) return;
+      last = root;
+      const target = root.querySelector('.wrap, .layout, .fullwrap') || root;
+      if (target === root && root.querySelector('.topbar')) return;
+      target.classList.remove('page-in'); void target.offsetWidth; target.classList.add('page-in');
     }).observe($app, { childList: true });
   }
 
