@@ -385,10 +385,10 @@
       ['第 7 堂 賽後反思', '#/notebook/new/reflect', '對照：本站「練習心得」筆記頁。'],
     ]],
     ['官方（VEX）', [
-      ['VEXcode IQ（網頁版）', 'https://codeiq.vex.com/', '他寫積木程式的地方，瀏覽器就能用（可選繁體中文或英文）。'],
+      ['VEXcode IQ（網頁版）', 'https://codeiq.vex.com/', '他寫積木程式的地方，瀏覽器就能用（可選正體中文或英文）。'],
       ['VEXcode VR（虛擬機器人）', 'https://vr.vex.com/', '沒有實體機器人也能用積木或 Python 控制 3D 虛擬機器人解任務，很適合練程式邏輯。'],
-      ['VEX IQ STEM Labs（繁體中文）', 'https://education.vex.com/stemlabs/zh-hant/iq', '官方的單元式課程：組裝、馬達與感測器、競賽。⚠ 中文是機器翻譯，有些句子不通順，可對照英文版。'],
-      ['VEX 知識庫（繁體中文）', 'https://kb.vex.com/hc/zh-tw', '像「VEX IQ 百科全書」：Brain 韌體更新、遙控器配對、感測器原理、故障排除。'],
+      ['VEX IQ STEM Labs（正體中文）', 'https://education.vex.com/stemlabs/zh-hant/iq', '官方的單元式課程：組裝、馬達與感測器、競賽。⚠ 中文是機器翻譯，有些句子不通順，可對照英文版。'],
+      ['VEX 知識庫（正體中文）', 'https://kb.vex.com/hc/zh-tw', '像「VEX IQ 百科全書」：Brain 韌體更新、遙控器配對、感測器原理、故障排除。'],
       ['當季 Game Manual（Level Up）', 'https://link.vex.com/docs/26-27/viqrc/game-manual', '比賽規則的唯一依據，會更新，比賽前再看一次。'],
       ['RobotEvents（賽事報名與查詢）', 'https://www.robotevents.com/', '找比賽、報名、查隊伍。'],
     ]],
@@ -401,7 +401,7 @@
   ];
   function viewResources() {
     paint(h('div', null,
-      h('p', { class: 'sub' }, '這些是外部網站，會在新分頁開啟。官方網站以英文為主；繁體中文頁面有些是機器翻譯。'),
+      h('p', { class: 'sub' }, '這些是外部網站，會在新分頁開啟。官方網站以英文為主；正體中文頁面有些是機器翻譯。'),
       RES.map(([t, items]) => h('div', { class: 'panel' }, h('h2', null, t),
         items.map(([name, url, d]) => h('div', { class: 'wrongitem' }, url[0] === '#' ? h('a', { href: url }, h('b', null, name + ' ›')) : h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, h('b', null, name + ' ↗')), h('div', { class: 'sub' }, d)))))), '學習資源', '🔗');
   }
