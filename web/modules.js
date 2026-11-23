@@ -567,6 +567,7 @@
       h('div', { class: 'panel' }, h('h2', null, '🏆 比賽專區'), h('p', null, '長期目標是參加區域賽、國際賽。這裡幫你把「機器人能力」和「表達能力」一起練起來。'),
         h('div', { class: 'tiles' },
           h('a', { class: 'tile', href: '#/arena3d', style: 'background:#0ea5e9;border-color:#0369a1;color:#fff' }, h('span', { class: 'ti' }, '🏟️'), '3D 練習場', h('small', { style: 'color:rgba(255,255,255,.9)' }, '3D 投球得分＋音效')),
+          h('a', { class: 'tile', href: '#/pathplan', style: 'background:#10b981;border-color:#047857;color:#fff' }, h('span', { class: 'ti' }, '🗺️'), '自動路徑規劃器', h('small', { style: 'color:rgba(255,255,255,.9)' }, '點路線轉積木／Python')),
           h('a', { class: 'tile', href: '#/compete/timer', style: 'background:#ef4444;border-color:#b91c1c;color:#fff' }, h('span', { class: 'ti' }, '🚨'), '場地計時與記分', h('small', { style: 'color:rgba(255,255,255,.9)' }, '60秒倒數＋官方音效')),
           h('a', { class: 'tile', href: '#/compete/prep', style: 'background:#8b5cf6;border-color:#6d28d9;color:#fff' }, h('span', { class: 'ti' }, '🎒'), '賽前準備與分工', h('small', { style: 'color:rgba(255,255,255,.9)' }, '組隊、駕駛模式、清單')),
           h('a', { class: 'tile', href: '#/compete/season', style: 'background:#f1ae34;border-color:#b38136' }, h('span', { class: 'ti' }, '🎯'), '當季 Level Up', h('small', null, '規則、計分、策略')),
