@@ -6,6 +6,9 @@ services:
     ports:
       # 只綁本機，請用反向代理（Nginx／Caddy／Cloudflare Tunnel）對外並加上 HTTPS。
       - "127.0.0.1:${VEXIQ_PORT:-8518}:8000"
+    environment:
+      # 若透過 Cloudflare Tunnel 對外，可設為 1 以讀取 CF-Connecting-IP
+      - TRUST_CF_IP=${TRUST_CF_IP:-0}
     volumes:
-      # 資料（sqlite、session.key）放在主機這個資料夾；預設 ./data
+      # 資料（sqlite、session.key）放在主機這個資料夾；預設 ./data（容器以 UID 1000 執行）
       - ${VEXIQ_DATA:-./data}:/data

@@ -23,6 +23,6 @@ jobs:
         run: python tools/check.py
       - name: 後端啟動測試
         run: |
-          pip install fastapi "uvicorn[standard]" itsdangerous
+          pip install -r requirements.txt
           python build_info.py
           DATA_DIR=/tmp/vx python -c "import server; print('import ok')"

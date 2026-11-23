@@ -104,7 +104,7 @@
       else if (q.t === 'ord') body.push(h('ol', null, q.items.map((o) => h('li', null, o.trim()))));
       else if (q.t === 'bug') body.push(h('div', { style: 'color:var(--ok);font-weight:700' }, '有問題的是第 ' + (q.a + 1) + ' 行：' + q.code[q.a].trim()));
       body.push(h('div', { class: 'sub' }, '解釋：' + q.why));
-      flagsOfQ.forEach((f) => body.push(h('div', { class: 'callout warn' }, (f.status === 'done' ? '✅ 已處理：' : '🚩 ') + f.comment, ' ', h('button', { class: 'btn sm ghost', onclick: async () => { await api('/api/parent/qflag/' + f.id + '/status', { status: f.status === 'done' ? 'open' : 'done' }); flags = (await api('/api/parent/qflags')).flags; draw(); } }, f.status === 'done' ? '重新開啟' : '標記已處理'))));
+      flagsOfQ.forEach((f) => body.push(h('div', { class: 'callout warn' }, (f.status === 'done' ? '✅ 已處理：' : '🚩 ') + f.comment, ' ', h('button', { class: 'btn sm ghost', onclick: async () => { try { await api('/api/parent/qflag/' + f.id + '/status', { status: f.status === 'done' ? 'open' : 'done' }); flags = (await api('/api/parent/qflags')).flags; draw(); } catch (e) { toast(e.message); } } }, f.status === 'done' ? '重新開啟' : '標記已處理'))));
       body.push(h('button', { class: 'btn sm', onclick: async () => { const c = prompt('這題有什麼問題？（答案不對、說法不清楚、太難、錯字…）'); if (!c || !c.trim()) return; try { await api('/api/parent/qflag', { qid: q.id, comment: c }); flags = (await api('/api/parent/qflags')).flags; draw(); toast('已回報'); } catch (e) { toast(e.message); } } }, '🚩 回報問題'));
       return h('div', { class: 'wrongitem vxscope' }, h('div', { class: 'row', style: 'gap:8px' }, h('span', { class: 'tag' }, q.id), h('span', { class: 'tag' }, '難度 ' + q.l), h('span', { class: 'tag' }, q.t)), ...body);
     }

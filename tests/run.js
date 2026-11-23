@@ -105,6 +105,17 @@ t('Python 與 C++ 都有 drive 動作', () => {
   assert(/drivetrain\.drive_for/.test(S.toPython(p.main, p.defs)), 'python');
   assert(/Drivetrain\.driveFor/.test(S.toCpp(p.main, p.defs)), 'cpp');
 });
+t('未經 normDirs 的中文方向也能正確轉成 Python／C++', () => {
+  const p = S.parseDsl(['何時開始', '驅動 [反向] 為 (100) [毫米]', '旋轉 [左邊] 度 (90) 度']);
+  const py = S.toPython(p.main, p.defs), cpp = S.toCpp(p.main, p.defs);
+  assert(/REVERSE/.test(py) && /LEFT/.test(py), py);
+  assert(/reverse/.test(cpp) && /left/.test(cpp), cpp);
+});
+t('迴圈內連續播放聲音會有數量上限，不會造成聲音風暴', () => {
+  const prog = { main: [{ t: 'repeat', v: '200', kids: [{ t: 'sound', snd: 'siren' }] }], defs: [] };
+  const r = S.simulate(prog, S.makeWorld(null));
+  assert(r.C.sounds.length <= 40, 'sounds=' + r.C.sounds.length);
+});
 
 group('.iqblocks 匯入（用自己手寫的小範例）');
 const iq = (xml, extra) => JSON.stringify(Object.assign({ mode: 'Blocks', workspace: xml, robotConfig: [] }, extra || {}));
@@ -137,6 +148,11 @@ t('寫得好的遙控程式：沒有「一定要改」的問題，且有對照�
 t('只檢查一次按鈕、沒有 stop：抓到兩個錯誤', () => { const a = tele(TELE_BAD, ['Arm']); assert(ids(a).includes('t-noloop'), ids(a).join(',')); assert(ids(a).includes('t-nostop'), ids(a).join(',')); });
 t('用到沒設定的裝置：抓到', () => assert(ids(tele(TELE_DEV, ['Arm'])).includes('t-baddev')));
 t('空的工作區：抓到', () => assert(ids(IQ.analyzeTeleop(IQ.parseIq(iq('<xml></xml>'), 't'))).includes('t-empty')));
+t('缺 MOTOR 欄位的積木不會把 null 當成馬達名稱', () => {
+  const x = '<xml><block type="iq_events_when_started"><next><block type="iq_motion_spin"></block></next></block></xml>';
+  const a = IQ.analyzeTeleop(IQ.parseIq(iq(x), 't'));
+  assert(!a.facts.motors.includes('null') && !a.facts.motors.includes(null));
+});
 
 console.log(`\n${pass} 通過、${fail} 失敗`);
 process.exit(fail ? 1 : 0);

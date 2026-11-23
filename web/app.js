@@ -151,14 +151,16 @@
   function pickQuestion(skillId, level, used) {
     const pool = QS.filter((q) => q.s === skillId && !used.has(q.id));
     const pool2 = pool.length ? pool : QS.filter((q) => q.s === skillId);
-    const score = (q) => {
+    const now = Date.now();
+    const scored = pool2.map((q) => {
       const sn = st.seen[q.id];
       const unseen = sn ? 0 : 1;
       const wrongBias = sn && sn.w > sn.c ? 0.5 : 0; // 以前答錯的，比較早再出現
-      const age = sn ? (Date.now() - sn.t) / 86400000 : 30;
-      return -Math.abs(q.l - level) * 3 + unseen * 2 + wrongBias + Math.min(age, 10) * 0.05 + Math.random() * 0.3;
-    };
-    return pool2.slice().sort((a, b) => score(b) - score(a))[0];
+      const age = sn ? (now - sn.t) / 86400000 : 30;
+      return { q, s: -Math.abs(q.l - level) * 3 + unseen * 2 + wrongBias + Math.min(age, 10) * 0.05 + Math.random() * 0.3 };
+    });
+    scored.sort((a, b) => b.s - a.s);
+    return scored[0].q;
   }
 
   async function save(q, res, mode) {
@@ -293,7 +295,9 @@
     const p = S.plan[S.di];
     const mid = Math.floor((p.lo + p.hi) / 2);
     const skill = p.sk[Math.min(mid, p.sk.length - 1)];
-    const q = QS.filter((x) => x.s === skill.id && x.l === 2).sort(() => Math.random() - 0.5)[0];
+    const l2 = QS.filter((x) => x.s === skill.id && x.l === 2);
+    const cand = l2.length ? l2 : QS.filter((x) => x.s === skill.id);
+    const q = shuffle(cand)[0];
     S.count++;
     drawQuiz({
       title: '定位測驗', sub: '先看看你現在會到哪裡。不會的可以按「我還不會」，沒有關係！',
@@ -309,7 +313,8 @@
   }
   function finishPlacement() {
     const S = session;
-    st = newState();
+    st = Object.assign(newState(), st || {});
+    st.m = {};
     S.plan.forEach((p) => {
       const k = p.lo; // 保守估計：只認「確定答對」的範圍
       p.sk.forEach((s, i) => {
@@ -466,7 +471,7 @@
       tile('#/build', '🔧', '組裝教學', '機構原理與零件圖鑑', '#f2a579', '#b37b5e'),
       tile('#/compete', '🏆', '比賽專區', 'Robot Skills、英文術語、面談', '#5ecd98', '#4a9873'));
     const guideEl = (VX.guide && VX.guide.homeCard) ? VX.guide.homeCard() : null;
-    $app.replaceChildren(shell(h('div', null, guideEl || top, tiles, st.done ? h('div', { class: 'radarbox' }, radarSvg(domainAvg(st), DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke))) : null, maps), { rail: st.done || true, title: '首頁', icon: '🏠' }));
+    $app.replaceChildren(shell(h('div', null, guideEl || top, tiles, st.done ? h('div', { class: 'radarbox' }, radarSvg(domainAvg(st), DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke))) : null, maps), { rail: true, title: '首頁', icon: '🏠' }));
     if (VX.guide && VX.guide.maybeTour) VX.guide.maybeTour();
   }
 
@@ -625,9 +630,9 @@
       coaches.length ? coaches.map((c) => { const cks = checks(c.learner_ids); const m2 = h('div', { class: 'okmsg' }); const pwi = h('input', { type: 'text', placeholder: '新密碼' });
         return h('details', { class: 'lessonbox' }, h('summary', null, c.display + '　', h('small', null, '登入名字：' + c.name + '　· 可看 ' + c.learner_ids.length + ' 位學員')),
           h('div', { class: 'body' }, h('b', null, '可以看哪些學員：'), cks,
-            h('div', { class: 'row gap' }, h('button', { class: 'btn sm primary', onclick: async () => { try { await api('/api/parent/coach/' + c.id + '/links', { learner_ids: picked(cks) }); m2.textContent = '已更新'; } catch (e) { m2.className = 'errmsg'; m2.textContent = e.message; } } }, '儲存指派')),
+            h('div', { class: 'row gap' }, h('button', { class: 'btn sm primary', onclick: async () => { try { await api('/api/parent/coach/' + c.id + '/links', { learner_ids: picked(cks) }); m2.className = 'okmsg'; m2.textContent = '已更新'; } catch (e) { m2.className = 'errmsg'; m2.textContent = e.message; } } }, '儲存指派')),
             pwi, h('div', { class: 'row gap' }, h('button', { class: 'btn sm', onclick: async () => { try { await api('/api/parent/coach/' + c.id + '/reset', { pw: pwi.value }); m2.className = 'okmsg'; m2.textContent = '密碼已重設'; pwi.value = ''; } catch (e) { m2.className = 'errmsg'; m2.textContent = e.message; } } }, '重設密碼'),
-              h('button', { class: 'btn sm danger', onclick: async () => { if (confirm('確定刪除教練帳號「' + c.name + '」？')) { await api('/api/parent/coach/' + c.id + '/delete', {}); renderCoaches(box, learners); } } }, '刪除帳號')), m2)); }) : h('p', { class: 'sub' }, '還沒有教練帳號。'),
+              h('button', { class: 'btn sm danger', onclick: async () => { if (!confirm('確定刪除教練帳號「' + c.name + '」？')) return; try { await api('/api/parent/coach/' + c.id + '/delete', {}); renderCoaches(box, learners); } catch (e) { m2.className = 'errmsg'; m2.textContent = e.message; } } }, '刪除帳號')), m2)); }) : h('p', { class: 'sub' }, '還沒有教練帳號。'),
       h('h4', null, '新增教練'), nm, dp, pw, h('b', null, '可以看哪些學員：'), newChecks, msg,
       h('button', { class: 'btn primary', onclick: async () => { msg.className = 'errmsg'; try { await api('/api/parent/coach', { name: nm.value, display: dp.value, pw: pw.value, learner_ids: picked(newChecks) }); renderCoaches(box, learners); } catch (e) { msg.textContent = e.message; } } }, '新增教練')));
   }
@@ -660,10 +665,10 @@
       h('div', { id: 'pweekly' }),
       h('div', { id: 'pnotes' }),
       domBlocks,
-      user.role === 'coach' ? null : h('div', { class: 'panel' }, h('h3', null, '管理'), dpi, h('div', { class: 'row gap' }, h('button', { class: 'btn', onclick: async () => { try { await api('/api/parent/learner/' + uid + '/display', { display: dpi.value }); viewParent(uid); } catch (e) { msg.textContent = e.message; } } }, '改顯示名稱')),
+      user.role === 'coach' ? null : h('div', { class: 'panel' }, h('h3', null, '管理'), dpi, h('div', { class: 'row gap' }, h('button', { class: 'btn', onclick: async () => { try { await api('/api/parent/learner/' + uid + '/display', { display: dpi.value }); viewParent(uid); } catch (e) { msg.className = 'errmsg'; msg.textContent = e.message; } } }, '改顯示名稱')),
         pwi, h('div', { class: 'row gap' }, h('button', { class: 'btn', onclick: async () => { try { await api('/api/parent/learner/' + uid + '/reset', { pw: pwi.value }); msg.className = 'okmsg'; msg.textContent = '密碼已重設（他的登入會被登出）'; pwi.value = ''; } catch (e) { msg.className = 'errmsg'; msg.textContent = e.message; } } }, '重設密碼')),
         msg,
-        h('div', { class: 'row gap' }, h('button', { class: 'btn danger', onclick: async () => { if (confirm('確定要清掉學習進度嗎？他會重新做定位測驗（作答紀錄會保留）。')) { await api('/api/parent/learner/' + uid + '/clear', {}); viewParent(uid); } } }, '清掉學習進度，重新定位')),
+        h('div', { class: 'row gap' }, h('button', { class: 'btn danger', onclick: async () => { if (!confirm('確定要清掉學習進度嗎？他會重新做定位測驗（作答紀錄會保留）。')) return; try { await api('/api/parent/learner/' + uid + '/clear', {}); viewParent(uid); } catch (e) { msg.className = 'errmsg'; msg.textContent = e.message; } } }, '清掉學習進度，重新定位')),
         h('div', { class: 'row gap' }, h('button', { class: 'btn danger', onclick: async () => {
           if (!confirm('⚠ 確定要「永久刪除」學員「' + d.display + '」嗎？\n他的帳號、所有作答紀錄和工程筆記都會被刪除，無法復原。')) return;
           const again = prompt('再確認一次：請輸入他的登入名字「' + d.name + '」才會刪除');
@@ -695,7 +700,7 @@
     if (session && !(a === 'practice' || a === 'placement')) session = null;
     if (a === 'parent') { if (user.role !== 'parent' && user.role !== 'coach') { location.hash = '#/'; return; } return viewParent(b ? parseInt(b, 10) : 0); }
     if (user.role === 'coach' && a !== 'me' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
-    if (user.role === 'parent' && a !== 'me' && a !== 'guide' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
+    if (user.role === 'parent' && a !== 'me' && a !== 'guide' && a !== 'start' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
     if (a === 'placement') { if (!session) startPlacement(); return; }
     if (a === 'practice') { if (!st.done) { location.hash = '#/placement'; return; } if (!session) startPractice(b || null); return; }
     if (VX.routes[a]) return VX.routes[a](...hash.split('/').slice(2));

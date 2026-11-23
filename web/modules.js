@@ -138,7 +138,7 @@
       h('div', { class: 'panel' }, h('h2', null, K.icon + ' ' + K.name), fbBox, h('div', { class: 'field' }, h('label', null, '標題'), title), body,
         h('h3', null, '✅ 自我檢查'), h('p', { class: 'sub' }, '寫完對照一下，每一項都做到了嗎？'), checks, meter, meterT, msg,
         h('div', { class: 'row gap' }, h('button', { class: 'btn primary', onclick: save }, '儲存'),
-          note ? h('button', { class: 'btn danger', onclick: async () => { if (confirm('確定要刪掉這頁筆記嗎？')) { await api('/api/notes/' + note.id + '/delete', {}); location.hash = '#/notebook'; } } }, '刪除') : null))), '工程筆記', '📓');
+          note ? h('button', { class: 'btn danger', onclick: async () => { if (!confirm('確定要刪掉這頁筆記嗎？')) return; try { await api('/api/notes/' + note.id + '/delete', {}); location.hash = '#/notebook'; } catch (e) { toast(e.message); } } }, '刪除') : null))), '工程筆記', '📓');
   }
 
   function matrixEditor(data) {
@@ -163,7 +163,7 @@
     const el = h('div', { class: 'field' }, h('label', null, '畫草圖'), h('div', { class: 'help' }, '用手指或滑鼠畫。畫完在下面標註尺寸和零件名稱。'));
     const cv = h('canvas', { class: 'sketch', width: 520, height: 320 }); const ctx = cv.getContext('2d');
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 520, 320);
-    if (data.sketch) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = data.sketch; }
+    if (typeof data.sketch === 'string' && data.sketch.startsWith('data:image/')) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = data.sketch; }
     let down = false, color = '#14202e', size = 3;
     const pos = (e) => { const r = cv.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * 520, ((e.clientY - r.top) / r.height) * 320]; };
     cv.addEventListener('pointerdown', (e) => { down = true; cv.setPointerCapture(e.pointerId); const [x, y] = pos(e); ctx.beginPath(); ctx.moveTo(x, y); });
@@ -301,12 +301,12 @@
     let notes = []; try { notes = (await api('/api/notes')).notes.filter((n) => n.kind === 'skills'); } catch (e) { /* ignore */ }
     const type = h('select', null, h('option', { value: '手動駕駛' }, '手動駕駛'), h('option', { value: '自動程式' }, '自動程式'));
     const score = h('input', { type: 'number', placeholder: '分數' }); const note = h('textarea', { placeholder: '這次發生什麼事？失誤在哪？下次想改什麼？' });
-    const rows = notes.slice().reverse().map((n) => ({ t: n.data.f.type, s: parseFloat(n.data.f.score) || 0, d: n.data.f.date }));
+    const rows = notes.slice().reverse().map((n) => { const f = (n.data && n.data.f) || {}; return { t: f.type || '', s: parseFloat(f.score) || 0, d: f.date || '' }; });
     const max = Math.max(10, ...rows.map((r) => r.s));
     paint(h('div', null, nav, h('div', { class: 'panel' }, h('h2', null, '⏱️ 技能賽練習記錄'), h('p', { class: 'sub' }, '每次練習完記下分數和想法，一眼看出有沒有進步。（分數規則依當季 Game Manual）'),
       type, score, note, h('button', { class: 'btn primary', onclick: async () => { if (score.value === '') return toast('請填分數'); try { await api('/api/notes', { kind: 'skills', title: type.value + ' ' + score.value + ' 分', data: { f: { type: type.value, score: score.value, note: note.value, date: VX.todayStr() }, c: [] } }); toast('已記錄 ✔'); if (VX.act) VX.act('note'); VX.saveState(); viewCompete('skills'); } catch (e) { toast(e.message); } } }, '記錄這次')),
       rows.length ? h('div', { class: 'panel' }, h('h3', null, '分數變化'), h('div', { class: 'bars' }, rows.slice(-20).map((r) => h('div', { class: 'bcol', title: r.d + ' ' + r.t + ' ' + r.s }, h('div', { class: 'bfill', style: 'height:' + Math.round((r.s / max) * 100) + '%;background:' + (r.t === '自動程式' ? '#5ecd98' : '#0875e2') }), h('small', null, String(r.s))))), h('p', { class: 'sub' }, '藍＝手動駕駛　綠＝自動程式')) : null,
-      notes.length ? h('div', { class: 'panel' }, h('h3', null, '紀錄'), notes.map((n) => h('div', { class: 'wrongitem' }, h('b', null, n.data.f.date + '　' + n.data.f.type + '　' + n.data.f.score + ' 分'), h('div', { class: 'sub' }, n.data.f.note || ''), h('button', { class: 'btn sm ghost', onclick: async () => { if (confirm('刪掉這筆紀錄？')) { await api('/api/notes/' + n.id + '/delete', {}); viewCompete('skills'); } } }, '刪除')))) : null), '技能賽練習', '⏱️');
+      notes.length ? h('div', { class: 'panel' }, h('h3', null, '紀錄'), notes.map((n) => { const f = (n.data && n.data.f) || {}; return h('div', { class: 'wrongitem' }, h('b', null, (f.date || '') + '　' + (f.type || '') + '　' + (f.score || 0) + ' 分'), h('div', { class: 'sub' }, f.note || ''), h('button', { class: 'btn sm ghost', onclick: async () => { if (!confirm('刪掉這筆紀錄？')) return; try { await api('/api/notes/' + n.id + '/delete', {}); viewCompete('skills'); } catch (e) { toast(e.message); } } }, '刪除')); })) : null), '技能賽練習', '⏱️');
   }
 
   function vocab(nav) {
@@ -332,8 +332,8 @@
     sel.addEventListener('change', upd); upd();
     paint(h('div', null, nav, h('div', { class: 'panel' }, h('h2', null, '🎤 面談練習'), h('p', { class: 'sub' }, '評審會問你們的設計與想法。選一題，寫下你的回答，再大聲唸出來練習。'), sel, frame, ans,
       h('button', { class: 'btn primary', onclick: async () => { if (!ans.value.trim()) return toast('先寫點內容'); try { await api('/api/notes', { kind: 'interview', title: INTERVIEW[+sel.value].q, data: { f: { q: INTERVIEW[+sel.value].q, answer: ans.value, date: VX.todayStr() }, c: [] } }); toast('已儲存 ✔'); if (VX.act) VX.act('note'); VX.saveState(); viewCompete('interview'); } catch (e) { toast(e.message); } } }, '儲存我的回答')),
-      notes.length ? h('div', { class: 'panel' }, h('h3', null, '我的回答（' + notes.length + '）'), notes.map((n) => h('div', { class: 'wrongitem' }, h('b', null, n.title), h('div', { style: 'white-space:pre-wrap' }, n.data.f.answer), n.fb ? h('div', { class: 'fb-box' }, '💬 ' + n.fb) : null,
-        h('button', { class: 'btn sm ghost', onclick: async () => { if (confirm('刪掉這個回答？')) { await api('/api/notes/' + n.id + '/delete', {}); viewCompete('interview'); } } }, '刪除')))) : null), '面談練習', '🎤');
+      notes.length ? h('div', { class: 'panel' }, h('h3', null, '我的回答（' + notes.length + '）'), notes.map((n) => { const f = (n.data && n.data.f) || {}; return h('div', { class: 'wrongitem' }, h('b', null, n.title), h('div', { style: 'white-space:pre-wrap' }, f.answer || ''), n.fb ? h('div', { class: 'fb-box' }, '💬 ' + n.fb) : null,
+        h('button', { class: 'btn sm ghost', onclick: async () => { if (!confirm('刪掉這個回答？')) return; try { await api('/api/notes/' + n.id + '/delete', {}); viewCompete('interview'); } catch (e) { toast(e.message); } } }, '刪除')); })) : null), '面談練習', '🎤');
   }
 
   /* ============ 家長頁：筆記與留言 ============ */
@@ -342,7 +342,7 @@
     const parts = [];
     Object.entries(f).forEach(([k, v]) => { if (!v || k === 'date' || k === 'author') return; const fld = K && (K.fields || []).find((x) => x.k === k); parts.push(h('div', null, h('b', null, (fld ? fld.l : (k === 'answer' ? '回答' : k === 'score' ? '分數' : k === 'type' ? '類型' : k === 'note' ? '想法' : k === 'q' ? '問題' : k)) + '：'), h('span', { style: 'white-space:pre-wrap' }, String(v)))); });
     if (d.iq) parts.push(h('div', null, h('button', { class: 'btn sm', onclick: () => { const a = h('a', { href: URL.createObjectURL(new Blob([d.iq], { type: 'application/json' })), download: (n.title || 'project').replace(/[^\w\u4e00-\u9fa5-]+/g, '_') + '.iqblocks' }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); } }, '⬇ 下載他的 VEXcode 存檔')));
-    if (d.sketch) parts.push(h('img', { src: d.sketch, style: 'max-width:100%;border:1px solid var(--line);border-radius:8px' }));
+    if (typeof d.sketch === 'string' && d.sketch.startsWith('data:image/')) parts.push(h('img', { src: d.sketch, style: 'max-width:100%;border:1px solid var(--line);border-radius:8px' }));
     if (d.matrix) parts.push(h('table', { class: 'tbl' }, h('tr', null, h('th', null, '標準'), h('th', null, '權重'), ...d.matrix.opts.map((o) => h('th', null, o))), ...d.matrix.rows.map((r) => h('tr', null, h('td', null, r.n), h('td', null, String(r.w)), ...r.s.map((x) => h('td', null, String(x)))))));
     if (d.trials) parts.push(h('table', { class: 'tbl' }, h('tr', null, ['次', '設定', '目標', '實際', '備註'].map((x) => h('th', null, x))), ...d.trials.map((r, i) => h('tr', null, h('td', null, String(i + 1)), h('td', null, r.a), h('td', null, r.b), h('td', null, r.c), h('td', null, r.d)))));
     return parts;

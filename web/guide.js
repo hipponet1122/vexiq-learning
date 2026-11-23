@@ -194,25 +194,28 @@
 
   /* ---------- 起步任務頁 ---------- */
   function viewStart() {
-    const st = VX.st, pr = startProgress(st);
+    const st = VX.st, isLearner = VX.user && VX.user.role === 'learner', pr = startProgress(st);
     const mark = (k, v) => { st.start = st.start || {}; st.start[k] = v; VX.saveState(); viewStart(); };
     VX.app.replaceChildren(VX.shell(h('div', null,
-      h('p', { class: 'sub' }, '第一次用的話，照這 7 步做就會了。不用一次做完，一次做一步就好。沒有機器人的步驟可以先略過，用模擬器練習。'),
-      h('div', { class: 'panel' }, h('b', null, '進度 ' + pr.done + ' / ' + pr.total), bar(pr.done / pr.total)),
+      isLearner
+        ? h('p', { class: 'sub' }, '第一次用的話，照這 7 步做就會了。不用一次做完，一次做一步就好。沒有機器人的步驟可以先略過，用模擬器練習。')
+        : h('div', { class: 'callout' }, '👀 家長檢視（預覽）：這是孩子看到的 7 個起步步驟，方便你陪他一步一步做。實際進度請到「家長頁」查看。'),
+      isLearner ? h('div', { class: 'panel' }, h('b', null, '進度 ' + pr.done + ' / ' + pr.total), bar(pr.done / pr.total)) : null,
       START.map((s, i) => {
-        const state = stepState(st, s), isNext = pr.next === s;
+        const state = isLearner ? stepState(st, s) : 'todo', isNext = isLearner && pr.next === s;
         return h('div', { class: 'panel step ' + state + (isNext ? ' next' : '') },
           h('div', { class: 'row', style: 'justify-content:space-between;gap:8px;align-items:flex-start' },
             h('h3', { style: 'margin:0' }, (state === 'done' ? '✅ ' : state === 'skipped' ? '⏭ ' : isNext ? '👉 ' : '') + '步驟 ' + (i + 1) + '：' + s.t), h('span', { class: 'tag' }, s.time)),
           h('p', { class: 'sub' }, h('b', null, '為什麼：'), s.why),
           h('ol', null, s.how.map((x) => h('li', null, x))),
-          h('div', { class: 'row gap' }, goBtn(s.go, 'btn ' + (isNext ? 'primary' : '') + ' sm'),
+          isLearner ? h('div', { class: 'row gap' }, goBtn(s.go, 'btn ' + (isNext ? 'primary' : '') + ' sm'),
             s.manual && state !== 'done' ? h('button', { class: 'btn green sm', onclick: () => mark(s.manual, true) }, '✔ 我做完了') : null,
             s.skippable && state === 'todo' ? h('button', { class: 'btn ghost sm', onclick: () => mark(s.id + '_skip', true) }, '先略過') : null,
             state === 'skipped' ? h('button', { class: 'btn ghost sm', onclick: () => mark(s.id + '_skip', false) }, '取消略過') : null,
-            state === 'done' && s.manual ? h('button', { class: 'btn ghost sm', onclick: () => mark(s.manual, false) }, '取消完成') : null));
+            state === 'done' && s.manual ? h('button', { class: 'btn ghost sm', onclick: () => mark(s.manual, false) }, '取消完成') : null)
+            : (s.go[2] ? h('div', { class: 'row gap' }, goBtn(s.go, 'btn sm')) : null));
       }),
-      pr.done === pr.total ? h('div', { class: 'callout' }, '🎉 起步任務全部完成！之後每天看首頁的「今天要做的事」就好。') : null), { title: '起步任務', icon: '🚀' }));
+      isLearner && pr.done === pr.total ? h('div', { class: 'callout' }, '🎉 起步任務全部完成！之後每天看首頁的「今天要做的事」就好。') : null), { title: '起步任務', icon: '🚀' }));
   }
 
   /* ---------- 網站怎麼用 ---------- */

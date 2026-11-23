@@ -8,7 +8,7 @@
   const S = VX.sim;
   const CELL = S.CELL;
   const L = (el) => el.localName;
-  const MAX_BYTES = 1500000;
+  const MAX_BYTES = 500000;
 
   /* ================= 一、解析存檔 ================= */
   let stats = null;
@@ -254,12 +254,12 @@
       const seenDir = {};
       list.forEach((n) => {
         const m = motorRef(n);
-        if (SPIN.includes(n.type)) {
+        if (m && SPIN.includes(n.type)) {
           facts.spun[m] = true; (facts.scriptsOfMotor[m] = facts.scriptsOfMotor[m] || new Set()).add(ctx.script);
           if (n.f.DIRECTION) { if (seenDir[m] && seenDir[m] !== n.f.DIRECTION) conflicts.push({ motor: m, where: ctx.where }); seenDir[m] = n.f.DIRECTION; }
         }
-        if (n.type === 'iq_motion_stop_motor') facts.stopped.add(m);
-        if (n.type === 'iq_motion_set_motor_velocity') facts.velocity.add(m);
+        if (m && n.type === 'iq_motion_stop_motor') facts.stopped.add(m);
+        if (m && n.type === 'iq_motion_set_motor_velocity') facts.velocity.add(m);
         if (n.type === 'iq_motion_set_motor_stopping') facts.stopping = true;
         if (n.type === 'iq_motion_set_motor_torque') facts.torque = true;
         // 條件裡的遙控器讀取
@@ -333,7 +333,7 @@
     const out = h('div');
     const file = h('input', { type: 'file', accept: '.iqblocks,.json,application/json', onchange: async (e) => {
       const f = e.target.files[0]; if (!f) return;
-      if (f.size > MAX_BYTES) return showErr(out, '這個檔案太大了（超過 1.5 MB），不像是 VEXcode 的存檔。');
+      if (f.size > MAX_BYTES) return showErr(out, '這個檔案太大了（超過 500 KB），不像是 VEXcode 的存檔。');
       try { const text = await f.text(); const parsed = parseIq(text, f.name); run(parsed); } catch (err) { showErr(out, err.message); }
     } });
     // 預選挑戰

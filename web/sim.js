@@ -151,7 +151,7 @@
         case 'cursor': C.screen.cr = Math.max(1, Math.min(ROWS, Math.floor(val(b.row)) || 1)); C.screen.cc = Math.max(1, Math.min(COLS, Math.floor(val(b.col)) || 1)); return;
         case 'nextrow': C.screen.cr = Math.min(ROWS, C.screen.cr + 1); C.screen.cc = 1; return;
         case 'clearall': C.screen.rows = []; C.screen.cr = 1; C.screen.cc = 1; shot(); return;
-        case 'sound': C.sounds.push({ tick: C.ticks, name: b.snd || 'siren' }); return;
+        case 'sound': { const nm = b.snd || 'siren'; const same = C.sounds.filter((x) => x.tick === C.ticks); if (C.sounds.length < 40 && same.length < 2 && !same.some((x) => x.name === nm)) C.sounds.push({ tick: C.ticks, name: nm }); return; }
         case 'setvar': C.vars[String(b.name).trim()] = val(b.v); return;
         case 'chvar': C.vars[String(b.name).trim()] = (C.vars[String(b.name).trim()] || 0) + val(b.v); return;
         default: return;
@@ -404,9 +404,12 @@
   }
   const valOf = (v) => { if (v && typeof v === 'object') return exprCode(v); const t = String(v == null ? '' : v).trim(); return /^-?\d+(\.\d+)?$/.test(t) ? t : (t === '' ? '0' : safeId(t)); };
   const blockNames = (defs) => { const m = {}; (defs || []).forEach((d, i) => { m[d.name] = IDENT.test(d.name) ? d.name : 'myBlock' + (i + 1); }); return m; };
-  function collectVars(prog, defs) {
-    const set = []; const walk = (l) => (l || []).forEach((b) => { if ((b.t === 'setvar' || b.t === 'chvar') && !set.includes(safeId(b.name))) set.push(safeId(b.name)); if (b.kids) walk(b.kids); if (b.elseKids) walk(b.elseKids); });
+  function collectRawVars(prog, defs) {
+    const set = []; const walk = (l) => (l || []).forEach((b) => { if (b.t === 'setvar' || b.t === 'chvar') { const n = String(b.name == null ? '' : b.name).trim(); if (n && !set.includes(n)) set.push(n); } if (b.kids) walk(b.kids); if (b.elseKids) walk(b.elseKids); });
     walk(prog); (defs || []).forEach((d) => walk(d.kids)); return set;
+  }
+  function collectVars(prog, defs) {
+    const set = []; collectRawVars(prog, defs).forEach((n) => { const id = safeId(n); if (!set.includes(id)) set.push(id); }); return set;
   }
   const printArg = (v) => { if (v && typeof v === 'object') return exprCode(v); const t = String(v == null ? '' : v).trim(); return /^-?\d+(\.\d+)?$/.test(t) ? t : (IDENT.test(t) && t !== 'Hello' && /^[a-z_]/.test(t) ? t : JSON.stringify(String(v == null ? '' : v))); };
   const HEAD_NOTE = '示意：用 VEXcode 把積木轉成文字程式，大概會長這樣（實際內容與裝置設定以 VEXcode 為準，這裡只是幫你預習）';
@@ -419,9 +422,9 @@
       list.forEach((b) => {
         const kids = (k, loop) => { const r = body(k || [], ind + 1); if (loop) r.push('    '.repeat(ind + 1) + 'wait(20, MSEC)'); return r.length ? r : ['    '.repeat(ind + 1) + 'pass']; };
         switch (b.t) {
-          case 'drive': out.push(pad + 'drivetrain.drive_for(' + (b.dir === 'reverse' ? 'REVERSE' : 'FORWARD') + ', ' + valOf(b.v) + ', MM)'); break;
-          case 'drivec': out.push(pad + 'drivetrain.drive(' + (b.dir === 'reverse' ? 'REVERSE' : 'FORWARD') + ')'); break;
-          case 'turn': out.push(pad + 'drivetrain.turn_for(' + (b.dir === 'left' ? 'LEFT' : 'RIGHT') + ', ' + valOf(b.v) + ', DEGREES)'); break;
+          case 'drive': out.push(pad + 'drivetrain.drive_for(' + (b.dir === 'reverse' || b.dir === '反向' ? 'REVERSE' : 'FORWARD') + ', ' + valOf(b.v) + ', MM)'); break;
+          case 'drivec': out.push(pad + 'drivetrain.drive(' + (b.dir === 'reverse' || b.dir === '反向' ? 'REVERSE' : 'FORWARD') + ')'); break;
+          case 'turn': out.push(pad + 'drivetrain.turn_for(' + (b.dir === 'left' || b.dir === '左邊' ? 'LEFT' : 'RIGHT') + ', ' + valOf(b.v) + ', DEGREES)'); break;
           case 'stop': out.push(pad + 'drivetrain.stop()'); break;
           case 'vel': out.push(pad + 'drivetrain.set_drive_velocity(' + valOf(b.v) + ', PERCENT)'); break;
           case 'tvel': out.push(pad + 'drivetrain.set_turn_velocity(' + valOf(b.v) + ', PERCENT)'); break;
@@ -434,7 +437,7 @@
           case 'setvar': out.push(pad + safeId(b.name) + ' = ' + valOf(b.v)); break;
           case 'chvar': out.push(pad + safeId(b.name) + ' = ' + safeId(b.name) + ' + ' + valOf(b.v)); break;
           case 'call': out.push(pad + (nm[b.name] || safeId(b.name)) + '(' + (b.args || []).map(valOf).join(', ') + ')'); break;
-          case 'turnc': out.push(pad + 'drivetrain.turn(' + (b.dir === 'left' ? 'LEFT' : 'RIGHT') + ')'); break;
+          case 'turnc': out.push(pad + 'drivetrain.turn(' + (b.dir === 'left' || b.dir === '左邊' ? 'LEFT' : 'RIGHT') + ')'); break;
           case 'calibrate': out.push(pad + 'brain_inertial.calibrate()'); break;
           case 'resettimer': out.push(pad + 'brain.timer.clear()'); break;
           case 'print': out.push(pad + 'brain.screen.print(' + printArg(b.v) + ')'); break;
@@ -464,9 +467,9 @@
       const block = (head, k, loop, ...tail) => { out.push(pad + head + ' {', ...body(k || [], ind + 1)); if (loop) out.push(pad + '  wait(20, msec);'); out.push(pad + '}' + (tail[0] || '')); };
       list.forEach((b) => {
         switch (b.t) {
-          case 'drive': out.push(pad + 'Drivetrain.driveFor(' + (b.dir === 'reverse' ? 'reverse' : 'forward') + ', ' + valOf(b.v) + ', mm);'); break;
-          case 'drivec': out.push(pad + 'Drivetrain.drive(' + (b.dir === 'reverse' ? 'reverse' : 'forward') + ');'); break;
-          case 'turn': out.push(pad + 'Drivetrain.turnFor(' + (b.dir === 'left' ? 'left' : 'right') + ', ' + valOf(b.v) + ', degrees);'); break;
+          case 'drive': out.push(pad + 'Drivetrain.driveFor(' + (b.dir === 'reverse' || b.dir === '反向' ? 'reverse' : 'forward') + ', ' + valOf(b.v) + ', mm);'); break;
+          case 'drivec': out.push(pad + 'Drivetrain.drive(' + (b.dir === 'reverse' || b.dir === '反向' ? 'reverse' : 'forward') + ');'); break;
+          case 'turn': out.push(pad + 'Drivetrain.turnFor(' + (b.dir === 'left' || b.dir === '左邊' ? 'left' : 'right') + ', ' + valOf(b.v) + ', degrees);'); break;
           case 'stop': out.push(pad + 'Drivetrain.stop();'); break;
           case 'vel': out.push(pad + 'Drivetrain.setDriveVelocity(' + valOf(b.v) + ', percent);'); break;
           case 'tvel': out.push(pad + 'Drivetrain.setTurnVelocity(' + valOf(b.v) + ', percent);'); break;
@@ -482,7 +485,7 @@
           case 'setvar': out.push(pad + safeId(b.name) + ' = ' + valOf(b.v) + ';'); break;
           case 'chvar': out.push(pad + safeId(b.name) + ' = ' + safeId(b.name) + ' + ' + valOf(b.v) + ';'); break;
           case 'call': out.push(pad + (nm[b.name] || safeId(b.name)) + '(' + (b.args || []).map(valOf).join(', ') + ');'); break;
-          case 'turnc': out.push(pad + 'Drivetrain.turn(' + (b.dir === 'left' ? 'left' : 'right') + ');'); break;
+          case 'turnc': out.push(pad + 'Drivetrain.turn(' + (b.dir === 'left' || b.dir === '左邊' ? 'left' : 'right') + ');'); break;
           case 'calibrate': out.push(pad + 'BrainInertial.calibrate();'); break;
           case 'resettimer': out.push(pad + 'Brain.Timer.clear();'); break;
           case 'print': out.push(pad + 'Brain.Screen.print(' + printArg(b.v) + ');'); break;
@@ -575,11 +578,14 @@
     const restore = (str) => { const o = JSON.parse(str); prog = o.prog; defs = o.defs; target = prog; draw(); drawFly(true); persist(); };
     const doUndo = () => { if (!undoS.length) return toast('沒有可以復原的了'); redoS.push(snapStr()); restore(undoS.pop()); };
     const doRedo = () => { if (!redoS.length) return toast('沒有可以重做的了'); undoS.push(snapStr()); restore(redoS.pop()); };
-    const persist = () => { st.sim[key] = { main: clone(prog), defs: clone(defs) }; VX.saveState(); isSaved = true; if (typeof savedEl !== 'undefined') savedEl.textContent = lang === 'en' ? 'Saved' : '已儲存'; };
+    let saveTimer = 0;
+    const persist = () => { clearTimeout(saveTimer); saveTimer = 0; st.sim[key] = { main: clone(prog), defs: clone(defs) }; VX.saveState(); isSaved = true; if (typeof savedEl !== 'undefined') savedEl.textContent = lang === 'en' ? 'Saved' : '已儲存'; };
+    const scheduleSave = () => { clearTimeout(saveTimer); saveTimer = setTimeout(() => { if (!isSaved) persist(); }, 1200); };
 
     const rail = h('nav', { class: 'vxrail2' });
     const fly = h('div', { class: 'vxfly2' });
     const wsInner = h('div', { class: 'vxws-inner' });
+    const applyZoom = () => { wsInner.style.transform = zoom === 1 ? '' : 'scale(' + zoom + ')'; wsInner.style.transformOrigin = '0 0'; };
     const ws = h('div', { class: 'vxws2' }, wsInner);
     const canvas = h('canvas', { class: 'simcanvas' });
     const resBox = h('div');
@@ -631,7 +637,12 @@
       if (!playing) return;
       const idx = Math.max(0, Math.min(result.frames.length - 1, baseIdx + Math.floor(((performance.now() - startReal) * speed) / DT)));
       curIdx = idx; drawWorld(idx); drawBrain(idx);
-      const snds = result.C.sounds; while (sndI < snds.length && snds[sndI].tick <= idx) { playSound(snds[sndI].name); sndI++; }
+      const snds = result.C.sounds;
+      if (sndI < snds.length && snds[sndI].tick <= idx) {
+        let last = snds[sndI].name;
+        while (sndI < snds.length && snds[sndI].tick <= idx) { last = snds[sndI].name; sndI++; }
+        playSound(last);
+      }
       if (idx >= result.frames.length - 1) { playing = false; showResult(); return; }
       raf = requestAnimationFrame(frameLoop);
     }
@@ -688,7 +699,7 @@
       const up = (ev) => {
         const wasStarted = started, s = wasStarted ? slotAt(ev.clientX, ev.clientY) : null;
         cleanup();
-        if (!wasStarted) { if (info.kind === 'expr') { toast('把它拖到積木的空格裡（六角形或圓形的格子）'); } else if (info.kind === 'new' && !info.disabled) { snap(); target.push(newBlock(info.t, info.name, defs)); draw(); } return; }
+        if (!wasStarted) { if (info.kind === 'expr') { toast('把它拖到積木的空格裡（六角形或圓形的格子）'); } else if (info.kind === 'new' && !info.disabled) { snap(); target.push(newBlock(info.t, info.name, defs)); markDirty(); draw(); } return; }
         if (!s) return;
         if (info.kind === 'expr') { s._set(info.build()); return; }
         let list = s._list, idx = s._idx;
@@ -701,6 +712,7 @@
           if (info.list === list && idx > si) idx--;
           list.splice(idx, 0, b);
         }
+        markDirty();
         draw();
       };
       function cleanup() {
@@ -731,7 +743,7 @@
     /* ---- 工作區積木（可編輯）＋ 停留 1 秒的中文提示 ---- */
     let preSnap;
     const endEdit = () => { if (preSnap !== undefined && preSnap !== snapStr()) pushSnap(preSnap); preSnap = undefined; };
-    const markDirty = () => { isSaved = false; savedEl.textContent = lang === 'en' ? 'Not Saved' : '尚未儲存'; };
+    const markDirty = () => { isSaved = false; savedEl.textContent = lang === 'en' ? 'Not Saved' : '尚未儲存'; scheduleSave(); };
     const sel = (b, key, opts) => h('select', { class: 'ssel', onfocus: () => { preSnap = snapStr(); }, onchange: (e) => { b[key] = e.target.value; markDirty(); refreshCode(); endEdit(); } }, opts.map((o) => h('option', { value: o, selected: b[key] === o }, o)));
     const selDir = (b, tk) => h('select', { class: 'ssel', onfocus: () => { preSnap = snapStr(); }, onchange: (e) => { b[tkKey(tk)] = e.target.value; markDirty(); refreshCode(); endEdit(); } }, DIRL[tk.s][lang].map(([v, l]) => h('option', { value: v, selected: b[tkKey(tk)] === v }, l)));
     const textIn = (obj, key, w) => h('input', { class: 'sin', type: 'text', value: obj[key] == null ? '' : obj[key], style: 'width:' + (w || 50) + 'px', onfocus: () => { preSnap = snapStr(); }, oninput: (e) => { obj[key] = e.target.value; markDirty(); refreshCode(); }, onchange: endEdit });
@@ -798,7 +810,7 @@
       el.addEventListener('pointerup', () => clearTimeout(tipTimer)); el.addEventListener('pointercancel', () => clearTimeout(tipTimer));
       el.addEventListener('pointermove', (e) => { if (e.pointerType === 'touch') clearTimeout(tipTimer); });
     }
-    const cleanupGlobal = () => { tip.remove(); closeMenu(); };
+    const cleanupGlobal = () => { if (!isSaved) persist(); clearTimeout(saveTimer); tip.remove(); closeMenu(); };
     window.addEventListener('hashchange', cleanupGlobal, { once: true });
 
     const slot = (list, i) => { const s = h('div', { class: 'slot' }); s._list = list; s._idx = i; return s; };
@@ -839,7 +851,7 @@
       nodes.push(hat, listEl(prog));
       if (!prog.length && !defs.length) nodes.push(h('div', { class: 'vxhint' }, '👈 從左邊的積木庫「拖」或「點」積木進來'));
       wsInner.replaceChildren(...nodes);
-      wsInner.style.zoom = String(zoom);
+      applyZoom();
       refreshCode();
       if (cat === 'my' || cat === 'var') drawFly(true);
     }
@@ -882,7 +894,7 @@
           ...defs.map((d) => mk(newBlock('call', d.name, defs))).filter(Boolean));
         fly.scrollTop = keep ? top : 0; return;
       }
-      const protoFor = (key) => { if (key === 'varref') { const names = collectVars(prog, defs); if (!names.includes('score')) names.unshift('score'); return names.map((n) => ({ e: 'var', name: n })); } return [EXPROTO[key]()]; };
+      const protoFor = (key) => { if (key === 'varref') { const names = collectRawVars(prog, defs); if (!names.includes('score')) names.unshift('score'); return names.map((n) => ({ e: 'var', name: n })); } return [EXPROTO[key]()]; };
       const exprItems = (sec) => (sec.exprs || []).flatMap((key) => protoFor(key).map((x) => { const el = exprStatic(x, lang); el.classList.add('flyex'); el.addEventListener('pointerdown', (e) => beginTrack(e, { kind: 'expr', cls: EXK[x.e], build: () => JSON.parse(JSON.stringify(x)) })); attachTip(el, () => ({ t: 'expr', x })); return h('div', { class: 'flyrow' }, el); }));
       fly.replaceChildren(...c.sections.flatMap((sec) => [h('div', { class: 'vxsec' }, sec[lang]), ...(sec.items || []).map((t) => mk(newBlock(t))), ...exprItems(sec)]));
       fly.scrollTop = keep ? top : 0;
@@ -959,7 +971,7 @@
       h('button', { class: 'vxsicon round', title: '說明', onclick: () => toast('從左邊拖積木到工作區 → 按 RUN。停在積木上 1 秒會顯示中文意思。') }, ico('help')));
     const goal = ch ? h('div', { class: 'vxgoal2' }, h('b', null, '目標：'), ch.goal_t, h('span', null, '　' + ch.task)) : h('div', { class: 'vxgoal2' }, '空場地（每格 200 mm）。拖積木進來，按「RUN」看看機器人怎麼走。');
     const zoomBtn = (label, f) => h('button', { class: 'vxzoom', onclick: f }, label);
-    const wsBox = h('div', { class: 'vxwsbox2' }, ws, h('div', { class: 'vxzooms' }, zoomBtn('＋', () => { zoom = Math.min(1.5, zoom + 0.1); wsInner.style.zoom = String(zoom); }), zoomBtn('－', () => { zoom = Math.max(0.5, zoom - 0.1); wsInner.style.zoom = String(zoom); }), zoomBtn('＝', () => { zoom = 0.95; wsInner.style.zoom = String(zoom); })));
+    const wsBox = h('div', { class: 'vxwsbox2' }, ws, h('div', { class: 'vxzooms' }, zoomBtn('＋', () => { zoom = Math.min(1.5, zoom + 0.1); applyZoom(); }), zoomBtn('－', () => { zoom = Math.max(0.5, zoom - 0.1); applyZoom(); }), zoomBtn('＝', () => { zoom = 0.95; applyZoom(); })));
     const right = h('div', { class: 'vxright2' }, h('div', { class: 'vxrhead2' }, rtitle, h('span', { class: 'vxspacer' }), ...rbtns, h('button', { class: 'vxrb chev', title: '收合', onclick: () => { rightOff = true; root.classList.add('rightoff'); } }, '›')), rightBody);
     root.append(top, sub, goal, h('div', { class: 'vxbody' }, h('div', { class: 'vxleft2' }, rail, fly), wsBox, right));
     VX.app.replaceChildren(shell(root, { full: true }));

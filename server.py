@@ -15,6 +15,7 @@ import sqlite3
 import threading
 import time
 from collections import defaultdict, deque
+from contextlib import contextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -28,11 +29,23 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = DATA_DIR / "vexiq.sqlite"
 COOKIE = "vexiq_session"
 COOKIE_MAX_AGE = 180 * 24 * 3600
-MAX_BODY = 400000
-NOTE_MAX = 300000
+MAX_BODY = 600000
+NOTE_MAX = 500000
 NOTE_LIMIT = 300
 NOTE_KINDS = {"goal", "brainstorm", "matrix", "sketch", "test", "program", "reflect", "skills", "interview"}
 NAME_RE = re.compile(r"^[\w一-鿿\-]{1,20}$")
+TRUST_CF_IP = os.environ.get("TRUST_CF_IP", "").lower() in ("1", "true", "yes")
+CSP = (
+    "default-src 'self'; "
+    "script-src 'self'; "
+    "style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data: blob:; "
+    "font-src 'self'; "
+    "connect-src 'self'; "
+    "object-src 'none'; "
+    "base-uri 'self'; "
+    "frame-ancestors 'none'"
+)
 
 _lock = threading.Lock()
 
@@ -40,18 +53,24 @@ _lock = threading.Lock()
 def _key() -> str:
     p = DATA_DIR / "session.key"
     if not p.exists():
-        p.write_text(secrets.token_hex(32))
-        os.chmod(p, 0o600)
+        fd = os.open(p, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(secrets.token_hex(32))
     return p.read_text().strip()
 
 
 SER = URLSafeTimedSerializer(_key(), salt="vexiq-session")
 
 
+@contextmanager
 def db():
     c = sqlite3.connect(DB_PATH, timeout=10)
     c.row_factory = sqlite3.Row
-    return c
+    try:
+        with c:
+            yield c
+    finally:
+        c.close()
 
 
 def pbkdf2(pw: str, salt_hex: str, iters: int) -> str:
@@ -66,6 +85,7 @@ def make_hash(pw: str):
 
 def init_db():
     with _lock, db() as c:
+        c.execute("PRAGMA journal_mode=WAL")
         c.execute(
             """CREATE TABLE IF NOT EXISTS users(
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -113,21 +133,57 @@ def init_db():
 
 init_db()
 
-# ---------- 登入失敗限流（單一 worker，放記憶體） ----------
+# ---------- 登入與改密碼失敗限流（單一 worker，放記憶體） ----------
 _fails = defaultdict(deque)
-FAIL_LIMIT, FAIL_WINDOW = 6, 600
+FAIL_LIMIT, FAIL_WINDOW, FAIL_MAX_KEYS = 6, 600, 4096
 
 
 def client_ip(req: Request) -> str:
-    return req.headers.get("cf-connecting-ip") or (req.client.host if req.client else "?")
+    if TRUST_CF_IP:
+        cf = req.headers.get("cf-connecting-ip")
+        if cf:
+            return cf.strip()
+    return req.client.host if req.client else "?"
+
+
+def _prune_fails(now: float):
+    if len(_fails) <= FAIL_MAX_KEYS:
+        return
+    dead = [k for k, q in _fails.items() if not q or now - q[-1] > FAIL_WINDOW]
+    for k in dead:
+        _fails.pop(k, None)
+    while len(_fails) > FAIL_MAX_KEYS:
+        _fails.pop(next(iter(_fails)), None)
 
 
 def too_many(key: str) -> bool:
-    q = _fails[key]
+    q = _fails.get(key)
+    if not q:
+        return False
     now = time.time()
     while q and now - q[0] > FAIL_WINDOW:
         q.popleft()
+    if not q:
+        _fails.pop(key, None)
+        return False
     return len(q) >= FAIL_LIMIT
+
+
+def record_fail(key: str):
+    now = time.time()
+    _prune_fails(now)
+    _fails[key].append(now)
+
+
+def is_https(req: Request) -> bool:
+    return req.url.scheme == "https" or req.headers.get("x-forwarded-proto") == "https"
+
+
+def _int_or(v, default=0):
+    try:
+        return int(v) if v is not None and v != "" else default
+    except (ValueError, TypeError):
+        return default
 
 
 def err(msg: str, code: int = 400):
@@ -150,11 +206,20 @@ def current_user(req: Request):
 
 
 async def body_json(req: Request):
-    raw = await req.body()
-    if len(raw) > MAX_BODY:
-        return None
+    cl = req.headers.get("content-length")
+    if cl is not None:
+        try:
+            if int(cl) > MAX_BODY:
+                return None
+        except ValueError:
+            return None
+    buf = bytearray()
+    async for chunk in req.stream():
+        buf.extend(chunk)
+        if len(buf) > MAX_BODY:
+            return None
     try:
-        d = json.loads(raw or b"{}")
+        d = json.loads(bytes(buf) or b"{}")
     except ValueError:
         return None
     return d if isinstance(d, dict) else None
@@ -177,6 +242,8 @@ async def guard(request: Request, call_next):
         return err("bad content-type", 415)
     resp = await call_next(request)
     resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Content-Security-Policy"] = CSP
     resp.headers["Referrer-Policy"] = "same-origin"
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"  # 孩子的學習網站，不要被搜尋引擎收錄
     if request.url.path.startswith("/api"):
@@ -217,7 +284,7 @@ async def login(request: Request):
     else:
         pbkdf2(pw, "00" * 16, 200000)  # 同樣花時間，避免猜出哪些名字存在
     if not ok:
-        _fails[key].append(time.time())
+        record_fail(key)
         return err("名字或密碼不對", 401)
     resp = JSONResponse(pub_user(row))
     resp.set_cookie(
@@ -226,7 +293,7 @@ async def login(request: Request):
         max_age=COOKIE_MAX_AGE,
         httponly=True,
         samesite="lax",
-        secure=request.headers.get("x-forwarded-proto") == "https",
+        secure=is_https(request),
     )
     return resp
 
@@ -257,11 +324,15 @@ async def change_password(request: Request):
     d = await body_json(request)
     if d is None:
         return err("格式錯誤")
+    key = f"pw|{client_ip(request)}|{u['id']}"
+    if too_many(key):
+        return err("嘗試太多次，請 10 分鐘後再試", 429)
     old, new = str(d.get("old", "")), str(d.get("new", ""))
     # 自己改密碼：不設複雜度規則，習慣用什麼都可以（只要不是空的、不超過 64 字）
     if len(new) < 1 or len(new) > 64:
         return err("新密碼不能是空的（最多 64 個字）")
     if not hmac.compare_digest(pbkdf2(old, u["salt"], u["iters"]), u["hash"]):
+        record_fail(key)
         return err("舊密碼不對", 401)
     salt, h, it = make_hash(new)
     with _lock, db() as c:
@@ -274,7 +345,7 @@ async def change_password(request: Request):
         max_age=COOKIE_MAX_AGE,
         httponly=True,
         samesite="lax",
-        secure=request.headers.get("x-forwarded-proto") == "https",
+        secure=is_https(request),
     )
     return resp
 
@@ -303,11 +374,11 @@ async def post_answer(request: Request):
                     time.time(),
                     str(d.get("qid"))[:20],
                     str(d.get("skill", ""))[:10],
-                    int(d.get("level", 0) or 0),
+                    _int_or(d.get("level"), 0),
                     1 if d.get("correct") else 0,
                     str(d.get("choice", ""))[:200],
                     str(d.get("tag") or "")[:30],
-                    max(0, min(int(d.get("ms", 0) or 0), 180000)),
+                    max(0, min(_int_or(d.get("ms"), 0), 180000)),
                     str(d.get("mode", ""))[:12],
                 ),
             )
@@ -355,14 +426,20 @@ async def save_note(request: Request):
     data = d.get("data")
     if not isinstance(data, dict):
         return err("內容格式錯誤")
+    sketch = data.get("sketch")
+    if sketch is not None and (not isinstance(sketch, str) or (sketch != "" and not sketch.startswith("data:image/"))):
+        return err("草圖格式不正確")
     raw = json.dumps(data, ensure_ascii=False)
-    if len(raw) > NOTE_MAX:
-        return err("內容太大（草圖請畫小一點）")
+    if len(raw.encode("utf-8")) > NOTE_MAX:
+        return err("內容太大（草圖或附檔請小於 500 KB）")
     now = time.time()
     nid = d.get("id")
     with _lock, db() as c:
-        if nid:
-            row = c.execute("SELECT * FROM notes WHERE id=? AND uid=?", (int(nid), u["id"])).fetchone()
+        if nid is not None and nid != "":
+            nid_int = _int_or(nid, -1)
+            if nid_int < 0:
+                return err("找不到這則筆記", 404)
+            row = c.execute("SELECT * FROM notes WHERE id=? AND uid=?", (nid_int, u["id"])).fetchone()
             if not row:
                 return err("找不到這則筆記", 404)
             c.execute("UPDATE notes SET kind=?,title=?,data=?,updated=? WHERE id=?", (kind, title, raw, now, row["id"]))
@@ -589,8 +666,10 @@ async def parent_feedback(nid: int, request: Request):
         return e
     d = await body_json(request)
     text = str((d or {}).get("text", "")).strip()[:1000]
+    seen = 0 if text else 1
+    ts = time.time() if text else 0
     with _lock, db() as c:
-        n = c.execute("UPDATE notes SET fb=?,fb_ts=?,fb_seen=0 WHERE id=?", (text, time.time(), nid)).rowcount
+        n = c.execute("UPDATE notes SET fb=?,fb_ts=?,fb_seen=? WHERE id=?", (text, ts, seen, nid)).rowcount
     return {"ok": True} if n else err("找不到筆記", 404)
 
 
@@ -604,6 +683,7 @@ async def parent_delete_learner(uid: int, request: Request):
         row = c.execute("SELECT id FROM users WHERE id=? AND role='learner'", (uid,)).fetchone()
         if not row:
             return err("找不到學員", 404)
+        c.execute("DELETE FROM coach_links WHERE learner_id=?", (uid,))
         c.execute("DELETE FROM answers WHERE uid=?", (uid,))
         c.execute("DELETE FROM notes WHERE uid=?", (uid,))
         c.execute("DELETE FROM users WHERE id=?", (uid,))
@@ -646,7 +726,8 @@ async def coach_create(request: Request):
     name = str(d.get("name", "")).strip()
     pw = str(d.get("pw", ""))
     display = str(d.get("display", "")).strip() or name
-    ids = [int(x) for x in (d.get("learner_ids") or []) if str(x).isdigit()]
+    raw_ids = d.get("learner_ids")
+    ids = [int(x) for x in raw_ids if str(x).isdigit()] if isinstance(raw_ids, list) else []
     if not NAME_RE.match(name):
         return err("登入名字要 1～20 個字（中英文、數字）")
     if len(pw) < 4 or len(pw) > 64:
@@ -666,7 +747,8 @@ async def coach_links(cid: int, request: Request):
     if e:
         return e
     d = await body_json(request)
-    ids = [int(x) for x in ((d or {}).get("learner_ids") or []) if str(x).isdigit()]
+    raw_ids = (d or {}).get("learner_ids")
+    ids = [int(x) for x in raw_ids if str(x).isdigit()] if isinstance(raw_ids, list) else []
     with _lock, db() as c:
         if not c.execute("SELECT 1 FROM users WHERE id=? AND role='coach'", (cid,)).fetchone():
             return err("找不到教練", 404)

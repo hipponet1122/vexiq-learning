@@ -11,9 +11,14 @@ seed = {
     "學員": {"display": "學員", "role": "learner", **mk(kid_pw)},
     "家長": {"display": "家長", "role": "parent", **mk(parent_pw)},
 }
-open("seed_users.json", "w").write(json.dumps(seed, ensure_ascii=False, indent=1))
-os.chmod("seed_users.json", 0o600)
-open("初始帳密.txt", "w").write(
-    f"VEX IQ 自學網站 初始帳號（登入後請自己改密碼，改完可刪掉這個檔案）\n\n學員  名字：學員  密碼：{kid_pw}\n家長  名字：家長  密碼：{parent_pw}\n")
-os.chmod("初始帳密.txt", 0o600)
+def write_secret(path, text):
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(text)
+
+write_secret("seed_users.json", json.dumps(seed, ensure_ascii=False, indent=1))
+write_secret(
+    "初始帳密.txt",
+    f"VEX IQ 自學網站 初始帳號（登入後請自己改密碼，改完可刪掉這個檔案）\n\n學員  名字：學員  密碼：{kid_pw}\n家長  名字：家長  密碼：{parent_pw}\n",
+)
 print("done")
