@@ -639,14 +639,18 @@
       curIdx = idx; drawWorld(idx); drawBrain(idx);
       const snds = result.C.sounds;
       if (sndI < snds.length && snds[sndI].tick <= idx) {
-        let last = snds[sndI].name;
-        while (sndI < snds.length && snds[sndI].tick <= idx) { last = snds[sndI].name; sndI++; }
-        playSound(last);
+        const played = [];
+        while (sndI < snds.length && snds[sndI].tick <= idx) {
+          const nm = snds[sndI].name;
+          if (!played.includes(nm)) played.push(nm);
+          sndI++;
+        }
+        played.slice(-2).forEach(playSound);
       }
       if (idx >= result.frames.length - 1) { playing = false; showResult(); return; }
       raf = requestAnimationFrame(frameLoop);
     }
-    function play() { if (!result) return; if (curIdx >= result.frames.length - 1) curIdx = 0; baseIdx = curIdx; startReal = performance.now(); playing = true; const sn = result.C.sounds; sndI = sn.findIndex((s) => s.tick > curIdx); if (sndI < 0) sndI = sn.length; resBox.replaceChildren(); raf = requestAnimationFrame(frameLoop); }
+    function play() { if (!result) return; if (curIdx >= result.frames.length - 1) curIdx = 0; baseIdx = curIdx; startReal = performance.now(); playing = true; const sn = result.C.sounds; sndI = sn.findIndex((s) => s.tick >= curIdx); if (sndI < 0) sndI = sn.length; resBox.replaceChildren(); raf = requestAnimationFrame(frameLoop); }
     function run() {
       cancelAnimationFrame(raf); playing = false; if (rightTab === 'code') setRightTab('field');
       try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { actx = actx || new AC(); actx.resume(); } } catch (e) { /* ignore */ }

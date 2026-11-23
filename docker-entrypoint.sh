@@ -5,8 +5,12 @@ set -e
 if [ "$(id -u)" = "0" ]; then
   U=$(stat -c %u /data)
   G=$(stat -c %g /data)
-  if [ "$U" = "0" ]; then U=1000; G=1000; chown -R "$U:$G" /data; fi
-  [ -f /app/seed_users.json ] && chown "$U:$G" /app/seed_users.json && chmod 600 /app/seed_users.json
+  if [ "$U" = "0" ]; then U=1000; G=1000; fi
+  find /data -user 0 -exec chown "$U:$G" {} +
+  if [ -f /app/seed_users.json ]; then
+    chown "$U:$G" /app/seed_users.json
+    chmod 600 /app/seed_users.json
+  fi
   exec setpriv --reuid="$U" --regid="$G" --clear-groups "$@"
 fi
 exec "$@"
