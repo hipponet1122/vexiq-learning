@@ -615,3 +615,56 @@ e1b39b|L1 is higher
 08e1e1|L2 is higher
 8995ee|Can't compare
 979d21|L1: 60 ÷ 6 = 10 runs × 3 = 30 points. L2: 60 ÷ 12 = 5 runs × 6 = 30 points. Equal! So you also need to consider which mechanism is steadier and easier to build.
+
+f16079	Compound gear train (2 stages): stage 1 is a 12-tooth driving a 36-tooth gear, and stage 2 on the same shaft is another 12-tooth driving a 36-tooth gear. If the input turns 18 times, how many times does the final output turn?
+17fef8	Each stage reduces speed by 3× (36 ÷ 12 = 3), so two stages reduce by 3 × 3 = 9×. Output turns = 18 ÷ 9 = 2 turns.
+71e860	Three gears mesh in a row (12-tooth → 24-tooth → 36-tooth), with the middle 24-tooth as an idler gear. When the first gear turns clockwise, how does the third gear turn and at what speed ratio?
+e8dfd2	Clockwise, 1/3 speed (3× slower)
+9b70ef	Counter-clockwise, 1/3 speed (3× slower)
+7a6ea7	Clockwise, 1/6 speed (6× slower)
+a117c5	Counter-clockwise, 1/2 speed (2× slower)
+b78354	An idler gear only changes direction (CW → CCW → CW) without changing the overall ratio: 12 ÷ 36 = 1/3 speed, and the 1st and 3rd gears turn the same way (clockwise).
+b6e2d6	After running the nested loop below, how many mm does the robot drive forward in total?
+db549c	The outer loop runs 3 times and the inner loop drives 2 × 100 = 200 mm each time: 3 × 2 × 100 = 600 mm total.
+0a17ca	A program runs "while <Distance > 150 mm>" with "drive forward" inside, forgets "stop driving" after the loop, and then runs "wait 2 seconds". What happens to the robot?
+6801c1	It keeps driving forward for 2 seconds and may crash into the wall
+cf8fcf	It stops automatically as soon as the loop ends
+f91c7d	It reverses in place for 2 seconds
+6b7d76	The program cannot be downloaded
+4bb6a8	"drive forward" without a distance never stops on its own! Without "stop driving" after the loop, the motors keep pushing forward during the 2-second wait.
+25a210	When is the condition "(Distance < 200 mm) and (sees red?)" true?
+a4538a	Only when the object is closer than 200 mm AND the sensor sees red at the same time
+363fb8	Whenever the distance is less than 200 mm
+5d454e	Whenever the sensor sees red
+096de5	When neither condition is true
+40106b	"and" requires BOTH conditions to be true at the same time; if either one is false, the whole condition is false.
+3494cd	Starting from 0°, a robot turns right in place for one and a half full turns (540°). What will the Gyro's heading and rotation read?
+834867	heading = 180°, rotation = 540°
+aad781	heading = 540°, rotation = 180°
+1e3523	Both read 540°
+6255e7	Both read 180°
+8027dd	heading always wraps between 0° and 359° (540° wraps to 180°), while rotation keeps accumulating the total angle (540°).
+d2099a	Why do autonomous programs often start with "calibrate Gyro", and why must you not touch the robot during calibration?
+aed09d	So the Gyro learns its stationary baseline; shaking it causes heading drift
+430ebc	To charge the battery more
+6f10c0	To make the wheels point straight ahead automatically
+0d4d86	To increase the Distance Sensor's range
+d4dd0b	Calibration measures the Gyro's resting signal; if the robot moves during calibration, the baseline is off and headings will continuously drift.
+fa77d2	After running the program below, how many mm does the robot drive forward in total?
+61f4c1	The four drives are 100, 150, 200, and 250 mm: 100 + 150 + 200 + 250 = 700 mm.
+1d604b	Approaching a target at high speed often causes overshoot from momentum. Advanced autonomous code uses Proportional Control (P-Control): as the robot gets closer to the target, how should drive velocity change?
+2a212b	Slow down proportionally as it gets closer, stopping accurately at low speed
+101336	Speed up as it gets closer
+888213	Stay at 100% speed all the way
+5545fd	Ignore distance and only use wait seconds
+941980	Driving fast when far saves time, and slowing down proportionally as remaining distance shrinks cuts overshoot and improves accuracy.
+fa2f9d	A My Block polygon (sides, len) computes each exterior turn angle as "360 ÷ sides". When calling polygon (8, 200) for a regular octagon, how many degrees is each turn?
+f118f3	A regular octagon has 8 exterior angles: 360 ÷ 8 = 45 degrees.
+0d5c64	In a 60-second Autonomous Skills run, wheel slip makes the robot drift more and more after 4–5 trips. Which strategy best eliminates accumulated error?
+0984d9	Intentionally square up gently against a field wall, or re-localize with sensors
+69f4c5	Add 50 mm to every drive distance
+c26ca9	Play a cooler sound effect
+87060e	Set turn velocity to 100%
+6ecbcf	Dead reckoning alone accumulates drift; strong competition teams square up against field walls or use Distance/Color sensors at key points to reset position.
+3a6562	Expected-value strategy: Route A takes 12 s for 6 pts (100% success); Route B takes 20 s for 16 pts (50% success). In 60 seconds, how many more expected points does Route A score than Route B?
+b7e735	Route A: (60 ÷ 12) × 6 × 100% = 30 pts. Route B: (60 ÷ 20) × 16 × 50% = 24 pts. Route A scores 30 − 24 = 6 more points.

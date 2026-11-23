@@ -5,6 +5,7 @@
 - 學習狀態（各技能熟練度）存成 JSON，每一次作答另外記一筆流水帳（給家長看錯題與練習時間）。
 - 網站內容是公開的靜態檔；只有 /api 需要登入。
 """
+import base64
 import hashlib
 import hmac
 import json
@@ -26,6 +27,11 @@ APP_DIR = Path(__file__).parent
 WEB_DIR = APP_DIR / "web"
 DATA_DIR = Path(os.environ.get("DATA_DIR", str(APP_DIR / "data")))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+PHOTOS_DIR = DATA_DIR / "photos"
+PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
+PHOTO_RE = re.compile(r"^(\d+)_[0-9a-f]{16}\.jpg$")
+PHOTO_MAX_BYTES = 450000
+PHOTO_LIMIT = 200
 DB_PATH = DATA_DIR / "vexiq.sqlite"
 COOKIE = "vexiq_session"
 COOKIE_MAX_AGE = 180 * 24 * 3600
@@ -466,6 +472,68 @@ async def delete_note(nid: int, request: Request):
     return {"ok": True}
 
 
+@app.post("/api/photos")
+async def upload_photo(request: Request):
+    u = current_user(request)
+    if not u:
+        return err("未登入", 401)
+    d = await body_json(request)
+    if not isinstance(d, dict) or not isinstance(d.get("data"), str):
+        return err("照片格式錯誤")
+    raw_url = d["data"]
+    if not raw_url.startswith("data:image/jpeg;base64,"):
+        return err("只支援 JPEG 照片格式")
+    try:
+        blob = base64.b64decode(raw_url.split(",", 1)[1], validate=True)
+    except Exception:
+        return err("照片編碼無效")
+    if len(blob) < 100 or len(blob) > PHOTO_MAX_BYTES or not blob.startswith(b"\xff\xd8\xff"):
+        return err("照片檔案太大或格式不正確（上限 450 KB）")
+    with _lock:
+        if len(list(PHOTOS_DIR.glob(f"{u['id']}_*.jpg"))) >= PHOTO_LIMIT:
+            return err("照片數量已達上限，請先刪除舊照片")
+        fname = f"{u['id']}_{secrets.token_hex(8)}.jpg"
+        (PHOTOS_DIR / fname).write_bytes(blob)
+    return {"ok": True, "url": f"/api/photos/{fname}"}
+
+
+@app.get("/api/photos/{fname}")
+def get_photo(fname: str, request: Request):
+    u = current_user(request)
+    if not u:
+        return err("未登入", 401)
+    m = PHOTO_RE.match(fname)
+    if not m:
+        return err("找不到照片", 404)
+    owner_id = int(m.group(1))
+    if u["id"] != owner_id:
+        allowed = allowed_learner_ids(u) if u["role"] in ("parent", "coach") else set()
+        if allowed is not None and owner_id not in allowed:
+            return err("沒有權限查看這張照片", 403)
+    p = PHOTOS_DIR / fname
+    if not p.is_file():
+        return err("找不到照片", 404)
+    return FileResponse(p, media_type="image/jpeg", headers={"Cache-Control": "private, max-age=86400"})
+
+
+@app.post("/api/photos/{fname}/delete")
+async def delete_photo(fname: str, request: Request):
+    u = current_user(request)
+    if not u:
+        return err("未登入", 401)
+    m = PHOTO_RE.match(fname)
+    if not m:
+        return err("找不到照片", 404)
+    owner_id = int(m.group(1))
+    if u["id"] != owner_id and u["role"] != "parent":
+        return err("沒有權限刪除這張照片", 403)
+    p = PHOTOS_DIR / fname
+    with _lock:
+        if p.is_file():
+            p.unlink()
+    return {"ok": True}
+
+
 @app.post("/api/notes/{nid}/seen")
 async def seen_note(nid: int, request: Request):
     u = current_user(request)
@@ -690,6 +758,11 @@ async def parent_delete_learner(uid: int, request: Request):
         c.execute("DELETE FROM answers WHERE uid=?", (uid,))
         c.execute("DELETE FROM notes WHERE uid=?", (uid,))
         c.execute("DELETE FROM users WHERE id=?", (uid,))
+        for pf in PHOTOS_DIR.glob(f"{uid}_*.jpg"):
+            try:
+                pf.unlink()
+            except OSError:
+                pass
     return {"ok": True}
 
 

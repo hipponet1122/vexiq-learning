@@ -408,9 +408,17 @@
         else if ((m = it.t.match(/^重複直到 <距離 ([<>]) (\d+) 毫米>/))) b = { t: 'until', cond: { k: 'dist', op: m[1], v: m[2] }, kids: [] };
         else if (/^重複直到 <碰撞開關被按下>/.test(it.t)) b = { t: 'until', cond: { e: 'bumper' }, kids: [] };
         else if ((m = it.t.match(/^重複直到 <看到(紅色|綠色|藍色|黃色)>/))) b = { t: 'until', cond: { e: 'color', color: { 紅色: 'red', 綠色: 'green', 藍色: 'blue', 黃色: 'yellow' }[m[1]] }, kids: [] };
+        else if ((m = it.t.match(/^如果 <距離 ([<>]) (\d+) 毫米> 則?$/))) b = { t: 'if', cond: { k: 'dist', op: m[1], v: m[2] }, kids: [] };
+        else if ((m = it.t.match(/^如果 <看到(紅色|綠色|藍色|黃色)> 則?$/))) b = { t: 'if', cond: { e: 'color', color: { 紅色: 'red', 綠色: 'green', 藍色: 'blue', 黃色: 'yellow' }[m[1]] }, kids: [] };
+        else if ((m = it.t.match(/^將 \[(\S+)\] 設定為 \((.+?)\)$/))) b = { t: 'setvar', name: m[1], v: m[2] };
+        else if ((m = it.t.match(/^將 \[(\S+)\] 改為 \((.+?)\)$/))) b = { t: 'chvar', name: m[1], v: m[2] };
         else if ((m = it.t.match(/^(\S+) \((.*)\)$/)) && defNames.includes(m[1])) b = { t: 'call', name: m[1], args: m[2].split(',').map((x) => x.trim()) };
         else return null;
         if (b.kids && i < items.length && items[i].ind > it.ind) { const k = build(it.ind + 1); if (!k) return null; b.kids = k; }
+        if (b.t === 'if' && i < items.length && items[i].ind === it.ind && /^(別的|否則)$/.test(items[i].t)) {
+          i++;
+          if (i < items.length && items[i].ind > it.ind) { const ek = build(it.ind + 1); if (!ek) return null; b.elseKids = ek; }
+        }
         out.push(b);
       }
       return out;
@@ -900,7 +908,7 @@
       }
       curIdx = 0;
       scrubEl.max = String(Math.max(0, result.frames.length - 1)); scrubEl.value = '0'; scrubEl.disabled = false; playPauseBtn.disabled = false;
-      if (VX.act) VX.act('sim'); persist(); play();
+      if (VX.act) VX.act('sim'); persist(); syncChSel(); play();
     }
     function stop() { cancelAnimationFrame(raf); playing = false; result = null; curIdx = 0; scrubEl.max = '0'; scrubEl.value = '0'; scrubEl.disabled = true; playPauseBtn.disabled = true; playPauseBtn.textContent = '▶'; highlightBid(''); resBox.replaceChildren(); drawWorld(0); drawBrain(null); }
     function showResult() {
@@ -930,6 +938,7 @@
           if ((firstSim && (rec.fails || 0) >= 2) || (earnedStars >= 3 && prevStars < 3)) rec.gritT = Date.now(); // 週報「克服卡關亮點」只列本週新達成的
         }
         rec.sim = true;
+        syncChSel();
         if (firstSim && VX.act) VX.act('simok');
         VX.saveState();
         if (VX.badges) VX.badges.check(false);
@@ -1394,10 +1403,23 @@
       h('div', { class: 'vxtb2 static' }, h('span', { class: 'vxico', html: SVG.brain }), h('span', null, 'BRAIN')),
       tb('download', 'DOWNLOAD', downloadCode), tb('play', 'RUN', run, 'run'), tb('stop', 'STOP', stop), tb('share', 'SHARE', saveNote), tb('exit', 'EXIT', () => { location.hash = '#/'; }));
 
+    const chLamp = (c) => {
+      const r = st.ch[c.id] || {};
+      if (r.done || r.sim) return '🟢 ';
+      const sv = st.sim && st.sim[c.id];
+      const hasBlocks = !!(sv && ((sv.main && sv.main.length) || (sv.defs && sv.defs.length)));
+      return ((r.runs || 0) > 0 || (r.hints || 0) > 0 || hasBlocks) ? '🟡 ' : '⚪ ';
+    };
+    const chLabel = (c) => chLamp(c) + (c.lu ? '🎯 ' : '') + c.title;
     const chSel = h('select', { class: 'vxfieldsel', onchange: (e) => { location.hash = e.target.value ? '#/sim/' + e.target.value : '#/sim'; } },
       h('option', { value: '', selected: !ch }, '自由練習／設計關卡'),
-      CHALLENGES.map((c) => h('option', { value: c.id, selected: ch && ch.id === c.id }, (c.lu ? '🎯 ' : '') + c.title)),
+      CHALLENGES.map((c) => h('option', { value: c.id, selected: ch && ch.id === c.id }, chLabel(c))),
       st.customCh.map((c) => h('option', { value: c.id, selected: ch && ch.id === c.id }, '🎨 自訂：' + c.title)));
+    const syncChSel = () => {
+      if (!ch || ch.custom) return;
+      const opt = Array.from(chSel.options).find((o) => o.value === ch.id);
+      if (opt) opt.textContent = chLabel(ch);
+    };
     let rightOff = false;
     const root = h('div', { class: 'vxroot vxscope' });
     const sub = h('div', { class: 'vxsub2' },

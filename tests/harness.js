@@ -35,7 +35,7 @@ function load() {
   vm.createContext(sandbox);
   const run = (f, tail) => vm.runInContext(fs.readFileSync(path.join(ROOT, 'web', f), 'utf8') + (tail || ''), sandbox, { filename: f });
   run('data.js', ';window.__data={QS,SKILLS,DOMAINS};');
-  run('content.js', ';window.__content={CHALLENGES,SEASON};');
+  run('content.js', ';window.__content={CHALLENGES,SEASON,BUILD_LAB_CATS,BUILD_LABS};');
   run('blocktext.js');
   run('sim.js');
   run('iqimport.js');

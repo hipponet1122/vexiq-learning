@@ -22,3 +22,12 @@ f2c7bf|Learner not found
 a3a90d|Note not found
 901563|Coach not found
 eceed7|Please write which question and what the problem is
+
+173689	Invalid photo format
+589d7e	Only JPEG photos are supported
+d21527	Invalid photo encoding
+56798c	Photo too large or invalid format (max 450 KB)
+fecc56	Photo limit reached; please delete older photos first
+c96cba	Photo not found
+1174d3	No permission to view this photo
+8f5b3a	No permission to delete this photo

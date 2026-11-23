@@ -12,7 +12,7 @@ const run = (code, ch) => { const w = S.makeWorld(ch || null); const r = S.simul
 
 group('題庫結構');
 const { QS, SKILLS } = data;
-t('題數 138、技能 26', () => { assert.strictEqual(QS.length, 138); assert.strictEqual(SKILLS.length, 26); });
+t('題數 150、技能 26', () => { assert.strictEqual(QS.length, 150); assert.strictEqual(SKILLS.length, 26); });
 t('題號不重複、技能都存在', () => {
   const ids = new Set(), sk = new Set(SKILLS.map((s) => s.id));
   for (const q of QS) { assert(!ids.has(q.id), '重複 ' + q.id); ids.add(q.id); assert(sk.has(q.s), q.id + ' 技能不存在'); }
@@ -301,6 +301,19 @@ t('dbg3 的 bug 程式：診斷說「有執行但沒動」，不是「還沒放�
   const { r } = run(ch.starter, ch);
   const tips = S.diagnoseFail(r, ch);
   assert(tips.length && !tips[0].includes('還沒有讓車子動'), tips.join('|'));
+});
+t('實體組裝挑戰（BUILD_LABS）：16 關結構完整、技能與量測上下界皆有效', () => {
+  const labs = content.BUILD_LABS || [], cats = new Set((content.BUILD_LAB_CATS || []).map((c) => c.id));
+  const sk = new Set(SKILLS.map((s) => s.id)), ids = new Set();
+  assert.strictEqual(labs.length, 16);
+  labs.forEach((lab) => {
+    assert(!ids.has(lab.id), '重複 ' + lab.id); ids.add(lab.id);
+    assert(cats.has(lab.cat), lab.id + ' 無效分類');
+    assert(sk.has(lab.skill), lab.id + ' 無效技能');
+    assert(lab.lv >= 1 && lab.lv <= 4, lab.id + ' 無效難度');
+    assert(lab.steps.length >= 3 && lab.checks.length >= 3, lab.id + ' 步驟或檢核不足');
+    (lab.measures || []).forEach((m) => assert(m.min <= m.max && m.failTip, lab.id + ' 量測設定無效'));
+  });
 });
 
 

@@ -113,3 +113,34 @@ a7d6ba|This program should stop the robot 150 mm before the wall, but the greate
 da91bd|The start is far from the wall (about 800 mm). Is that greater than 150 or less than 150?
 ef3ce0|We want "while the distance is still greater than 150 mm, keep driving forward".
 cccfb1|Change the < in while to >.
+
+37fc7f	Square Spiral (Incrementing Variable)
+0c95de	Use a variable to add 200 mm to each straight segment and spiral 4 segments to the flag.
+3e2ee9	Start with 200 mm, then turn left 90° and increase the variable by 200 each time (200 → 400 → 600 → 800). Solve it with "repeat 4" + a variable!
+d19736	First create the variable len in the Variables category using "set [len] to (200)".
+f54ff4	Inside "repeat 4", put: drive forward for len, turn left 90, change len by 200 (adds 200 each time).
+b7c289	The four segments are 200, 400, 600, and 800 mm, spiraling around the middle obstacles to the bottom-left flag.
+5d6dc1	Dual Sensors: Turn Before Wall, Stop on Red
+7aa5f0	First use the Distance Sensor to stop about 150 mm before the right wall and turn left 90°, then use the Color Sensor to stop on the red floor.
+1a0445	Don't hardcode distances for either segment: use the Distance Sensor for the wall, then the Color Sensor for red.
+1fd78c	Segment 1: while <Distance > 150 mm> drive forward, then stop driving after the loop.
+6211e5	Next, turn left 90 degrees to face up.
+c57852	Segment 2: drive forward → repeat until <sees red?> → stop driving.
+5f07d0	Smart Obstacle Corridor (Auto-Turn on Sensor)
+7d4a35	Use a loop with the Distance Sensor to automatically turn left 90° whenever you're within 150 mm of a wall, following the U-shaped corridor to the flag.
+62ca83	The three corridor segments have different lengths. Try wrapping "drive until 150 mm from the wall → stop → turn left 90°" inside "repeat 3".
+edf2bc	You don't need to count cells for each segment—just stop and turn left whenever the distance reaches 150 mm.
+fd8d41	One segment = while <Distance > 150 mm> { drive forward } → stop driving → turn left 90 degrees.
+fcc6e8	Wrap that sequence inside "repeat 3" to automatically navigate all three legs of the U-shaped corridor.
+bfe4ac	Wall-Align & Go (Bumper + Distance)
+008f90	Drive forward into the right wall to align, reverse 200 mm, turn left 90°, then use the Distance Sensor to stop 150 mm before the top wall at the flag.
+7b7efd	This is a real competition "wall-alignment" technique (hitting the wall is allowed here): use the Bumper Switch to confirm alignment before the second leg.
+e664bb	Segment 1: drive forward → repeat until <Bumper pressed?> → stop driving.
+19303c	Next, reverse 200 mm (drive reverse for 200 mm), then turn left 90 degrees.
+3dfa95	Finally, use while <Distance > 150 mm> { drive forward } → stop driving.
+cfdd55	🐛 Debug Detective (Advanced): Two-Bug Spiral
+807ed3	This spiral program tries to wind 4 segments from the center to the bottom-left flag, but it has 2 bugs! Press RUN to observe and fix both.
+7dae5c	Check both the "turn direction" and the "amount added to the variable each step".
+93fa50	Press RUN first and watch which way the robot turns on step 1—did it turn the wrong way into a wall?
+e59a03	After changing turn right to left, run it again and check whether each segment is long enough to clear the obstacles.
+c1c32b	Each segment should grow by 200 mm (200 → 400 → 600 → 800): change "change len by 100" to 200.

@@ -5,7 +5,7 @@
   const { h, api, shell, blocksEl, toast } = VX;
   const $ = () => VX.app;
   const fmt = (ts) => { const d = new Date(ts * 1000); return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate(); };
-  const stars = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
+  const stars = (n) => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
   const paint = (c, title, icon) => $().replaceChildren(shell(c, { title, icon }));
   const html = (s) => h('div', { html: s });
 
@@ -33,13 +33,30 @@
 
   function viewChallenge(id) {
     const st = VX.st; st.ch = st.ch || {};
+    const chStatus = (c) => {
+      const rec = st.ch[c.id] || {};
+      if (rec.done || rec.sim) return 'ok';
+      const sv = st.sim && st.sim[c.id];
+      const hasBlocks = !!(sv && ((sv.main && sv.main.length) || (sv.defs && sv.defs.length)));
+      if ((rec.runs || 0) > 0 || (rec.hints || 0) > 0 || hasBlocks) return 'try';
+      return 'idle';
+    };
     if (!id) {
-      const done = CHALLENGES.filter((c) => st.ch[c.id] && st.ch[c.id].done).length;
+      const okN = CHALLENGES.filter((c) => chStatus(c) === 'ok').length;
+      const tryN = CHALLENGES.filter((c) => chStatus(c) === 'try').length;
+      const idleN = CHALLENGES.length - okN - tryN;
       const customList = Array.isArray(st.customCh) ? st.customCh : [];
       const card = (c) => {
         const rec = st.ch[c.id] || {};
         const d = rec.done;
-        return h('a', { class: 'card', href: '#/challenge/' + c.id }, h('h3', null, c.title, d ? h('span', { class: 'tag done' }, ' ✓ 完成') : null), h('div', { class: 'stars' }, stars(c.lv)), h('p', { class: 'sub' }, c.goal_t),
+        const stt = chStatus(c);
+        const cls = 'card' + (stt === 'ok' ? ' card-lit-ok' : stt === 'try' ? ' card-lit-try' : '');
+        const lampTitle = stt === 'ok' ? '已通過' : stt === 'try' ? '練習中' : '尚未練習';
+        return h('a', { class: cls, href: '#/challenge/' + c.id },
+          h('h3', null, h('span', { class: 'lamp ' + stt, title: lampTitle }), c.title,
+            d ? h('span', { class: 'tag done' }, ' ✓ 完成') : null,
+            stt === 'try' ? h('span', { class: 'tag try' }, '練習中') : null),
+          h('div', { class: 'stars' }, stars(c.lv)), h('p', { class: 'sub' }, c.goal_t),
           rec.sim ? h('span', { class: 'tag done' }, '🖥 模擬通過' + (rec.stars ? ' ' + '⭐'.repeat(rec.stars) : '')) : null,
           c.skills.map((s) => h('span', { class: 'tag' }, VX.SK[s].name)));
       };
@@ -50,7 +67,11 @@
           h('a', { class: 'btn primary sm', href: '#/sim/' + c.id }, '▶ 挑戰這關'),
           h('button', { class: 'btn ghost sm', onclick: () => { if (!confirm('刪掉自訂關卡「' + c.title + '」？')) return; st.customCh = customList.filter((x) => x.id !== c.id); delete st.ch[c.id]; if (st.sim) delete st.sim[c.id]; VX.saveState(); viewChallenge(); } }, '刪除')));
       return paint(h('div', null,
-        h('p', { class: 'sub' }, '把程式真的下載到機器人上跑跑看！每題完成後，記得寫一頁「測試紀錄」。已完成 ' + done + ' / ' + CHALLENGES.length),
+        h('p', { class: 'sub' }, '把程式真的下載到機器人上跑跑看！每題完成後，記得寫一頁「測試紀錄」。'),
+        h('div', { class: 'lamp-legend' },
+          h('span', null, h('span', { class: 'lamp ok' }), '已通過 ' + okN + ' / ' + CHALLENGES.length),
+          h('span', null, h('span', { class: 'lamp try' }), '練習中 ' + tryN),
+          h('span', null, h('span', { class: 'lamp idle' }), '尚未練習 ' + idleN)),
         h('h2', null, '🐛 除錯偵探（修好壞掉的程式）'), h('p', { class: 'sub' }, '不用從零開始！系統已經放好一段藏了 bug 的程式，進模擬器抓出兇手並修好它。'),
         h('div', { class: 'grid2' }, CHALLENGES.filter((c) => c.debug).map(card)),
         h('h2', null, '基礎挑戰'), h('div', { class: 'grid2' }, CHALLENGES.filter((c) => !c.lu && !c.debug).map(card)),
@@ -202,16 +223,254 @@
     return { el, get: () => ({ trials: t }) };
   }
 
-  /* ============ 組裝教學 ============ */
-  function viewBuild() {
-    const st = VX.st;
-    paint(h('div', null,
-      h('p', { class: 'sub' }, '先搞懂原理，再動手做。每一課都有「動手做」小實驗，記得把結果寫進工程筆記。'),
-      BUILD.map((b) => h('div', { class: 'panel' }, h('h2', null, b.title), html(b.svg), html(b.html), h('div', { class: 'callout warn' }, b.lab),
-        h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/practice/' + b.skill }, '練習題：' + VX.SK[b.skill].name), h('a', { class: 'btn', href: '#/notebook/new/test' }, '📓 寫測試紀錄')))),
-      h('h2', null, '🔩 零件圖鑑'),
-      h('p', { class: 'sub' }, '零件清單對照 VEXcode 裡「新增裝置」看到的項目。之後會加上你自己機器人的照片。'),
-      h('div', { class: 'grid2' }, PARTS.map((p) => h('div', { class: 'card' }, h('h3', null, p.ic + ' ' + p.n), h('p', { class: 'sub' }, p.z))))), '組裝教學', '🔧');
+  /* ============ 組裝教學與實體組裝挑戰 ============ */
+  function compressPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const MAX = 1024;
+        const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale));
+        const h2 = Math.max(1, Math.round(img.height * scale));
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h2;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h2);
+        resolve(cv.toDataURL('image/jpeg', 0.78));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('無法讀取這張照片')); };
+      img.src = url;
+    });
+  }
+
+  let buildCat = 'all', buildLv = 0;
+  function viewBuild(a, b) {
+    const st = VX.st; st.build = st.build || {};
+    const labStatus = (lab) => {
+      const rec = st.build[lab.id] || {};
+      if (rec.done) return 'ok';
+      const hasM = rec.m && Object.values(rec.m).some((v) => v !== '' && v != null);
+      const hasC = Array.isArray(rec.c) && rec.c.some(Boolean);
+      const hasP = Array.isArray(rec.photos) && rec.photos.length > 0;
+      return (hasM || hasC || hasP || (rec.note && rec.note.trim())) ? 'try' : 'idle';
+    };
+    const nav = h('div', { class: 'row gap', style: 'margin:0 0 12px' },
+      [['', '🛠️ 動手組裝挑戰（' + BUILD_LABS.length + ' 關）'], ['lessons', '📘 機構原理圖解'], ['parts', '🔩 零件圖鑑']].map(([k, n]) =>
+        h('a', { class: 'btn sm' + (((a || '') === k || (a === 'lab' && k === '')) ? ' primary' : ''), href: '#/build' + (k ? '/' + k : '') }, n)));
+
+    if (a === 'lessons') {
+      return paint(h('div', null, nav,
+        h('p', { class: 'sub' }, '先搞懂原理，再動手挑戰實作！每一課都對應到動手組裝關卡與觀念題。'),
+        BUILD.map((x) => h('div', { class: 'panel' }, h('h2', null, x.title), html(x.svg), html(x.html), h('div', { class: 'callout warn' }, x.lab),
+          h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/practice/' + x.skill }, '練習題：' + VX.SK[x.skill].name), h('a', { class: 'btn', href: '#/build' }, '🛠️ 去挑戰實體組裝'))))), '機構原理圖解', '📘');
+    }
+    if (a === 'parts') {
+      return paint(h('div', null, nav,
+        h('p', { class: 'sub' }, 'VEX IQ 第二代常見零件與感測器對照表。'),
+        h('div', { class: 'grid2' }, PARTS.map((p) => h('div', { class: 'card' }, h('h3', null, p.ic + ' ' + p.n), h('p', { class: 'sub' }, p.z))))), '零件圖鑑', '🔩');
+    }
+
+    if (a === 'lab' && b) {
+      const lab = BUILD_LABS.find((x) => x.id === b);
+      if (!lab) { location.hash = '#/build'; return; }
+      const rec = st.build[lab.id] || (st.build[lab.id] = { done: false, m: {}, c: [], photos: [], note: '' });
+      rec.m = rec.m || {}; rec.c = rec.c || []; rec.photos = rec.photos || [];
+      const catObj = BUILD_LAB_CATS.find((x) => x.id === lab.cat);
+      const parseNum = (s) => {
+        const norm = String(s == null ? '' : s).replace(/[０-９]/g, (ch) => String.fromCharCode(ch.charCodeAt(0) - 0xfee0)).replace(/[．。]/g, '.').replace(/[－—–]/g, '-').replace(/[,，\s]/g, '');
+        return norm === '' ? NaN : parseFloat(norm);
+      };
+
+      const statusBox = h('div');
+      const mRows = [];
+      const evalAll = (celebrate) => {
+        let allMOk = true;
+        lab.measures.forEach((ms, idx) => {
+          const val = parseNum(rec.m[ms.k]);
+          const row = mRows[idx];
+          const filled = !isNaN(val);
+          const ok = filled && val >= ms.min - 1e-9 && val <= ms.max + 1e-9;
+          if (!ok) allMOk = false;
+          if (row) {
+            row.el.className = 'm-row' + (!filled ? '' : ok ? ' m-ok' : ' m-bad');
+            row.tip.className = 'm-tip' + (ok ? ' ok' : '');
+            row.tip.textContent = !filled ? ('請實測後填入數字（合格範圍：' + ms.min + ' ～ ' + ms.max + ' ' + ms.unit + '）')
+              : ok ? ('✅ 實測 ' + val + ' ' + ms.unit + '，符合合格標準！')
+              : ('❌ ' + ms.failTip);
+          }
+        });
+        const allCOk = lab.checks.every((_, i) => !!rec.c[i]);
+        const passed = allMOk && allCOk;
+        const firstPass = passed && !rec.done;
+        rec.done = passed;
+        if (passed && !rec.t) rec.t = Date.now();
+        VX.saveState();
+        if (firstPass && celebrate) {
+          if (VX.act) VX.act('challenge');
+          toast('🎉 實體組裝驗證通過！');
+          if (window.VXFX) setTimeout(() => window.VXFX.confetti(), 120);
+        }
+        const idx = BUILD_LABS.findIndex((x) => x.id === lab.id);
+        const nextLab = idx >= 0 && idx + 1 < BUILD_LABS.length ? BUILD_LABS[idx + 1] : null;
+        statusBox.replaceChildren(passed
+          ? h('div', { class: 'callout' },
+            h('b', null, '🟢 實體驗證通過！'), ' 這個機構已經達標囉，記得拍照存證並存進工程筆記。',
+            h('div', { class: 'row gap', style: 'margin-top:8px' },
+              nextLab ? h('a', { class: 'btn primary sm', href: '#/build/lab/' + nextLab.id }, '下一個組裝挑戰：' + nextLab.title + ' ›') : null,
+              h('a', { class: 'btn sm', href: '#/build' }, '回組裝挑戰列表')))
+          : h('div', { class: 'callout warn' },
+            h('b', null, '🟡 尚未全部通過：'),
+            !allMOk ? '請完成並讓所有「實測數據」落在合格範圍內。' : '',
+            !allCOk ? '請逐項確認並勾選所有「實體檢核表」項目。' : ''));
+      };
+
+      const measuresBox = lab.measures.length ? h('div', null,
+        h('h3', null, '📏 實測數據自動驗算'),
+        lab.measures.map((ms) => {
+          const inp = h('input', { type: 'text', inputmode: 'decimal', placeholder: ms.min + '～' + ms.max });
+          inp.value = rec.m[ms.k] == null ? '' : String(rec.m[ms.k]);
+          const tip = h('div', { class: 'm-tip' });
+          const el = h('div', { class: 'm-row' },
+            h('b', null, ms.label),
+            h('div', { class: 'm-in' }, inp, h('span', null, ms.unit), h('span', { class: 'sub' }, '（標準：' + ms.min + ' ～ ' + ms.max + ' ' + ms.unit + '）')),
+            tip);
+          inp.addEventListener('input', () => { rec.m[ms.k] = inp.value; evalAll(true); });
+          mRows.push({ el, tip });
+          return el;
+        })) : null;
+
+      const checksBox = h('div', null,
+        h('h3', null, '✅ 實體動手檢核表'),
+        lab.checks.map((txt, i) => {
+          const cb = h('input', { type: 'checkbox' }); cb.checked = !!rec.c[i];
+          cb.addEventListener('change', () => { rec.c[i] = cb.checked; evalAll(true); });
+          return h('label', { class: 'check' }, cb, h('span', null, txt));
+        }));
+
+      const photoBox = h('div');
+      const drawPhotos = () => {
+        photoBox.replaceChildren(
+          rec.photos.length ? h('div', { class: 'photo-grid' }, rec.photos.map((url, idx) =>
+            h('div', { class: 'photo-item' },
+              h('img', { src: url, alt: lab.title, onclick: () => window.open(url, '_blank') }),
+              h('button', { type: 'button', class: 'pdel', title: '刪除照片', onclick: async () => {
+                if (!confirm('刪除這張作品照片？')) return;
+                const fname = url.split('/').pop();
+                rec.photos.splice(idx, 1); VX.saveState(); drawPhotos();
+                try { await api('/api/photos/' + fname + '/delete', {}); } catch (e) {}
+              } }, '×'))))
+          : h('p', { class: 'sub' }, '還沒拍照。用 iPad 或手機拍下你的實體作品，之後可一鍵存進工程筆記！'));
+      };
+      const fileIn = h('input', { type: 'file', accept: 'image/*', capture: 'environment', style: 'display:none' });
+      const uploadBtn = h('button', { type: 'button', class: 'btn', onclick: () => fileIn.click() }, '📷 拍下我的作品／選擇照片');
+      fileIn.addEventListener('change', async () => {
+        const f = fileIn.files && fileIn.files[0]; fileIn.value = '';
+        if (!f) return;
+        if (rec.photos.length >= 4) return toast('這關最多存 4 張照片，先刪掉一張再拍喔');
+        uploadBtn.disabled = true; uploadBtn.textContent = '上傳中…';
+        try {
+          const dataUrl = await compressPhoto(f);
+          const res = await api('/api/photos', { data: dataUrl });
+          rec.photos.push(res.url);
+          VX.saveState(); drawPhotos();
+          toast('照片已上傳 ✔');
+        } catch (e) { toast(e.message || '照片上傳失敗'); }
+        uploadBtn.disabled = false; uploadBtn.textContent = '📷 拍下我的作品／選擇照片';
+      });
+      drawPhotos();
+
+      const noteTa = h('textarea', { placeholder: '記錄你的設計想法、卡關的地方或改良點（選填）', style: 'min-height:70px' });
+      noteTa.value = rec.note || '';
+      noteTa.addEventListener('input', () => { rec.note = noteTa.value; VX.saveState(); });
+
+      const saveToNotebook = async () => {
+        const summary = [];
+        lab.measures.forEach((ms) => { if (rec.m[ms.k] !== '' && rec.m[ms.k] != null) summary.push(ms.label + '：' + rec.m[ms.k] + ' ' + ms.unit); });
+        const chkDone = lab.checks.filter((_, i) => rec.c[i]).length;
+        summary.push('實體檢核：' + chkDone + ' / ' + lab.checks.length + ' 項');
+        try {
+          await api('/api/notes', {
+            kind: 'test',
+            title: '🔧 組裝實測：' + lab.title,
+            data: {
+              f: {
+                date: VX.todayStr(),
+                author: (VX.user && (VX.user.display || VX.user.name)) || '',
+                what: lab.title + '（' + lab.goal + '）',
+                setup: lab.parts,
+                find: summary.join('\n') + (rec.note ? '\n心得：' + rec.note : ''),
+                next: rec.done ? '已通過實體驗證，準備挑戰下一個機構！' : '繼續微調機構直到全部檢核通過。',
+              },
+              c: lab.checks.map((_, i) => !!rec.c[i]),
+              photos: rec.photos.slice(),
+            },
+          });
+          if (VX.act) VX.act('note');
+          VX.saveState();
+          toast('已存成一頁工程筆記 ✔');
+        } catch (e) { toast(e.message || '存入失敗'); }
+      };
+
+      evalAll(false);
+      return paint(h('div', null,
+        h('a', { class: 'back', href: '#/build' }, '‹ 回實體組裝挑戰列表'),
+        h('div', { class: 'panel' },
+          h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' },
+            h('span', { class: 'tag' }, (catObj ? catObj.ic + ' ' + catObj.name : '')),
+            h('span', { class: 'stars' }, '難度 ' + stars(lab.lv))),
+          h('h1', { style: 'margin-top:6px' }, lab.title),
+          h('p', null, h('b', null, '🎯 任務目標：'), lab.goal),
+          h('div', { class: 'callout' }, h('b', null, '🔩 建議零件：'), lab.parts),
+          h('h3', null, '📐 設計與組裝要點'),
+          h('ol', null, lab.steps.map((s) => h('li', null, s))),
+          measuresBox,
+          checksBox,
+          h('h3', null, '📷 作品拍照存證（最多 4 張）'),
+          fileIn, uploadBtn, photoBox,
+          h('h3', null, '📝 改良心得（選填）'),
+          noteTa,
+          statusBox,
+          h('div', { class: 'row gap', style: 'margin-top:12px' },
+            h('button', { type: 'button', class: 'btn primary', onclick: saveToNotebook }, '📓 一鍵存入工程筆記'),
+            h('a', { class: 'btn', href: '#/practice/' + lab.skill }, '✏️ 相關觀念題：' + VX.SK[lab.skill].name)))), lab.title, '🔧');
+    }
+
+    // 預設主頁：16 關實體組裝挑戰列表（可依主題／難度挑選）
+    const okN = BUILD_LABS.filter((x) => labStatus(x) === 'ok').length;
+    const tryN = BUILD_LABS.filter((x) => labStatus(x) === 'try').length;
+    const idleN = BUILD_LABS.length - okN - tryN;
+    const filtered = BUILD_LABS.filter((x) => (buildCat === 'all' || x.cat === buildCat) && (!buildLv || x.lv === buildLv));
+    const card = (lab) => {
+      const rec = st.build[lab.id] || {};
+      const stt = labStatus(lab);
+      const cls = 'card' + (stt === 'ok' ? ' card-lit-ok' : stt === 'try' ? ' card-lit-try' : '');
+      const lampTitle = stt === 'ok' ? '已通過' : stt === 'try' ? '練習中' : '尚未練習';
+      const catObj = BUILD_LAB_CATS.find((x) => x.id === lab.cat);
+      const pCnt = Array.isArray(rec.photos) ? rec.photos.length : 0;
+      return h('a', { class: cls, href: '#/build/lab/' + lab.id },
+        h('h3', null, h('span', { class: 'lamp ' + stt, title: lampTitle }), lab.title,
+          stt === 'ok' ? h('span', { class: 'tag done' }, ' ✓ 驗證通過') : null,
+          stt === 'try' ? h('span', { class: 'tag try' }, '組裝測試中') : null),
+        h('div', { class: 'stars' }, stars(lab.lv)),
+        h('p', { class: 'sub' }, lab.goal),
+        catObj ? h('span', { class: 'tag' }, catObj.ic + ' ' + catObj.name) : null,
+        lab.measures.length ? h('span', { class: 'tag' }, '📏 含實測驗算') : null,
+        pCnt ? h('span', { class: 'tag done' }, '📷 ' + pCnt + ' 張') : null);
+    };
+
+    paint(h('div', null, nav,
+      h('p', { class: 'sub' }, '挑一個你感興趣的機構題目，拿出 VEX IQ 零件動手設計、組裝、量測驗證，還能直接拍照存入工程筆記！'),
+      h('div', { class: 'lamp-legend' },
+        h('span', null, h('span', { class: 'lamp ok' }), '已通過 ' + okN + ' / ' + BUILD_LABS.length),
+        h('span', null, h('span', { class: 'lamp try' }), '組裝測試中 ' + tryN),
+        h('span', null, h('span', { class: 'lamp idle' }), '尚未練習 ' + idleN)),
+      h('div', { class: 'row gap', style: 'margin-bottom:8px' },
+        BUILD_LAB_CATS.map((c) => h('button', { type: 'button', class: 'btn sm' + (buildCat === c.id ? ' primary' : ''), onclick: () => { buildCat = c.id; viewBuild(); } }, c.ic + ' ' + c.name))),
+      h('div', { class: 'row gap', style: 'margin-bottom:14px' },
+        [[0, '全部難度'], [1, '★ Lv1'], [2, '★★ Lv2'], [3, '★★★ Lv3'], [4, '★★★★ Lv4']].map(([lv, lb]) =>
+          h('button', { type: 'button', class: 'btn sm' + (buildLv === lv ? ' primary' : ''), onclick: () => { buildLv = lv; viewBuild(); } }, lb))),
+      filtered.length ? h('div', { class: 'grid2' }, filtered.map(card)) : h('p', { class: 'sub' }, '這個篩選條件下沒有題目，換個主題或難度看看！')), '實體組裝挑戰', '🔧');
   }
 
   /* ============ 比賽專區 ============ */
@@ -355,6 +614,7 @@
     Object.entries(f).forEach(([k, v]) => { if (!v || k === 'date' || k === 'author') return; const fld = K && (K.fields || []).find((x) => x.k === k); parts.push(h('div', null, h('b', null, (fld ? fld.l : (k === 'answer' ? '回答' : k === 'score' ? '分數' : k === 'type' ? '類型' : k === 'note' ? '想法' : k === 'q' ? '問題' : k)) + '：'), h('span', { style: 'white-space:pre-wrap', 'data-notrans': '1' }, String(v)))); });
     if (d.iq) parts.push(h('div', null, h('button', { class: 'btn sm', onclick: () => { const a = h('a', { href: URL.createObjectURL(new Blob([d.iq], { type: 'application/json' })), download: (n.title || 'project').replace(/[^\w\u4e00-\u9fa5-]+/g, '_') + '.iqblocks' }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); } }, '⬇ 下載他的 VEXcode 存檔')));
     if (typeof d.sketch === 'string' && d.sketch.startsWith('data:image/')) parts.push(h('img', { src: d.sketch, style: 'max-width:100%;border:1px solid var(--line);border-radius:8px' }));
+    if (Array.isArray(d.photos) && d.photos.length) parts.push(h('div', { class: 'photo-grid' }, d.photos.filter((u) => typeof u === 'string' && u.startsWith('/api/photos/')).map((u) => h('div', { class: 'photo-item' }, h('img', { src: u, onclick: () => window.open(u, '_blank') })))));
     if (d.matrix) parts.push(h('table', { class: 'tbl' }, h('tr', null, h('th', null, '標準'), h('th', null, '權重'), ...d.matrix.opts.map((o) => h('th', { 'data-notrans': '1' }, o))), ...d.matrix.rows.map((r) => h('tr', null, h('td', { 'data-notrans': '1' }, r.n), h('td', null, String(r.w)), ...r.s.map((x) => h('td', null, String(x)))))));
     if (d.trials) parts.push(h('table', { class: 'tbl' }, h('tr', null, ['次', '設定', '目標', '實際', '備註'].map((x) => h('th', null, x))), ...d.trials.map((r, i) => h('tr', null, h('td', null, String(i + 1)), h('td', { 'data-notrans': '1' }, r.a), h('td', { 'data-notrans': '1' }, r.b), h('td', { 'data-notrans': '1' }, r.c), h('td', { 'data-notrans': '1' }, r.d)))));
     return parts;
@@ -410,6 +670,6 @@
   VX.routes.challenge = (id) => viewChallenge(id);
   VX.routes.resources = () => viewResources();
   VX.routes.notebook = (a, b, c) => viewNotebook(a, b, c);
-  VX.routes.build = () => viewBuild();
+  VX.routes.build = (a, b) => viewBuild(a, b);
   VX.routes.compete = (a, b) => viewCompete(a, b);
 })();

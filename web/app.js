@@ -205,7 +205,13 @@
     const card = h('div', { class: 'qcard' });
     const sk = SK[q.s];
     if (banner) card.append(h('div', { class: 'qbanner' }, banner));
-    card.append(h('div', { class: 'qmeta' }, h('span', { class: 'chip', style: 'background:' + DOM[sk.d].color + ';border-color:' + DOM[sk.d].stroke }, sk.name), h('span', { class: 'lv' }, '難度 ' + '★'.repeat(q.l) + '☆'.repeat(3 - q.l))));
+    const seenRec = st && st.seen && st.seen[q.id];
+    const seenBadge = seenRec
+      ? (seenRec.c > 0
+        ? h('span', { class: 'tag done', style: 'margin-left:6px' }, h('span', { class: 'lamp ok', style: 'width:8px;height:8px;margin-right:5px' }), '曾答對')
+        : h('span', { class: 'tag try', style: 'margin-left:6px' }, h('span', { class: 'lamp try', style: 'width:8px;height:8px;margin-right:5px' }), '曾練習'))
+      : null;
+    card.append(h('div', { class: 'qmeta' }, h('span', { class: 'chip', style: 'background:' + DOM[sk.d].color + ';border-color:' + DOM[sk.d].stroke }, sk.name), h('span', { class: 'lv' }, '難度 ' + '★'.repeat(q.l) + '☆'.repeat(Math.max(0, 3 - q.l)), seenBadge)));
     card.append(h('div', { class: 'qtext' }, q.q));
     if (q.code && q.t !== 'bug') card.append(blocksEl(q.code));
     const area = h('div', { class: 'qarea' });
@@ -681,9 +687,14 @@
       h('h3', null, h('span', { class: 'dot', style: 'background:' + dm.color + ';border-color:' + dm.stroke }), dm.icon + ' ' + dm.name, h('small', null, ' ' + dm.en)),
       h('div', { class: 'skills' }, SKILLS.filter((s) => s.d === dm.id).map((s) => {
         const p = pOf(s.id), lock = st.done && !unlocked(s.id);
+        const sqs = QS.filter((q) => q.s === s.id);
+        const seenN = sqs.filter((q) => st.seen && st.seen[q.id]).length;
+        const skSt = mastered(s.id) ? 'ok' : (seenN > 0 || (st.m[s.id] && st.m[s.id].n > 0)) ? 'try' : 'idle';
+        const skTitle = skSt === 'ok' ? '已精通' : skSt === 'try' ? '已練習' : '尚未練習';
         return h('a', { class: 'skill' + (lock ? ' lock' : '') + (mastered(s.id) ? ' mastered' : ''), href: '#/skill/' + s.id, style: 'background:' + dm.color + ';border-color:' + dm.stroke },
-          h('div', { class: 'sn' }, (lock ? '🔒 ' : '') + s.name),
+          h('div', { class: 'sn' }, h('span', { class: 'lamp ' + skSt, title: skTitle }), (lock ? '🔒 ' : '') + s.name),
           h('div', { class: 'stars' }, '★'.repeat(stars(p)) + '☆'.repeat(3 - stars(p))),
+          h('div', { class: 'scnt' }, '已練 ' + seenN + '/' + sqs.length + ' 題'),
           h('div', { class: 'mbar' }, h('div', { style: 'width:' + Math.round(p * 100) + '%' })));
       }))));
     const tile = (href, ic, name, desc, c, sc) => h('a', { class: 'tile', href, style: 'background:' + c + ';border-color:' + sc }, h('span', { class: 'ti' }, ic), name, h('small', null, desc));
