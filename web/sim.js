@@ -107,7 +107,7 @@
       try {
         switch (b.t) {
           case 'drive': {
-            const target = Math.abs(val(b.v)), dir = (b.dir === '反向' || b.dir === 'reverse') ? -1 : 1, spd = (C.dv / 100) * SPD;
+            const raw = val(b.v), target = Math.abs(raw), dir = ((b.dir === '反向' || b.dir === 'reverse') ? -1 : 1) * (raw < 0 ? -1 : 1), spd = (C.dv / 100) * SPD;
             let moved = 0;
             if (spd <= 0) return;
             while (moved < target - 1e-9) {
@@ -126,7 +126,7 @@
           case 'vel': C.dv = Math.max(0, Math.min(100, val(b.v))); return;
           case 'tvel': C.tv = Math.max(0, Math.min(100, val(b.v))); return;
           case 'turn': {
-            const ang = Math.abs(val(b.v)), sgn = (b.dir === '正確的' || b.dir === 'right') ? 1 : -1, rate = (C.tv / 100) * TSPD;
+            const raw = val(b.v), ang = Math.abs(raw), sgn = ((b.dir === '正確的' || b.dir === 'right') ? 1 : -1) * (raw < 0 ? -1 : 1), rate = (C.tv / 100) * TSPD;
             let t = 0;
             if (rate <= 0) return;
             while (t < ang - 1e-9) { const s = Math.min((rate * DT) / 1000, ang - t); C.th = (C.th + sgn * s + 360) % 360; C.rot += sgn * s; t += s; yield; }
@@ -188,6 +188,105 @@
     return { frames, C, world };
   }
 
+  function ptSegDist(px, py, ax, ay, bx, by) {
+    const dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+    if (l2 < 1e-9) return Math.hypot(px - ax, py - ay);
+    const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+    return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+  }
+  function splitLoops(wps) {
+    if (wps.length < 3) return [wps];
+    const s = wps[0], out = [];
+    let cur = [s];
+    for (let i = 1; i < wps.length; i++) {
+      cur.push(wps[i]);
+      if (Math.hypot(wps[i][0] - s[0], wps[i][1] - s[1]) < 1 && i < wps.length - 1) {
+        out.push(cur);
+        cur = [wps[i]];
+      }
+    }
+    out.push(cur);
+    return out;
+  }
+  function rotateLoop(pts, dth) {
+    const [ox, oy] = pts[0], c = Math.cos(dth), s = Math.sin(dth);
+    return pts.map(([x, y]) => [ox + (x - ox) * c - (y - oy) * s, oy + (x - ox) * s + (y - oy) * c]);
+  }
+  function matchLoop(frames, startFi, loop, tol, isPoly) {
+    let wi = 0, endFi = startFi;
+    for (let fi = startFi; fi < frames.length; fi++) {
+      const f = frames[fi];
+      while (wi < loop.length && Math.hypot(f[0] - loop[wi][0], f[1] - loop[wi][1]) <= tol) wi++;
+      if (wi >= loop.length) {
+        const lastWp = loop[loop.length - 1];
+        let bestD = Math.hypot(f[0] - lastWp[0], f[1] - lastWp[1]);
+        endFi = fi;
+        for (let j = fi + 1; j < frames.length; j++) {
+          const d = Math.hypot(frames[j][0] - lastWp[0], frames[j][1] - lastWp[1]);
+          if (d <= bestD + 1e-6) { bestD = d; endFi = j; } else break;
+        }
+        break;
+      }
+    }
+    if (wi < loop.length) return { ok: false, wi, endFi: frames.length };
+    if (isPoly) {
+      for (let fi = startFi; fi <= endFi; fi++) {
+        const f = frames[fi];
+        let md = Infinity;
+        for (let k = 0; k < loop.length - 1; k++) {
+          const d = ptSegDist(f[0], f[1], loop[k][0], loop[k][1], loop[k + 1][0], loop[k + 1][1]);
+          if (d < md) md = d;
+        }
+        if (md > tol) return { ok: false, wi: loop.length - 1, endFi: frames.length };
+      }
+    }
+    return { ok: true, wi: loop.length, endFi };
+  }
+  function matchPath(frames, wps, allowRotate, tol) {
+    if (!wps.length) return { ok: false, wi: 0 };
+    const loops = splitLoops(wps);
+    let fi = 0, doneWps = 0;
+    for (const loop of loops) {
+      const closed = loop.length >= 3 && Math.hypot(loop[0][0] - loop[loop.length - 1][0], loop[0][1] - loop[loop.length - 1][1]) < 1;
+      const isPoly = closed && loop.length >= 4;
+      const cands = [loop];
+      if (closed) {
+        const rev = loop.slice().reverse();
+        cands.push(rev);
+        if (allowRotate && isPoly) {
+          const edge = Math.hypot(loop[1][0] - loop[0][0], loop[1][1] - loop[0][1]);
+          const thr = Math.max(tol + 10, Math.min(200, edge * 0.55));
+          let dep = null;
+          for (let i = fi; i < frames.length; i++) {
+            if (Math.hypot(frames[i][0] - loop[0][0], frames[i][1] - loop[0][1]) >= thr) { dep = frames[i]; break; }
+          }
+          if (dep) {
+            const angR = Math.atan2(dep[1] - loop[0][1], dep[0] - loop[0][0]);
+            const angF = Math.atan2(loop[1][1] - loop[0][1], loop[1][0] - loop[0][0]);
+            const angB = Math.atan2(rev[1][1] - rev[0][1], rev[1][0] - rev[0][0]);
+            cands.push(rotateLoop(loop, angR - angF), rotateLoop(rev, angR - angB));
+          }
+        }
+      }
+      let hit = null, bestWi = 0;
+      for (const c of cands) {
+        const r = matchLoop(frames, fi, c, tol, isPoly);
+        if (r.ok) { hit = r; break; }
+        if (r.wi > bestWi) bestWi = r.wi;
+      }
+      if (!hit) return { ok: false, wi: doneWps + bestWi };
+      fi = hit.endFi;
+      doneWps += loop.length - 1;
+    }
+    const endWp = wps[wps.length - 1];
+    for (let i = fi; i < frames.length; i++) {
+      if (Math.hypot(frames[i][0] - endWp[0], frames[i][1] - endWp[1]) > tol) {
+        return { ok: false, wi: wps.length - 1 };
+      }
+    }
+    return { ok: true, wi: wps.length };
+  }
+
   function judge(res) {
     const { frames, C, world } = res, ch = world.ch;
     const secs = (C.time / 1000).toFixed(1);
@@ -199,9 +298,18 @@
     const last = frames[frames.length - 1];
     if (ch && (ch.mode === 'waypoints' || (ch.goal && ch.goal.c === ch.start.c && ch.goal.r === ch.start.r))) {
       const wps = (ch.path || []).map(([c, r]) => [c * CELL, r * CELL]);
-      let wi = 0;
-      for (const f of frames) { while (wi < wps.length && Math.hypot(f[0] - wps[wi][0], f[1] - wps[wi][1]) <= TOL) wi++; }
-      if (wi >= wps.length) out.ok = true; else out.msgs.push('路線沒有走完：第 ' + (wi + 1) + ' 個轉角／終點沒到達（參考路線的第 ' + (wi + 1) + ' 個點）');
+      const allowRotate = !(ch.walls && ch.walls.length);
+      let m = matchPath(frames, wps, allowRotate, TOL);
+      // 若終點旗子不在起點、但參考路線最後又折返起點（如 lu2 來回兩趟），最後一趟停在旗子上也算過關
+      if (!m.ok && ch.mode === 'waypoints' && ch.goal && (ch.goal.c !== ch.start.c || ch.goal.r !== ch.start.r) && wps.length >= 3) {
+        const gPt = [ch.goal.c * CELL, ch.goal.r * CELL];
+        const prev = wps[wps.length - 2], lastWp = wps[wps.length - 1];
+        if (Math.hypot(prev[0] - gPt[0], prev[1] - gPt[1]) < 1 && Math.hypot(lastWp[0] - wps[0][0], lastWp[1] - wps[0][1]) < 1) {
+          const m2 = matchPath(frames, wps.slice(0, -1), allowRotate, TOL);
+          if (m2.ok) m = m2;
+        }
+      }
+      if (m.ok) out.ok = true; else out.msgs.push('路線沒有走完：第 ' + (m.wi + 1) + ' 個轉角／終點沒到達（參考路線的第 ' + (m.wi + 1) + ' 個點）');
     } else if (world.goal) {
       const d = Math.hypot(last[0] - world.goal.x, last[1] - world.goal.y);
       out.goalDist = Math.round(d);

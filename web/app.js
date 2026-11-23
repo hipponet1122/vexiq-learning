@@ -291,7 +291,8 @@
     } else if (q.t === 'num') {
       const inp = h('input', { type: 'text', inputmode: 'decimal', class: 'numin', placeholder: '輸入數字', autocomplete: 'off' });
       const go = () => {
-        const v = parseFloat(inp.value.replace(/[,，\s]/g, ''));
+        const norm = inp.value.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/[．。]/g, '.').replace(/[－—–]/g, '-').replace(/[,，\s]/g, '');
+        const v = parseFloat(norm);
         if (isNaN(v)) { inp.focus(); return; }
         const ok = Math.abs(v - q.a) <= q.tol + 1e-9;
         if (!ok && allowHint && tries === 0) {
