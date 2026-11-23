@@ -1,0 +1,11 @@
+services:
+  vexiq:
+    build: .
+    container_name: vexiq
+    restart: always
+    ports:
+      # 只綁本機，請用反向代理（Nginx／Caddy／Cloudflare Tunnel）對外並加上 HTTPS。
+      - "127.0.0.1:${VEXIQ_PORT:-8518}:8000"
+    volumes:
+      # 資料（sqlite、session.key）放在主機這個資料夾；預設 ./data
+      - ${VEXIQ_DATA:-./data}:/data
