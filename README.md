@@ -1,11 +1,11 @@
-[繁體中文](README.zh-TW.md) · **English**
+[繁體中文](docs/zh-TW/README.md) · **English**
 
 # VEX IQ Self-Study Site
 
 A website for upper-elementary to middle-school students to teach themselves **VEX IQ (2nd generation, VEXcode IQ Blocks)**. A placement quiz finds the learner's level, then the site adapts: practice questions, build lessons, block programming, engineering notebook coaching, a web simulator, and competition practice (current season: Level Up 2026–2027). Parents and coaches can see how the child is doing.
 
-> Unofficial project. Not affiliated with VEX Robotics, Innovation First or the REC Foundation. See [`NOTICE.md`](NOTICE.md).
-> The interface is available in Traditional Chinese (Taiwan) and English. Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](CONTRIBUTING.md).
+> Unofficial project. Not affiliated with VEX Robotics, Innovation First or the REC Foundation. See [`NOTICE.md`](docs/NOTICE.md).
+> The interface is available in Traditional Chinese (Taiwan) and English. Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
 ## Features
 - **Adaptive practice**: 6 domains, 26 skills, 138 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
@@ -50,11 +50,11 @@ Put it behind a reverse proxy (Nginx / Caddy / Cloudflare Tunnel) with **HTTPS**
 Environment variables: `VEXIQ_PORT`, `VEXIQ_DATA` (data folder), and `TRUST_CF_IP` (set to `1` behind a Cloudflare Tunnel so `CF-Connecting-IP` is used for login rate limiting). The container drops privileges to the owner of `/data` (`docker-entrypoint.sh`) and does not run as root. After logging in, parents can add learners and coaches on the parent page.
 
 ## For contributors
-- Want to help? See [`CONTRIBUTING.md`](CONTRIBUTING.md), [`ROADMAP.md`](ROADMAP.md), [`MAINTAINERS.md`](MAINTAINERS.md), or look for issues labeled `good first issue`.
+- Want to help? See [`CONTRIBUTING.md`](docs/CONTRIBUTING.md), [`ROADMAP.md`](docs/ROADMAP.md), [`MAINTAINERS.md`](docs/MAINTAINERS.md), or look for issues labeled `good first issue`.
 - Editing questions: `web/data.js` (block syntax: `[dropdown]` `(number)` `<condition>`; two leading spaces = one indent level).
 - New season: update `SEASON` in `web/content.js` and the season questions in `web/data.js`. **Write in your own words and link to the official source.**
 - Releasing: update `VERSION` and `CHANGELOG.md`.
 
 ## License
-Code: MIT ([`LICENSE`](LICENSE)). Teaching content and question bank: CC BY-SA 4.0 ([`LICENSE-CONTENT.md`](LICENSE-CONTENT.md)).
-Security reports: see [`SECURITY.md`](SECURITY.md). Author: Elvis Huang <elvis@mingchhun.com>
+Code: MIT ([`LICENSE`](LICENSE)). Teaching content and question bank: CC BY-SA 4.0 ([`LICENSE-CONTENT.md`](docs/LICENSE-CONTENT.md)).
+Security reports: see [`SECURITY.md`](docs/SECURITY.md). Author: Elvis Huang <elvis@mingchhun.com>

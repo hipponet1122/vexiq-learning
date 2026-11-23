@@ -1,4 +1,4 @@
-**繁體中文** · [English](CODE_OF_CONDUCT.md)
+**繁體中文** · [English](../CODE_OF_CONDUCT.md)
 
 # 行為準則
 

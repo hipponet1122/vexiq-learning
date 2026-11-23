@@ -1,4 +1,4 @@
-**繁體中文** · [English](NOTICE.md)
+**繁體中文** · [English](../NOTICE.md)
 
 # 聲明
 

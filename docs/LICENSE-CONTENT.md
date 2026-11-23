@@ -1,8 +1,8 @@
-[繁體中文](LICENSE-CONTENT.zh-TW.md) · **English**
+[繁體中文](zh-TW/LICENSE-CONTENT.md) · **English**
 
 # Content License
 
-This project's **code** is under the MIT license (see [`LICENSE`](LICENSE)).
+This project's **code** is under the MIT license (see [`LICENSE`](../LICENSE)).
 
 **Teaching and question-bank content** — `web/data.js` (skill map and questions) and `web/content.js` (engineering notebook lessons, challenges, build lessons, term cards, interview questions) — is original work by Elvis Huang, licensed under
 [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/):

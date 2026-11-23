@@ -1,4 +1,4 @@
-**繁體中文** · [English](README.md)
+**繁體中文** · [English](../../README.md)
 
 # VEX IQ 自學網站
 
@@ -6,8 +6,8 @@
 教組裝、教積木程式、教工程筆記，並提供網頁模擬器與比賽（目前季：Level Up 2026–2027）練習。
 家長與教練可以看到孩子的練習狀況。
 
-> 非官方專案，與 VEX Robotics／Innovation First／REC Foundation 無關。見 [`NOTICE.zh-TW.md`](NOTICE.zh-TW.md)。
-> 介面有繁體中文（台灣）與英文。歡迎老師、教練、家長一起改進 → [`CONTRIBUTING.zh-TW.md`](CONTRIBUTING.zh-TW.md)。
+> 非官方專案，與 VEX Robotics／Innovation First／REC Foundation 無關。見 [`NOTICE.md`](NOTICE.md)。
+> 介面有繁體中文（台灣）與英文。歡迎老師、教練、家長一起改進 → [`CONTRIBUTING.md`](CONTRIBUTING.md)。
 
 ## 功能
 - **自適應出題**：6 個領域、26 個技能點、138 題（選擇／數值／排序／找錯）；定位測驗＋依熟練度練習、錯題回補。
@@ -54,11 +54,11 @@ docker compose up -d --build            # 預設只綁 127.0.0.1:8518，資料�
 環境變數：`VEXIQ_PORT`、`VEXIQ_DATA`（資料夾）、`TRUST_CF_IP`（走 Cloudflare Tunnel 時設 `1`，才會用 `CF-Connecting-IP` 做登入限流）。容器啟動時會降權成 `/data` 資料夾的擁有者（`docker-entrypoint.sh`），不以 root 執行。家長登入後可在「家長頁」新增學員與教練。
 
 ## 給參與者
-- 想幫忙：看 [`CONTRIBUTING.zh-TW.md`](CONTRIBUTING.zh-TW.md)、[`ROADMAP.zh-TW.md`](ROADMAP.zh-TW.md)、[`MAINTAINERS.zh-TW.md`](MAINTAINERS.zh-TW.md)，或找標籤 `good first issue` 的任務。
+- 想幫忙：看 [`CONTRIBUTING.md`](CONTRIBUTING.md)、[`ROADMAP.md`](ROADMAP.md)、[`MAINTAINERS.md`](MAINTAINERS.md)，或找標籤 `good first issue` 的任務。
 - 改題庫：`web/data.js`（積木寫法 `[下拉]` `(數字)` `<條件>`，行首兩格空白＝縮排）。
 - 換季：更新 `web/content.js` 的 `SEASON` 與 `web/data.js` 的當季題，**用自己的話整理並附官方連結**。
 - 發版：改 `VERSION` 與 `CHANGELOG.md`。
 
 ## 授權
-程式碼 MIT（[`LICENSE`](LICENSE)）；教學與題庫內容 CC BY-SA 4.0（[`LICENSE-CONTENT.zh-TW.md`](LICENSE-CONTENT.zh-TW.md)）。
-資安回報請看 [`SECURITY.zh-TW.md`](SECURITY.zh-TW.md)。作者：Elvis Huang <elvis@mingchhun.com>
+程式碼 MIT（[`LICENSE`](../../LICENSE)）；教學與題庫內容 CC BY-SA 4.0（[`LICENSE-CONTENT.md`](LICENSE-CONTENT.md)）。
+資安回報請看 [`SECURITY.md`](SECURITY.md)。作者：Elvis Huang <elvis@mingchhun.com>

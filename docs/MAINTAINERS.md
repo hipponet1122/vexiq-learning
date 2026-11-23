@@ -1,4 +1,4 @@
-[繁體中文](MAINTAINERS.zh-TW.md) · **English**
+[繁體中文](zh-TW/MAINTAINERS.md) · **English**
 
 # Maintainers and Governance
 

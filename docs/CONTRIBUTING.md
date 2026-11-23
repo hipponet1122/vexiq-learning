@@ -1,4 +1,4 @@
-[繁體中文](CONTRIBUTING.zh-TW.md) · **English**
+[繁體中文](zh-TW/CONTRIBUTING.md) · **English**
 
 # Contributing
 
@@ -36,7 +36,7 @@ node tests/run.js          # question bank, challenge solutions, simulator engin
 for f in web/*.js; do node --check "$f"; done
 ```
 
-For reviewing questions: `node tools/export_questions.js D F` produces a phone-friendly review list. Season updates: see [`docs/SEASON-UPDATE.md`](docs/SEASON-UPDATE.md).
+For reviewing questions: `node tools/export_questions.js D F` produces a phone-friendly review list. Season updates: see [`docs/SEASON-UPDATE.md`](SEASON-UPDATE.md).
 
 Direction and roles: [`ROADMAP.md`](ROADMAP.md), [`MAINTAINERS.md`](MAINTAINERS.md). Looking for a task? Check the `good first issue` label.
 

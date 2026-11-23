@@ -1,4 +1,4 @@
-[繁體中文](ROADMAP.zh-TW.md) · **English**
+[繁體中文](zh-TW/ROADMAP.md) · **English**
 
 # Roadmap
 
