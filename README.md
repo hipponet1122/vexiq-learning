@@ -28,7 +28,7 @@ web/data.js      技能地圖與題庫          web/content.js  課程、挑戰�
 web/app.js       路由、登入、練習、家長頁   web/sim.js      模擬器
 web/iqimport.js  .iqblocks 匯入          web/guide.js    引導、徽章
 web/modules.js   筆記、挑戰、組裝、比賽、資源   web/extras.js   週報、作品集、題庫審閱
-web/about.js     關於頁與頁尾            build_info.py   產生 web/version.json
+web/about.js     關於頁與頁尾            web/blocktext.js 題目積木中文→英文            build_info.py   產生 web/version.json
 ```
 
 ## 本機執行

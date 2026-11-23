@@ -70,7 +70,13 @@
       return document.createTextNode(x.trim() ? x.trim() : '');
     });
   }
-  function oneBlock(text) { return h('div', { class: 'blk ' + blockClass(text) }, blockInner(text.trim())); }
+  const toEn = window.VXEN.toEn;
+  window.VXEN.localize(QS); // 題目裡的積木字樣改成 VEXcode 英文
+  function oneBlock(text) {
+    const zh = text.trim();
+    const en = st && st.simLang === 'zh' ? zh : toEn(zh);
+    return h('div', { class: 'blk ' + blockClass(zh), title: en !== zh ? zh : null }, blockInner(en));
+  }
   function blocksEl(lines) {
     // 依縮排組成巢狀（C 形積木）
     const items = lines.map((ln) => ({ ind: (ln.match(/^ */)[0].length / 2) | 0, t: ln.trim() }));
@@ -694,7 +700,7 @@
   }
 
   const VX = window.VX = {
-    routes: {}, h, api, shell, blocksEl, oneBlock, toast, DOM, SK, DOMAINS, SKILLS, QS, TAGS, radarSvg, domainAvg, pOf, newState, clamp, shuffle, startPractice,
+    routes: {}, h, api, shell, toEn, blocksEl, oneBlock, toast, DOM, SK, DOMAINS, SKILLS, QS, TAGS, radarSvg, domainAvg, pOf, newState, clamp, shuffle, startPractice,
     get user() { return user; }, get st() { return st; }, saveState, render, app: $app, plainOrBlock, todayStr,
   };
   window.addEventListener('hashchange', render);

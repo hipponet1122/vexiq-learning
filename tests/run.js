@@ -3,7 +3,7 @@
    涵蓋：題庫結構、當季計分題算術、挑戰參考解答、模擬引擎、程式碼轉換、.iqblocks 匯入。 */
 const assert = require('assert');
 const { load } = require('./harness');
-const { VX, data, content } = load();
+const { VX, VXEN, data, content } = load();
 const S = VX.sim, IQ = VX.iq;
 let pass = 0, fail = 0;
 const t = (name, fn) => { try { fn(); pass++; console.log('  ✓', name); } catch (e) { fail++; console.log('  ✗', name, '\n     ', e.message.split('\n')[0]); } };
@@ -53,6 +53,27 @@ t('重複 4 次：走 4 趟', () => { const { j } = run(['何時開始', '重複
 t('同樣程式、同樣場地，結果每次一樣（決定性）', () => {
   const ch = content.CHALLENGES[1]; const a = run(ch.code, ch).j, b = run(ch.code, ch).j;
   assert.deepStrictEqual([a.secs, a.dist, a.ok], [b.secs, b.dist, b.ok]);
+});
+
+group('題目積木英文化');
+const en = VXEN.toEn;
+t('驅動／旋轉', () => { assert.strictEqual(en('驅動 [向前] 為 (200) [毫米]'), 'drive [forward] for (200) [mm]'); assert.strictEqual(en('旋轉 [正確的] 度 (90) 度'), 'turn [right] for (90) [degrees]'); assert.strictEqual(en('旋轉 [左邊] 度 (90) 度'), 'turn [left] for (90) [degrees]'); });
+t('控制與變數', () => { assert.strictEqual(en('重複 (4)'), 'repeat (4)'); assert.strictEqual(en('等待 (2) 秒'), 'wait (2) seconds'); assert.strictEqual(en('將 [score] 設定為 (0)'), 'set [score] to (0)'); assert.strictEqual(en('將 [score] 改為 (5)'), 'change [score] by (5)'); assert.strictEqual(en('何時開始'), 'when started'); });
+t('條件', () => { assert.strictEqual(en('如果 <距離 < 100 毫米> 則'), 'if <Distance < 100 mm> then'); assert.strictEqual(en('而 <距離 > 150 毫米>'), 'while <Distance > 150 mm>'); assert.strictEqual(en('重複直到 <碰撞開關被按下>'), 'repeat until <Bumper pressed?>'); });
+t('題庫與挑戰裡所有積木行都轉成英文（不剩中文）', () => {
+  const lines = [];
+  QS.forEach((q) => { if (Array.isArray(q.code)) lines.push(...q.code); });
+  content.CHALLENGES.forEach((c) => lines.push(...c.code));
+  const left = lines.filter((l) => /[\u4e00-\u9fff]/.test(en(l)));
+  assert.strictEqual(left.length, 0, '還有中文：' + [...new Set(left)].slice(0, 5).join(' | '));
+});
+
+t('題目文字、選項、排序項目裡的積木也轉英文', () => {
+  const copy = JSON.parse(JSON.stringify(QS)); VXEN.localize(copy);
+  const all = []; copy.forEach((q) => { all.push(q.q, q.why, ...(q.opts || []), ...(q.items || [])); });
+  const left = all.filter((x) => typeof x === 'string' && (/「(驅動|旋轉|等待|重複|將驅動速度)[^」：]*」/.test(x) || /^(驅動|旋轉) ?\[/.test(x.trim())));
+  assert.strictEqual(left.length, 0, '還有中文積木：' + left.slice(0, 3).join(' | '));
+  assert.strictEqual(copy.find((q) => q.id === 'C1-2').items[0], 'drive [forward] for (300) [mm]');
 });
 
 group('程式碼轉換');
