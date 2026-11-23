@@ -49,6 +49,7 @@ docker compose up -d --build            # 預設只綁 127.0.0.1:8518，資料�
 環境變數：`VEXIQ_PORT`、`VEXIQ_DATA`（資料夾）。家長登入後可在「家長頁」新增學員與教練。
 
 ## 給參與者
+- 想幫忙：看 [`CONTRIBUTING.md`](CONTRIBUTING.md)、[`ROADMAP.md`](ROADMAP.md)、[`MAINTAINERS.md`](MAINTAINERS.md)，或找標籤 `good first issue` 的任務。
 - 改題庫：`web/data.js`（積木寫法 `[下拉]` `(數字)` `<條件>`，行首兩格空白＝縮排）。
 - 換季：更新 `web/content.js` 的 `SEASON` 與 `web/data.js` 的當季題，**用自己的話整理並附官方連結**。
 - 發版：改 `VERSION` 與 `CHANGELOG.md`。

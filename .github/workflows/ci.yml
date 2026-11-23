@@ -1,0 +1,26 @@
+name: 檢查
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python 語法
+        run: python -m py_compile server.py build_info.py make_seed.py tools/check.py
+      - name: JavaScript 語法
+        run: for f in web/*.js; do node --check "$f" || exit 1; done
+      - name: 內容與機密檢查（簡體字、不該入庫的檔案、疑似金鑰）
+        run: python tools/check.py
+      - name: 後端啟動測試
+        run: |
+          pip install fastapi "uvicorn[standard]" itsdangerous
+          python build_info.py
+          DATA_DIR=/tmp/vx python -c "import server; print('import ok')"

@@ -24,4 +24,12 @@
 - 不要提交 `seed_users.json`、`data/`、`.env`、密碼或任何個資。
 - 內容貢獻視同以 CC BY-SA 4.0、程式碼視同以 MIT 授權（見 `LICENSE-CONTENT.md`）。
 
+## 提交前先自我檢查
+```bash
+python3 tools/check.py     # 簡體字、不該入庫的檔案、疑似金鑰（CI 也會跑）
+for f in web/*.js; do node --check "$f"; done
+```
+
+方向與分工見 [`ROADMAP.md`](ROADMAP.md)、[`MAINTAINERS.md`](MAINTAINERS.md)；想找任務請看標籤 `good first issue`。
+
 請先讀 [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。

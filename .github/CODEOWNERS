@@ -1,0 +1,12 @@
+# 預設：所有修改由維護者審查
+*                       @hipponet1122
+# 題庫與當季規則：答錯會誤導孩子，一定要審題人核准（之後可把審題夥伴加進來）
+/web/data.js            @hipponet1122
+/web/content.js         @hipponet1122
+# 部署、授權、安全相關
+/server.py              @hipponet1122
+/Dockerfile             @hipponet1122
+/docker-compose.yml     @hipponet1122
+/.github/               @hipponet1122
+/SECURITY.md            @hipponet1122
+/LICENSE*               @hipponet1122
