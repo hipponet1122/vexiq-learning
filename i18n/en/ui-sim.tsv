@@ -1,0 +1,192 @@
+65a8f9|⏱ Ran over 120 seconds without finishing (is there a "forever", or a condition that is never true?)
+2f71a5|💥 Hit a wall or obstacle 
+95410f| times
+76f976|Free practice: there's no goal. See where the robot ends up.
+514675|The route isn't finished: corner / endpoint no. 
+1ed52d| wasn't reached (point no. 
+e6e343| of the reference route)
+1e90e6|About 
+ee5898| mm from the flag (needs to be within 
+2c7753| mm)
+fc99cf|This challenge doesn't allow touching obstacles
+4b8c00|The program ran, but the robot didn't move at all: check the while / if condition (are < and > the right way around?) or whether the drive distance is 0.
+e2af0e|There are no blocks that move the robot yet. Drag a drive block in from the left to try.
+4a9201|The program won't stop: check whether a forever or repeat condition can never end.
+c4c47e|The robot hit an obstacle or the border: shorten the straight drive, or turn earlier to go around.
+f3b8a2|The robot has barely moved. Make sure you've added a drive block and filled in a distance (200 mm per cell).
+285452|Try ticking "Show reference route" and compare to see which turn goes off (angle or side length).
+bb9a71|The robot ended up farther from the flag! Check the turn direction (left / right) and whether forward / reverse is backwards.
+1cc151|You're getting closer to the flag! Fine-tune the distance (200 mm per cell) or the turn angle.
+a5232a|Starts turning and doesn't stop on its own — use "stop driving" to stop. Often used with the gyro: turn to a set angle, then stop.
+fef441|Resets the timer to zero and starts counting seconds from now.
+118963|Drives forward (or backward) a set distance; the next block runs after it finishes.
+675b05|Starts driving forward (or backward) and doesn't stop on its own — use "stop driving" to stop.
+99cdec|Turns in place by a set angle. right = turn right, left = turn left.
+7f9061|Makes the robot stop moving.
+aa195e|Prints text (or a variable's value) on the Brain screen. You can see it in the "Brain" tab on the right.
+cf0624|Chooses which row and column of the screen the next print goes to.
+d55657|Moves the cursor to the start of the next row.
+c9c95c|Clears all text on the Brain screen.
+87c1b6|Makes the Brain play a sound.
+2e6ef8|Pauses the program for some seconds, then continues.
+5e1aa0|Repeats the blocks inside a set number of times.
+48eaa4|Repeats the blocks inside forever. It never ends.
+49ec75|Repeats until the condition becomes true.
+009687|Repeats as long as the condition is true.
+5fdf7c|Runs the blocks inside only if the condition is true.
+ab1b69|Runs the blocks here when the "if" condition above is false.
+fe8340|Sets a variable directly to a number.
+f5efdb|Increases (or decreases) a variable by a number.
+365b41|The program starts running from here. Blocks not attached under it won't run by themselves.
+1b9d93|Calls a block you made yourself (My Block).
+15c7e0|Defines a new block: wraps a group of blocks into one so you can reuse it.
+dea8c2|The distance from the sensor to the object ahead (millimeters). Often placed on the left of a comparison block, e.g. "distance < 150".
+156bc4|The direction the robot is facing now (0–360 degrees). After calibration it starts at 0 and increases when turning right.
+a6e01a|How many degrees the robot has turned in total (right adds, left subtracts). It can go beyond 360.
+6874f6|The seconds elapsed since the program started (or since the last reset).
+f687b1|Whether the Bumper Switch is pressed (the robot hit something).
+e1012d|Whether the Distance Sensor sees an object ahead.
+be56dc|Whether the floor color the Color Sensor sees now is this color.
+dd5ce7|Adds, subtracts, multiplies or divides two numbers.
+c09c76|Compares two numbers; the result is "true" or "false".
+7c637b|"and" = both sides must be true; "or" = only one side needs to be true.
+ed1c34|Turns "true" into "false" and "false" into "true".
+133388|The variable's current value.
+b600b1|Illustration: this is roughly what your blocks look like when VEXcode converts them to text code (the actual output and device setup depend on VEXcode; this is just a preview).
+113fc6|Not supported in the simulator
+62f275|Nothing left to undo
+9e8dad|Nothing left to redo
+db852d|Saved
+5e44f4|0.0 s
+c7eb21|You can't put a wall on the start cell
+51823a| s
+845451|Drag the timeline to see which block runs at each step
+ce92a4|🏁 Run finished
+7c7e6a|✅ Simulation passed!
+c7dbe9|❌ Not yet
+93caf8|🔥 New record! You got closer to the flag than last time by 
+6094ba| mm — almost there!
+826458|Simulation time 
+dfab49| s　·　traveled about 
+ed7f9d| mm　·　final position (
+39ab4a|) mm, facing 
+1be3f3|Variables: 
+7a872f|⚠ The simulation is idealized (speeds and turn rates are assumed values). A real robot has errors, so always test on the real robot too.
+d6a4bb|Simulation passed! Now go test it on the robot.
+a60a79| Compact and precise — full stars!
+36b29c| Nicely compact! Fine-tune the distance to shrink the endpoint error and get 3 stars.
+6e3cab| 1 star with the reference solution; try rewriting it yourself or using fewer blocks for 3 stars!
+25ed67| You used 
+ddd166| blocks; try using repeat or fewer steps for 2–3 stars!
+35882c|🎯 You beat the sticking point! Lock it in while it's fresh:
+28c5c5|🎯 Simulation passed! Strike while the iron is hot:
+a5e4d1|✏️ Take a 2-question quiz on “
+b0306e|”
+eb27f5|🚀 Try a similar challenge: 
+51e0ff|📓 Save as a "program explanation" note
+945645|Back to the challenge page
+9d7d3b|Back to challenge list
+cdd3ef|🧭 Coach helper (failed 
+9641a5| times in a row)
+cdffb5|Getting stuck is normal! No rush. Drag the timeline above to see which block lights up at each step, or open a hint:
+6385bf|Hint 
+2f202b|💡 Give me a hint (
+31a2de|🗺️ Show reference route
+994896|📖 Load the reference solution
+00de4a|Program explanation: 
+28c8bc|Free practice
+58fcf0|Simulation passed
+0224bf|Simulation not passed
+26e2e7|, used 
+040828| s (simulated).
+077f20|Saved as a note ✔ (remember to add your own thoughts)
+2877e2|Drag it into a block's slot (the hexagon or round boxes)
+a31d76|You can't put a block inside itself
+524e04|Not saved yet
+b7ac00|Drag to move
+c02e7d|Up
+f98b5b|Down
+0c06d4|Delete
+6b89bb|▼ Blocks you tap in the library are added here
+4a77ca|Delete this block
+97f5ca|👈 Drag or tap blocks from the library on the left to add them
+42be39|Delete the block “
+71304f|”? Anywhere it's used will be removed too.
+ccba28|What should the block be called? (e.g. square; up to 10 characters, no spaces or brackets)
+e58c7c|The name can't contain spaces, brackets or commas, and is at most 10 characters
+0bf660|That name already exists. Choose another.
+4700b1|Add a "parameter"? A parameter lets the block take a different number each time, e.g. size.\nIf you don't need one, just press OK; separate multiple parameters with commas (up to 3).
+7366a6|Use English letters for parameter names (e.g. size)
+01aaee|A simulator program always starts from "when started", which is fixed at the top of the workspace. Other event blocks (e.g. controller button presses) aren't supported yet.
+ebc57f|Comment blocks aren't supported in the simulator yet. Write engineering notes on the "Notebook" page.
+f6890c|Make a Block
+ab44be|Make a Block
+5a7b93|You don't have your own blocks yet. Wrap a group of blocks you use often into one so you can reuse it.
+562b13|Field
+117c6b|Brain screen
+db53d9|Code
+2fb9e4|First tap a spot with the "🚩 Flag" tool to set the finish, so others know where to go!
+b47274|The flag is inside a wall. Choose another spot!
+914d5f|The flag is too close to the start — it would pass right away! Place it farther away.
+d0b22e|You can save at most 8 custom levels. Delete ones you don't need in the challenge list first.
+9f5faa|Give the level you designed a name! (e.g. Dad's Maze Challenge)
+ac6d04|My maze 
+3f8e17|A level I designed! Avoid the gray obstacles and reach the flag.
+95947b|Ask a parent or teammate to try it!
+f8a67e|First count how many cells from the start to the first corner (200 mm per cell).
+0816d5|Use left / right turns to go around the obstacles.
+7e822e|Custom level saved: “
+3a320d|”! You can take it on now or ask a parent to play.
+24e1f6|🎨 Design my own level (place walls / a flag to make a puzzle)
+2c306a|Tap cells on the field above to place or remove things. When you're done, save it as a level and challenge your parents!
+c08f57|🧱 Wall
+e394ae|🚩 Flag
+e83510|🟥 Red zone
+2bc74d|🧹 Clear
+24eb83|💾 Save as a level
+968f1d|Collapse
+03f385|Speed
+472049|Show reference route (hint)
+6ac06b|This is the Brain's screen. Use the print block from the "Looks" category on the left to show text or variables; they appear here when you run.
+990a53|Code copied
+6f6901|This browser can't copy automatically. Please select it by hand.
+1fde1c|Copy
+af0289|This is an illustration: roughly what the same blocks look like converted to VEXcode text code (Python or C++). The real result follows VEXcode's "convert to text" — device setup (motor and sensor names and ports) isn't shown here.
+e81bcf|This challenge has no reference solution
+66a308|This reference solution uses blocks the simulator doesn't support yet
+0c451e|Replace your current program with the reference solution?
+28d82d|Reload the original program with the bug?
+302612|Clear all blocks?
+bfb9d6|🐛 Reset to the original buggy program
+e8a3ed|Load reference solution
+2be76c|Clear all blocks
+0697a1|Save as a "program explanation" note
+0dd724|Copy / download code…
+04a7af|Upload a VEXcode file to check…
+72e99f|Back to the site home
+3eba42|Free practice / design a level
+5a4f07|🎨 Custom: 
+b85f44|Field
+f11eb2|Undo
+c3c873|Redo
+5b2e13|Show / hide the right panel
+d244b7|Help
+1170c7|Drag blocks from the left into the workspace → press RUN. Hold on a block for 1 second to see what it means.
+9d9c17|Goal: 
+d1db91|Empty field (200 mm per cell). Drag blocks in and press "RUN" to see how the robot moves.
+86048b|Remove
+59149d|Play / Pause
+341bd3|🧩 Blocks
+ac3f22|🏁 Field
+90f6c3|Block tools
+559718|Add new blocks here
+e14e9e|Controls driving forward, reverse, turning, and speed.
+62c814|Prints text or numbers on the Brain screen, or clears it.
+f390e3|Plays sound effects from the Brain.
+60e5a7|Decides when the program starts running (when started).
+870e8b|Waits, repeat loops, and if/else conditions.
+36f3f8|Reads Distance, Color, Bumper, Gyro, and Timer values.
+cd72e7|Math, comparisons, and and/or/not logic.
+2a4568|Stores numbers that change (like score or distance).
+a0c5dd|Groups reusable blocks into your own custom block.
+640552|Notes beside your code to remind yourself (ignored when running).

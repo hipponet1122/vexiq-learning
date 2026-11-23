@@ -1,0 +1,342 @@
+9e0535|Stage 1: Basics — make the robot do what you say
+d83140|Know the parts, and use blocks to make the robot drive, turn and repeat.
+17e342|Stage 2: Mechanisms and sensors
+b1bb4f|Understand how mechanisms work, use sensors and conditions, and use variables and custom blocks.
+73f223|Stage 3: Strategy and competition
+81030f|Debug, work out scores, and plan the 60 seconds of a match.
+5ca60e|You haven't practiced this yet. It's the best place to start.
+a68d8d|Current mastery 
+11a75e|%. This is what needs the most work right now.
+9c76cd|It's been 
+b59538| days since you practiced this. Practice a bit more so you don't forget.
+ceb980|%. A few more questions and you'll master it.
+90c708|Take the placement quiz
+b1e542|about 10 minutes
+28e62e|Let the site know what you can do now, so later questions aren't too hard or too easy.
+f6d1a8|Press "Start the placement quiz".
+4b067e|Try to think each one through yourself; if you don't know, press "I don't know yet". No points are taken off.
+509bd1|Start the placement quiz
+21de69|Get to know your parts
+5bd659|Learn what the Brain, motors and sensors each do, so you can understand the questions later.
+bd5e97|Open the "Build" page and look at the "Parts Catalog" at the bottom.
+a1720a|Take out your kit and find what each part looks like.
+79ca20|See the parts catalog
+79828a|Build the robot
+c35a63|30–60 minutes
+3a249c|You need a real robot to test your programs on.
+0503df|Open VEX's free official course "Competition 101: VEX IQ Level Up" and do Lesson 2, "Building Your First Robot", which builds this season's Hero Bot "Flop" step by step (English pages with clear pictures).
+c2253b|First check that your kit has enough parts (see the official page); if you're not sure, ask your teacher.
+21c7ae|You can ask your teacher or a parent to build it with you. If you don't have a robot yet, that's fine: press "Skip" and practice with the web simulator.
+defc58|Open the official course (Lesson 2: Build)
+cb391b|Open VEXcode and set up the robot
+115f27|VEXcode is the software for writing block programs; first tell it which parts your robot has.
+c7721d|Open VEXcode IQ web version in your browser, or open VEXcode IQ on your computer.
+b998ba|Click "Devices" at the top right, then press "Add a device".
+fedd2d|Choose Drivetrain 2-motor, pick which Brain ports the left and right motors are plugged into, and press Done.
+99473a|The port numbers must match what is actually plugged in on the Brain.
+c1c9d3|Open VEXcode IQ
+09403b|Write your first program in the simulator
+ad95f5|Practice on the computer first: no fear of crashing, no waiting for the robot.
+7b6d90|Go to the "Simulator" and choose the field "Straight Dash".
+913144|Drag "drive forward for 200 mm" from the left under "when started" and change the number to 1000.
+4a976a|Press RUN and see whether the robot reaches the flag.
+bfec7e|Start (Straight Dash)
+9cf9e7|Put the same program on the real robot
+152e0c|about 15 minutes
+36e8ca|The simulator is ideal, and a real robot has errors. That gap is where you learn the most.
+707aee|Write the same program in VEXcode (drive forward for 1000 mm).
+39460e|Connect the Brain with USB, press Download, then RUN.
+d00131|Use a ruler to measure how far the robot actually went.
+f53a58|Go back to the challenge and press "It worked on my robot"
+4e89be|Write your first engineering notebook page
+97e950|Judges care about "how you thought and how you tested", not just the robot.
+3cda92|Go to "Notebook" and first read Lesson 1, "Why write an engineering notebook".
+a02b57|Choose "Test record" and write how far the simulation and the real robot each went.
+59c964|Write a test record
+fd57b8|Do practice questions
+798e05|about 8 minutes
+7f77f4|The site asks questions from where you most need practice (about 10 questions).
+f86206|Start practice
+02ec36|Focus: 
+935ebd|about 5 minutes
+c422fd|Practice this skill (5 questions)
+02b62c|Verify on the real robot: "
+5ec092|You already passed it in the simulator. Now try it on the robot and write a test record page.
+d0d403|Go to the challenge page
+136bcf|Strengthen first, then challenge: 
+625931|" needs you to know "
+b839ff|" first, so practice that.
+b92a17|Try it in the simulator
+c5779a|Practice this skill first
+55fe12|Write an engineering notebook page
+4016f5|Write down what you learned today and the difficulties you ran into.
+406e39|Go write notes
+81093f|Off we go!
+a22775|Finished the placement quiz
+44476a|Practice 10 questions
+274d3c|Answered 10 questions in total
+bf40b1|Hundred-Question Pro
+171085|Answered 100 questions in total
+c6cc81|3-day streak
+bd9b17|Practiced 3 days in a row
+752ec1|7-day streak
+8b8b02|Practiced 7 days in a row
+77c278|First simulator pass
+9a3aff|Completed a challenge in the simulator
+16e9f2|5 challenges
+3b9866|Completed 5 challenges
+0d15b4|Real-robot success
+abd0d7|Completed a challenge on a real robot
+d65dd8|First notebook page
+4931cd|Wrote the first engineering notebook page
+15ed9a|Handed in a file
+f4c566|Uploaded your first VEXcode file to be checked
+53a5de|Master 1 skill
+6e2357|One skill's mastery reached 80%
+4cd75c|Master 5 skills
+129396|Five skills' mastery reached 80%
+26423b|Sensor Whiz
+92254b|Average of 60% in the "Conditions & Sensors" domain
+91f939|Level Up Expert
+0640cd|Season scoring, planning and rules all at 60%
+c091fd|10 English terms
+0445d3|Remembered 10 terms on the term cards
+2c3695|Bug Detective
+458151|Failed 3+ times on the same level, then passed in the simulator
+e0f79f|Quick Learner
+2b8394|Finished similar-question practice after a hint / cheat sheet
+689bfb|Three-Star Engineer
+bc9c73|Got 3 stars on any challenge (compact and precise)
+070fe3|Level Designer
+5efa9d|Designed your first custom level
+6ee41d|🏅 Badge earned: 
+fd12cd|Welcome, 
+efaefd|! Start here
+8e45d1|Step one: the placement quiz (about 10 minutes). The site learns what you can do now, then arranges the right questions for you. If you don't know one, just say "I don't know yet". No points are taken off.
+369e20|Not sure how to use it?
+bae35f|Start with the "Starter Tasks": 7 small steps, each telling you what to do, why, and how.
+9103aa|See the Starter Tasks
+7f72b0|How to use this site
+296bb7|📅 What to do today
+f8497e|🔥 Streak: 
+c3309a|! Do them in order; about 20 minutes is enough. 3–4 times a week works better than one long session.
+30d5cc|Done today
+6a24ab|🎉 All of today's tasks are done! Take a break and come back tomorrow. If you want more, go play freely in "Challenges" or the "Simulator".
+b0f608|Only 10 minutes? Just do the first one.
+ad26c1|🚀 Starter tasks 
+0f1073|See all steps ›
+d4d364|Next: 
+278e60|🏅 My badges 
+f949d1|🧭 Where am I now
+12ef3f|Most worth practicing next: 
+79d8f3|Welcome to VEX IQ Self-Study!
+3f26f7|This site will walk you through learning robotics step by step. Just remember three things, and we'll start right away!
+de475c|① Start with the placement quiz
+62db70|About 10 minutes. The site learns what you can do now, then picks the right questions. If you don't know one, just press "I don't know yet".
+cfd6fa|② Each visit, look at "What to do today"
+ddfec9|At the top of the home page, about 20 minutes, in order. No time? "Today's 1-minute puzzle" counts as practice too!
+edc363|Stuck? The site will help
+6d33d6|When you get one wrong you get a hint and a second try; in the simulator, drag the timeline to see which block lights up at each step, and the coach helps you step by step.
+accb57|③ Try it on a real robot
+7d2205|After practicing in the simulator, test on the robot, then write what you found in your engineering notebook. You can earn ⭐ and badges for passing!
+fa7279|Skip
+c1b87d|‹ Back
+9f11ec|Got it, let's go
+02e7b0|Next ›
+f89d64|If it's your first time, just follow these 7 steps. You don't have to finish them all at once; one step at a time is fine. Steps that need a robot can be skipped for now while you practice in the simulator.
+087b4f|👀 Parent view (preview): these are the 7 starter steps your child sees, so you can go through them together. For actual progress, see the "Parent page".
+82e5fd|Progress 
+886280|Step 
+209c41|✔ I did it
+b3ab47|Skip for now
+fa9fd8|Undo skip
+268c9c|Undo done
+b1f81c|🎉 All starter tasks are done! From now on, just look at "What to do today" on the home page.
+7668e5|Starter Tasks
+1bc18e|Quick Start
+b53c33|First time here? Just remember three things:
+4e52ec|Take the placement quiz first
+ab36be| (about 10 minutes). If you don't know one, press "I don't know yet". No points are taken off, and that's fine!
+c78647|Each visit, look at "What to do today" on the home page
+7f69d7|: do them in order; about 20 minutes is enough.
+9c5324|Try it on a real robot, then write it in your notes
+fbb2fe|: after practicing in the simulator, test on the robot. Judges care most about the engineering notebook.
+3735b9|💡 Practicing 3–4 times a week for 20 minutes beats one long session. Only 10 minutes? Just do the first item of "What to do today".
+4db2d4|🚀 See the Starter Tasks (7 steps)
+c63c78|Every Feature
+3d2d69|The tab bar at the top (at the bottom on a phone) takes you everywhere:
+cafb4d|Questions matched to your level. When you miss one you get a hint and a second try; repeated misses bring a 30-second cheat sheet; at the end of a round you can "practice similar questions".
+83a9aa|Today's 1-minute puzzle
+9a2320|A new easy warm-up each day on the home page. Answer it and today counts as practiced, so your streak keeps going.
+f5dd2e|Robot missions, one after another. Open hints step by step, and earn ⭐ for passing: compact blocks and a precise finish can earn 3 stars.
+ea4371|See challenges
+49e935|Debug Detective
+7790dd|You get a program with a hidden bug. Use the glowing blocks and the timeline to catch the culprit and fix it.
+9b5b94|Go catch bugs
+087f63|Try programs without a robot. Drag the timeline to see each step, and the coach helps diagnose when a run fails.
+4262f9|Open the simulator
+8739c8|Custom levels
+1b03e5|In the simulator's free practice, place walls and a flag to design your own level and challenge your parents or teammates.
+bd5fc1|Go design
+ffdb5a|Hand the .iqblocks file saved from VEXcode to the site to check; if something's wrong it teaches you step by step how to fix it.
+93e0bf|The engineering notebook has lessons, checklists, and can be made into a printable portfolio.
+66ad09|Write notes
+8c5bc9|How mechanisms work and a parts catalog, with a small "try it" experiment in every lesson.
+ff61c8|See build lessons
+b59c31|Season rules summary, score planner, skills practice log, English–Chinese term cards and interview practice.
+13a15c|How to use each block, with VEXcode's original English wording so it's easy to follow.
+328833|See the cheat sheet
+3d976c|Badges and streaks
+e494ee|Do certain things to earn badges; practice every day and your streak keeps growing.
+5f5813|See my badges
+82b3f1|What to Do When You're Stuck
+c267d9|Getting stuck is part of learning! The site helps you step by step and won't just hand you the answer.
+9ff2d2|Stuck on a practice question
+fa0934|Press "💡 Give me a hint": it crosses out one wrong option and shows the key points of this skill.
+362e49|A wrong answer doesn't reveal the answer right away; you get to try again.
+aa8d81|If you miss 2 questions in the same skill, a "🧭 30-second cheat sheet" pops up and then an easy warm-up question follows.
+67583c|At the end of a round, press "🎯 Practice similar questions" to make sure you really get it.
+f7baf6|Stuck in the simulator / on a challenge
+b8cf1c|After pressing RUN, drag the timeline above: the block for each step lights up, so you can see which step goes wrong.
+02b759|Below a failed result is a plain-language diagnosis (hit a wall? went the wrong way? won't stop?).
+36cabf|After 2 failures in a row, the "🧭 Coach helper" appears and you can open hints one by one.
+4c537d|On the 3rd you can show the reference route; only on the 4th can you load the reference solution (using it caps you at 1 star).
+2d9a4f|If you get closer to the flag than last time, a "🔥 New record" appears: you're improving!
+0be080|🐛 Debug Detective: no need to start from scratch. Press RUN first, watch the glowing blocks, find the odd one, and change only that one.
+671edc|Still confused? Write it down and ask your teacher or a parent. Writing the question in your engineering notebook is great too.
+e18b10|Drag or tap blocks from the library on the left under "when started".
+8ab6c5|Change the numbers and press RUN at the top; you can also pause with ▶ / ⏸ and use the timeline to jump to any step.
+97d5a1|Hold your finger or mouse on a block for 1 second and an explanation pops up.
+530aab|When it works, remember to test the same program on the real robot, then write the difference in your notes.
+0cc2b9|📱 Phone screens are small, so we recommend an iPad or computer for the simulator; an iPad held sideways works best.
+c7008f|Design your own level
+1a77ab|Open the simulator and choose the field "Free practice / design a level".
+0ee229|Press "🎨 Design my own level" and tap cells to place 🧱 walls, a 🚩 flag and 🟥 red zones.
+92c45c|Press "💾 Save as a level", give it a name, and it appears under "My custom levels" on the challenge page.
+acd964|iPad / Phone Tips
+19ffe8|Open the site in Safari, press "Share" → "Add to Home Screen", and next time it opens full screen like an app.
+9cbbf0|For the simulator, hold the iPad sideways; on a phone held upright, the tab bar is at the bottom so your thumb can reach it.
+1b7c6c|The "中 / EN" switch at the top right changes the interface between Chinese and English.
+2f3ba0|To see a bigger picture, pinch with two fingers to zoom in on images or the field.
+8217a2|⌨️ On a computer: press Enter in a text box to submit, no need to click the button.
+fa0b4e|FAQ
+2e4652|Do I lose points for a wrong answer?
+88acce|No. A wrong answer just lets the site know what you still need to practice; "I don't know yet" doesn't lose points either.
+1405f8|If I get it right after a hint, does it count as correct?
+a2ff7a|Yes! Your mastery goes up, just by a little less; it also reminds you to check yourself again at the end of the round.
+b9c575|Will my progress disappear?
+500fb6|Your progress is saved on the site, so it's there when you sign in to the same account on another device.
+d6ecd8|I forgot my password?
+b26970|Ask a parent to tap your name on the "Parent page" and find "Manage" to reset the password.
+5861d5|Can I learn without a robot?
+cc29ee|Yes. Practice with the simulator first; the starter steps that need a robot can be skipped for now.
+f0310f|What This Is
+b084fd|It helps your child teach themselves VEX IQ robotics outside of class. The site will:
+c90265|Test their level first, then ask suitable questions (never too hard or too easy); when they get stuck it gives hints, cheat sheets and similar questions so they don't go in circles.
+797b26|Teach them to write an "engineering notebook" — the thing competition judges care about most.
+1a2d31|Provide a web simulator so they can practice programming without a robot; with a robot they can test for real.
+d9c8f0|Let you see on the "Parent page" what they've learned and where they're stuck.
+38d36f|You don't need to know VEX IQ. Your role is simple: keep them company and ask questions. If they can explain it themselves, they really understand.
+3ec6e1|🚀 See your child's starter tasks
+f29e61|Go to the Parent page
+a8ff52|Weekly Routine
+de2714|About 10 minutes a week:
+13917b|Make sure they've set aside time
+cdb197|: 3–4 times a week, 20 minutes each time is enough. Short and regular beats one long session.
+74c79b|Look at the Parent page once
+d6af17| (about 3 minutes): see how long they practiced this week, where they improved and where they often make mistakes.
+663b59|Leave a line on their notes
+37011a|: encouragement, or a question (for example "Where is the data behind this conclusion?").
+c0ee18|How to start the first week
+6acb41|Day
+0f23a2|What to do
+3d7ca7|About how long
+241c0a|Day 1
+719140|Sign in and take the "Placement Quiz".
+ecc306|15 minutes
+adfd54|Day 2
+0dd3a1|Look at "Build → Parts Catalog" to get to know their kit; begin the "Starter Tasks".
+2467c9|20 minutes
+a2dada|Day 3
+b8cb75|Practice questions + finish the first challenge "Straight Dash" in the simulator.
+da5392|Day 4
+9e59e4|Put the same program on the real robot, measure the error and write the first engineering notebook page.
+0f663f|30 minutes
+0b8b39|Weekend
+de0a9d|You look at the Parent page, leave a comment on their notes and chat about what they learned.
+5712b6|10 minutes
+39711b|No robot yet is fine: use the simulator first and do the robot steps of the "Starter Tasks" when it arrives.
+7ea91f|You can ask them (no VEX knowledge needed)
+fe5348|What did the robot do with the program you wrote this week?
+e779b6|Which question did you think about the longest? How did you finally work it out?
+c703a6|Which bug did you catch? How did you find it?
+46a8c6|Reading the Parent Page
+de80c9|Radar chart
+204002|: mastery in the six domains; the closer to the outer ring, the more fluent.
+ca7b92|: counts only questions answered correctly "on the first try, without a hint". Answers that were right only after a hint or a retry are recorded as "not independently correct", so this number is more honest and may be a little lower than before.
+cfff64|Common mistake types
+1ad27c|: for example "Mixing up angle and distance", showing which kind of idea they need to strengthen; even if they got it right after a hint, the type of the first wrong choice is recorded.
+260d9c|: see their answer and the explanation, and you can ask them directly "What were you thinking then?".
+05e617|: open it to read what they wrote and leave a comment.
+eda010|Weekly learning report
+4378ae|: practice time, number of questions, challenges completed, plus "🌟 Highlights of beating a sticking point", a great chance to praise their willingness to try again and again; there is also a text version you can paste into LINE.
+059b4c|What to do with them this week
+604707|: at the top of the Parent page, with specific suggestions based on their progress.
+93a52b|Account Management
+5fd2b1|Add a learner: at the bottom of the Parent page, under "Add a learner", enter a sign-in name and a starter password.
+446284|Coach accounts: you can add a read-only "Coach" account for your child; it can only see assigned learners' practice, notes and question bank, and can't change any data.
+53c22a|Delete a learner: this permanently deletes their account, answer history and notes, and you must type their name once more to confirm.
+500297|🔒 Data is stored only on this site's own server, with no third-party tracking or ads. Please don't write real full names, schools or contact details in notes.
+0cee5c|🌐 The "中 / EN" switch at the top right changes the interface language; the choice is remembered on this device.
+a2f4f8|A Few Terms
+83626c|Term
+56646e|In plain words
+a8e3d8|The robot's brain; the program is stored and runs inside it.
+409e07|Motor
+eaf566|The part that turns the wheels and arms.
+8ff465|Sensor
+6136aa|Parts that let the robot "know" its surroundings, for example measuring distance or detecting a bump.
+d94d7d|The software where they write block programs by dragging and dropping blocks.
+5f6051|Autonomous period
+a68a05|Engineering Notebook
+382b17|A notebook recording the design and testing process; competition judges care a lot about it.
+62a63a|Skills
+414d15|One robot scores as much as it can in a limited time.
+36c7ac|They say they don't want to do it or aren't interested. What now?
+01b342|Lower the barrier first: do only item 1 of "What to do today", or the "Today's 1-minute puzzle" on the home page. You can also let them play with the "Simulator" first; seeing the robot move usually feels more rewarding.
+2060fd|The questions are too hard and they can't answer them?
+44fcda|The site lowers the difficulty automatically, and after a wrong answer it gives a hint first, then a cheat sheet and similar questions. If they keep getting stuck on the same skill, the Parent page shows it; you can take that skill to their teacher.
+59f1a6|Can they start without a robot yet?
+1a5f00|Yes. The steps in "Starter Tasks" that involve the robot can be skipped for now; practice with the simulator first.
+575436|They forgot their password?
+49d249|On the Parent page, tap their name and find "Manage" to reset their password.
+b14785|How long until progress shows?
+1fd70b|Usually after 1–2 weeks of practice the radar chart on the Parent page changes noticeably. What really matters is keeping at it.
+e35089|For kids
+c70167|For parents
+748898|Welcome! Here's how to use this site
+5980a7|Guide for parents
+183e3a|Just pick a tab; no need to read it all at once.
+91bf6f|You don't need to know VEX IQ; about 10 minutes a week is enough.
+18d0db|Ask them to take the "Placement Quiz" first
+fdabb1| (about 10 minutes). This is the basis for all the suggestions.
+ab05f9|They haven't practiced for 
+7e9eb1| days
+b6d73e|: ask whether they've run into difficulty lately, and agree on a regular practice time.
+14dcb7|Go through the next Starter Task step with them: "
+0477da|Ask them to strengthen "
+0d7707|They can take on "
+316f48|Strengthen first, then take on "
+63ef49|: they need to know "
+d5aca0|Read their engineering notebook and leave a line
+9fcc05|, with encouragement or a question.
+b00e27|" — what is it about? Can you explain it to me?
+bbca80|🧭 What to do with them this week
+bbff76|Not started
+2433d9|Current stage
+800dfd|Today
+0c467f| days ago
+8c57f8|If they can explain it, they really understand; if they can't, that's what to strengthen next time.
+8efe1f|How to use this site (parent version)
+81390e|If you wanted to improve your robot, what would you change first? Why?
+867737|Reset password: tap your child's name and look under "Manage". They will be signed out.

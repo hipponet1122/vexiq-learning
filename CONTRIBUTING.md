@@ -26,6 +26,9 @@ Coaches, teachers, parents and students are all welcome! You do not need to writ
 - Never commit `seed_users.json`, `data/`, `.env`, passwords or any personal data.
 - Contributions are licensed under CC BY-SA 4.0 (content) and MIT (code); see `LICENSE-CONTENT.md`.
 
+## Translating the interface
+The code keeps Chinese strings; English comes from a dictionary. To add or fix a translation: run `node tools/i18n_extract.js` (lists every Chinese string), find the string with `python3 tools/i18n_todo.py <area>`, add `hash|English` to `i18n/en/<area>.tsv`, then run `python3 tools/i18n_build.py` to regenerate `web/i18n-en.js`. `node tests/run.js` checks that nothing is missing.
+
 ## Self-check before submitting
 ```bash
 python3 tools/check.py     # Simplified Chinese, files that must not be committed, suspected keys (CI runs this too)

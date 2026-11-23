@@ -35,18 +35,30 @@
     const st = VX.st; st.ch = st.ch || {};
     if (!id) {
       const done = CHALLENGES.filter((c) => st.ch[c.id] && st.ch[c.id].done).length;
+      const customList = Array.isArray(st.customCh) ? st.customCh : [];
       const card = (c) => {
-        const d = st.ch[c.id] && st.ch[c.id].done;
+        const rec = st.ch[c.id] || {};
+        const d = rec.done;
         return h('a', { class: 'card', href: '#/challenge/' + c.id }, h('h3', null, c.title, d ? h('span', { class: 'tag done' }, ' ✓ 完成') : null), h('div', { class: 'stars' }, stars(c.lv)), h('p', { class: 'sub' }, c.goal_t),
-          (st.ch[c.id] && st.ch[c.id].sim) ? h('span', { class: 'tag done' }, '🖥 模擬通過') : null,
+          rec.sim ? h('span', { class: 'tag done' }, '🖥 模擬通過' + (rec.stars ? ' ' + '⭐'.repeat(rec.stars) : '')) : null,
           c.skills.map((s) => h('span', { class: 'tag' }, VX.SK[s].name)));
       };
+      const customCard = (c) => h('div', { class: 'card' },
+        h('h3', null, '🎨 ', h('span', { 'data-notrans': '1' }, c.title)),
+        h('p', { class: 'sub' }, c.goal_t || '自訂場地（' + c.cols + '×' + c.rows + ' 格，' + (c.walls ? c.walls.length : 0) + ' 塊牆）'),
+        h('div', { class: 'row gap' },
+          h('a', { class: 'btn primary sm', href: '#/sim/' + c.id }, '▶ 挑戰這關'),
+          h('button', { class: 'btn ghost sm', onclick: () => { if (!confirm('刪掉自訂關卡「' + c.title + '」？')) return; st.customCh = customList.filter((x) => x.id !== c.id); delete st.ch[c.id]; if (st.sim) delete st.sim[c.id]; VX.saveState(); viewChallenge(); } }, '刪除')));
       return paint(h('div', null,
         h('p', { class: 'sub' }, '把程式真的下載到機器人上跑跑看！每題完成後，記得寫一頁「測試紀錄」。已完成 ' + done + ' / ' + CHALLENGES.length),
-        h('h2', null, '基礎挑戰'), h('div', { class: 'grid2' }, CHALLENGES.filter((c) => !c.lu).map(card)),
+        h('h2', null, '🐛 除錯偵探（修好壞掉的程式）'), h('p', { class: 'sub' }, '不用從零開始！系統已經放好一段藏了 bug 的程式，進模擬器抓出兇手並修好它。'),
+        h('div', { class: 'grid2' }, CHALLENGES.filter((c) => c.debug).map(card)),
+        h('h2', null, '基礎挑戰'), h('div', { class: 'grid2' }, CHALLENGES.filter((c) => !c.lu && !c.debug).map(card)),
         h('h2', null, '🎯 Level Up 練習'), h('p', { class: 'sub' }, '用當季遊戲的情境練路線與時間。場地是示意的，請自己量；秒數要用碼錶實測，拿去「得分規劃器」。'),
         h('div', { class: 'grid2' }, CHALLENGES.filter((c) => c.lu).map(card)),
-        h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/compete/plan' }, '🧮 得分規劃器'), h('a', { class: 'btn', href: '#/practice/F1' }, '當季計分練習題'))), '挑戰題庫', '🏁');
+        h('h2', null, '🎨 我的自訂關卡（出題考爸媽／隊友）'),
+        customList.length ? h('div', { class: 'grid2' }, customList.map(customCard)) : h('p', { class: 'sub' }, '還沒有自訂關卡。到模擬器自由練習點「🎨 設計關卡」，就能自己擺牆壁和旗子出題！'),
+        h('div', { class: 'row gap', style: 'margin-top:12px' }, h('a', { class: 'btn primary', href: '#/sim' }, '🎨 去設計我的關卡'), h('a', { class: 'btn', href: '#/compete/plan' }, '🧮 得分規劃器'), h('a', { class: 'btn', href: '#/practice/F1' }, '當季計分練習題'))), '挑戰題庫', '🏁');
     }
     const ch = CHALLENGES.find((c) => c.id === id); if (!ch) { location.hash = '#/challenge'; return; }
     const rec = st.ch[id] || (st.ch[id] = { done: false, hints: 0 });
@@ -93,7 +105,7 @@
       h('div', { class: 'tiles' }, Object.entries(NB_KINDS).map(([k, v]) => h('a', { class: 'tile', href: '#/notebook/new/' + k, style: 'background:#f2cd16;border-color:#b4982e' }, h('span', { class: 'ti' }, v.icon), v.name))),
       h('h2', null, '我的筆記（' + notes.length + '）'),
       notes.length ? notes.map((n) => { const sc = checkScore(n); return h('a', { class: 'card', href: '#/notebook/edit/' + n.id, style: 'margin:8px 0;display:block' },
-        h('b', null, n.title), h('div', { class: 'sub' }, KIND_NAME(n.kind) + '　·　' + fmt(n.updated), sc != null ? '　·　自評 ' + sc + '%' : '', n.fb ? (n.fb_seen ? '　💬 有留言' : '　🔔 新留言') : '')); }) : h('p', { class: 'sub' }, '還沒有筆記。選一種開始寫第一頁吧！')), '工程筆記', '📓');
+        h('b', { 'data-notrans': '1' }, n.title), h('div', { class: 'sub' }, KIND_NAME(n.kind) + '　·　' + fmt(n.updated), sc != null ? '　·　自評 ' + sc + '%' : '', n.fb ? (n.fb_seen ? '　💬 有留言' : '　🔔 新留言') : '')); }) : h('p', { class: 'sub' }, '還沒有筆記。選一種開始寫第一頁吧！')), '工程筆記', '📓');
   }
 
   function editor(note, kind, chid) {
@@ -332,7 +344,7 @@
     sel.addEventListener('change', upd); upd();
     paint(h('div', null, nav, h('div', { class: 'panel' }, h('h2', null, '🎤 面談練習'), h('p', { class: 'sub' }, '評審會問你們的設計與想法。選一題，寫下你的回答，再大聲唸出來練習。'), sel, frame, ans,
       h('button', { class: 'btn primary', onclick: async () => { if (!ans.value.trim()) return toast('先寫點內容'); try { await api('/api/notes', { kind: 'interview', title: INTERVIEW[+sel.value].q, data: { f: { q: INTERVIEW[+sel.value].q, answer: ans.value, date: VX.todayStr() }, c: [] } }); toast('已儲存 ✔'); if (VX.act) VX.act('note'); VX.saveState(); viewCompete('interview'); } catch (e) { toast(e.message); } } }, '儲存我的回答')),
-      notes.length ? h('div', { class: 'panel' }, h('h3', null, '我的回答（' + notes.length + '）'), notes.map((n) => { const f = (n.data && n.data.f) || {}; return h('div', { class: 'wrongitem' }, h('b', null, n.title), h('div', { style: 'white-space:pre-wrap' }, f.answer || ''), n.fb ? h('div', { class: 'fb-box' }, '💬 ' + n.fb) : null,
+      notes.length ? h('div', { class: 'panel' }, h('h3', null, '我的回答（' + notes.length + '）'), notes.map((n) => { const f = (n.data && n.data.f) || {}; return h('div', { class: 'wrongitem' }, h('b', null, n.title), h('div', { style: 'white-space:pre-wrap', 'data-notrans': '1' }, f.answer || ''), n.fb ? h('div', { class: 'fb-box' }, '💬 ', h('span', { 'data-notrans': '1' }, n.fb)) : null,
         h('button', { class: 'btn sm ghost', onclick: async () => { if (!confirm('刪掉這個回答？')) return; try { await api('/api/notes/' + n.id + '/delete', {}); viewCompete('interview'); } catch (e) { toast(e.message); } } }, '刪除')); })) : null), '面談練習', '🎤');
   }
 
@@ -340,11 +352,11 @@
   function noteReadonly(n) {
     const K = NB_KINDS[n.kind]; const d = n.data || {}; const f = d.f || {};
     const parts = [];
-    Object.entries(f).forEach(([k, v]) => { if (!v || k === 'date' || k === 'author') return; const fld = K && (K.fields || []).find((x) => x.k === k); parts.push(h('div', null, h('b', null, (fld ? fld.l : (k === 'answer' ? '回答' : k === 'score' ? '分數' : k === 'type' ? '類型' : k === 'note' ? '想法' : k === 'q' ? '問題' : k)) + '：'), h('span', { style: 'white-space:pre-wrap' }, String(v)))); });
+    Object.entries(f).forEach(([k, v]) => { if (!v || k === 'date' || k === 'author') return; const fld = K && (K.fields || []).find((x) => x.k === k); parts.push(h('div', null, h('b', null, (fld ? fld.l : (k === 'answer' ? '回答' : k === 'score' ? '分數' : k === 'type' ? '類型' : k === 'note' ? '想法' : k === 'q' ? '問題' : k)) + '：'), h('span', { style: 'white-space:pre-wrap', 'data-notrans': '1' }, String(v)))); });
     if (d.iq) parts.push(h('div', null, h('button', { class: 'btn sm', onclick: () => { const a = h('a', { href: URL.createObjectURL(new Blob([d.iq], { type: 'application/json' })), download: (n.title || 'project').replace(/[^\w\u4e00-\u9fa5-]+/g, '_') + '.iqblocks' }); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); } }, '⬇ 下載他的 VEXcode 存檔')));
     if (typeof d.sketch === 'string' && d.sketch.startsWith('data:image/')) parts.push(h('img', { src: d.sketch, style: 'max-width:100%;border:1px solid var(--line);border-radius:8px' }));
-    if (d.matrix) parts.push(h('table', { class: 'tbl' }, h('tr', null, h('th', null, '標準'), h('th', null, '權重'), ...d.matrix.opts.map((o) => h('th', null, o))), ...d.matrix.rows.map((r) => h('tr', null, h('td', null, r.n), h('td', null, String(r.w)), ...r.s.map((x) => h('td', null, String(x)))))));
-    if (d.trials) parts.push(h('table', { class: 'tbl' }, h('tr', null, ['次', '設定', '目標', '實際', '備註'].map((x) => h('th', null, x))), ...d.trials.map((r, i) => h('tr', null, h('td', null, String(i + 1)), h('td', null, r.a), h('td', null, r.b), h('td', null, r.c), h('td', null, r.d)))));
+    if (d.matrix) parts.push(h('table', { class: 'tbl' }, h('tr', null, h('th', null, '標準'), h('th', null, '權重'), ...d.matrix.opts.map((o) => h('th', { 'data-notrans': '1' }, o))), ...d.matrix.rows.map((r) => h('tr', null, h('td', { 'data-notrans': '1' }, r.n), h('td', null, String(r.w)), ...r.s.map((x) => h('td', null, String(x)))))));
+    if (d.trials) parts.push(h('table', { class: 'tbl' }, h('tr', null, ['次', '設定', '目標', '實際', '備註'].map((x) => h('th', null, x))), ...d.trials.map((r, i) => h('tr', null, h('td', null, String(i + 1)), h('td', { 'data-notrans': '1' }, r.a), h('td', { 'data-notrans': '1' }, r.b), h('td', { 'data-notrans': '1' }, r.c), h('td', { 'data-notrans': '1' }, r.d)))));
     return parts;
   }
   VX.parentNotes = async function (uid, readonly) {
@@ -352,8 +364,8 @@
     let notes = []; try { notes = (await api('/api/parent/learner/' + uid + '/notes')).notes; } catch (e) { box.textContent = e.message; return; }
     box.replaceChildren(h('div', { class: 'panel' }, h('h3', null, '📓 工程筆記與練習（' + notes.length + '）'), notes.length ? notes.map((n) => {
       const sc = checkScore(n); const ta = h('textarea', { placeholder: '給他一句鼓勵，或問一個問題（例如：這個結論的數據在哪裡？）', style: 'min-height:60px' }); ta.value = n.fb || '';
-      return h('details', { class: 'lessonbox' }, h('summary', null, n.title + '　', h('small', null, KIND_NAME(n.kind) + ' · ' + fmt(n.updated) + (sc != null ? ' · 自評 ' + sc + '%' : '') + (n.fb ? ' · 已留言' : ''))),
-        h('div', { class: 'body' }, noteReadonly(n), readonly ? (n.fb ? h('div', { class: 'fb-box' }, '💬 家長留言：' + n.fb) : null) : ta, readonly ? null : h('button', { class: 'btn sm primary', onclick: async () => { try { await api('/api/parent/notes/' + n.id + '/feedback', { text: ta.value }); toast('留言已送出'); } catch (e) { toast(e.message); } } }, '送出留言')));
+      return h('details', { class: 'lessonbox' }, h('summary', null, h('span', { 'data-notrans': '1' }, n.title), '　', h('small', null, KIND_NAME(n.kind) + ' · ' + fmt(n.updated) + (sc != null ? ' · 自評 ' + sc + '%' : '') + (n.fb ? ' · 已留言' : ''))),
+        h('div', { class: 'body' }, noteReadonly(n), readonly ? (n.fb ? h('div', { class: 'fb-box' }, '💬 家長留言：', h('span', { 'data-notrans': '1' }, n.fb)) : null) : ta, readonly ? null : h('button', { class: 'btn sm primary', onclick: async () => { try { await api('/api/parent/notes/' + n.id + '/feedback', { text: ta.value }); toast('留言已送出'); } catch (e) { toast(e.message); } } }, '送出留言')));
     }) : h('p', { class: 'sub' }, '還沒有筆記')));
   };
 

@@ -1,0 +1,267 @@
+cd4e96|Can't reach the site. Please check your network.
+2feb3c|Something went wrong
+7bda1e|This answer wasn't saved (
+7fc321|Your progress data is almost full. Please delete unused custom levels under "Challenges", or ask a parent to tidy up.
+872d94|Progress wasn't saved: 
+452531|Check whether the question asks for an "angle (degrees)" or a "distance (mm)".
+ab946b|Imagine sitting on the robot: left and right turns are from the robot's point of view (facing forward).
+f9432b|A program runs from top to bottom, one block at a time. Walk through it step by step.
+38a43b|Count how many actions are inside the repeat block and how many times it repeats in total.
+d81204|Check whether the condition uses < or >. "and" needs both sides true; "or" needs only one.
+a5a5dc|Think about what this problem needs to measure: distance, color, angle, or whether it hit something?
+7f8156|Check that the units match: 1 cm = 10 millimeters (mm).
+f5af9f|A small gear driving a big gear is slower but stronger; a big gear driving a small one is faster but weaker.
+70a42d|List the numbers given in the problem, then check your calculation again.
+3bb11c|"set" replaces the value with a new number; "change" adds to or subtracts from the current value.
+67b7c3|Start from the very top and simulate, line by line, what the robot does.
+a54a5b|Difficulty 
+f9b59d|✅ You figured it out! (finished after a hint)
+e23f88|✅ Correct!
+f4acc1|❌ Not quite
+a42947|Correct answer: 
+cf01c1|Next ➜
+7896db|💡 Give me a hint
+58100e|(not yet)
+9962d7|I don't know yet
+9ebfe5|Try again! I crossed out this option for you.
+66af78|Look at the key points below and choose again:
+ca94c1|I crossed out one wrong option. Now look at the key points:
+29d1e4|Take a look at this key point, then choose again:
+d00fd2|Enter a number
+b85ec3|Your number is a bit too big
+78dcf0|Your number is a bit too small
+0d7cf2|Try again! 
+6dcaf3|Look at the key formula and calculate again:
+6b6004|Submit
+ae2df5|First check the units and the formula, then calculate again:
+4136d6|Try again! Right now 
+808414| positions are in the right place. Check step 
+b926a7| first (tap an item above to remove it and re-arrange):
+4e32aa|Submit order
+9b67c0|Tap the items below in order to put them here
+82f475|Think about what the robot should do first, then go down in order:
+a8f285|Try again! This line isn't wrong. Look through the other blocks in the program:
+b3c413|Start from the top and imagine how the robot moves step by step to find which line gives the wrong result:
+f74ebd|Placement Quiz
+b5bf8d|Let's see what you can do now. If you don't know one, press "I don't know yet" — that's fine!
+df41c7|🎯 Similar-question practice
+f9b835|Practice: 
+b0bab9|Today's practice
+0c1294|🎯 Practice similar questions on what tripped you up
+97cd26|Leave
+1232f7|🧭 30-second cheat sheet
+cbe549|Let's pause. This part is easy to mix up! Look at the key points together, then continue:
+1c3747|After this, I'll give you a slightly easier similar question to warm up. No need to be nervous!
+34a230|I get it — give me an easy one ▶
+bba735|Go to the full lesson for this skill
+a83ba7|🎯 Here are different similar questions on the idea you just got stuck on!
+89f016|💡 Here's an easier similar question. Try again!
+1f96e6|💡 Warm-up question: try it with the cheat sheet you just read!
+f5eb7a|🎯 You just figured it out — lock it in!
+9e34ef|Earlier, in “
+425dba|” you used a hint or missed one. Want to do 
+7ca624| similar questions right now to make sure you've got it?
+52e967|🎯 Practice similar questions (
+e5a58a| questions)
+529edb|You got 
+342170| correct this round
+203129| (
+6294ee| of them after a hint)
+e35c8b|Practice another round
+b32373|Back to home
+469db7|Home
+423252|Practice
+ce9f34|Challenges
+ea051b|Simulator
+6f7156|Upload file
+d09b79|Notebook
+4144d1|Build
+e58bdc|Compete
+f771c2|Cheat sheet
+536240|Resources
+36cc5e|How to use
+6432c6|Learners
+c3f889|Question review
+d18e3e|Parent page
+bf3b9a|Self-Study
+75c856|Sign out
+c973dd|🔑 You're using the starter password. You can change it to one you like (any format).
+ebd77b|Change password
+27ad35|Not now
+689fad|Name
+6662c8|Password
+fa4a01|VEX IQ Self-Study
+e0286f|After you sign in, the site picks questions to match your level
+6e00ca|Sign in
+e928fc|Hi, 
+918c8f|Mastered 
+25c41f| skills　·　Practice streak: 
+ed2ac5| days
+3e3831|Start today's practice ▶
+6ee051|Welcome! Start with the placement quiz
+de97c8|About 12 questions. The site will learn what you can do now and pick the right questions for you. If you don't know one, just say "I don't know yet".
+3fd024|Start the placement quiz ▶
+306968|Try your programs without a robot
+2fe903|Challenge Bank
+763a0c|Run your program on a real robot
+1ba760|Engineering Notebook
+085f34|Learn to write it — and actually write it
+ec1fad|Build Lessons
+ce9341|How mechanisms work, plus a parts catalog
+17c185|Competition Zone
+2a7d88|Robot Skills, English terms, interviews
+b9e8cf|⚡ Today's 1-minute puzzle is done!
+50428d| Today's streak is checked in. A new question comes tomorrow.
+482da7|⚡ Today's 1-minute puzzle
+debe26|Finish to check in
+77ca03|⚡ Today's 1-minute check-in done!
+82f00c|⚡ Take it on (1 question)
+62deb7|A new easy warm-up every day. Answer it to keep your streak going!
+1cc889|‹ Back to map
+8a529e| Mastery 
+92a66b|Prerequisites: 
+eafc13|Practice this skill (5 questions)
+73b00d|Drivetrain (robot movement)
+2e7313|Drive forward 200 mm; the next block runs after it finishes. Choose reverse to go backward.
+097000|Starts driving forward and doesn't stop on its own — use "stop driving" to stop.
+97f784|Turn in place 90 degrees. right = turn right, left = turn left.
+74832e|Starts turning and doesn't stop on its own (often used with the gyro: turn to an angle, then stop).
+f1fbe3|Ways to stop: brake, coast, hold.
+0c1a7b|Control
+24fd7c|Pause the program for 1 second.
+00c6ca|Pause until the condition becomes true, then continue.
+718128|Repeat the blocks inside 10 times.
+48eaa4|Repeat the blocks inside forever. It never ends.
+49ec75|Repeat until the condition becomes true.
+009687|Repeat as long as the condition is true.
+5fdf7c|Run the blocks inside only if the condition is true.
+fc365e|Used with if: runs when the condition is false.
+830ce7|Jump out of the current loop right away.
+dd2320|Events
+141a5b|The start of the program. Blocks not attached under it won't run by themselves.
+0cc505|Runs the blocks below when a controller button is pressed (or released).
+3848b7|Sends a message for other programs (when I receive) to receive.
+2f66fe|Variables / My Blocks
+f17c24|Set the variable directly to 0.
+fe7786|Add 1 to the variable's current value (it does not set it to 1).
+51ac6e|Make your own block: wrap a group of blocks you use often so you can reuse it, and add parameters.
+405be2|Sensing
+f687b1|Whether the Bumper Switch is pressed (the robot hit something).
+e1012d|Whether the Distance Sensor sees an object ahead.
+a90209|Distance from the sensor to the object ahead (millimeters). Often used with the < > comparison blocks.
+901f91|The direction the robot is currently facing (0–360 degrees).
+ceeee7|How many seconds the timer has counted.
+30613a|Reset the timer to zero.
+41894f|Whether a controller button is being held down.
+14b605|Operators
+f577f0|Compare two numbers: less than. There are also > (greater than) and = (equal to).
+464ea3|"and": true only if both A and B are true.
+fc27bb|"or": true if either A or B is true.
+fbaec3|"not": true becomes false, false becomes true.
+029f9e|Looks (Brain screen) / Sound
+5398aa|Print text or a variable's value on the Brain screen.
+d5d426|Choose which row and column the next print goes to.
+b25c59|Clear all text on the screen.
+87c1b6|Make the Brain play a sound.
+ac6cf9|Motor (single motors, e.g. arm or claw)
+6f7a6c|Keep this motor spinning. Use stop to stop it.
+fb31e4|Spin the motor 90 degrees before continuing.
+c959e0|Stop this motor.
+98c291|"right" (⚠ the Chinese interface's translation; it means right)
+7dc81a|left
+e7beb5|Blocks use VEXcode's original English wording; the explanations are in plain language. Square brackets [ ] are dropdown menus, round brackets ( ) are boxes you can type numbers into, and < > are conditions.
+79e778|Chinese interface wording
+75bad9|The English is VEXcode's original; the Chinese is its translation. Competitions, judges and online searches all use English, so we recommend getting used to reading it.
+dd3c9b|Block cheat sheet
+f7dd1c|Placement quiz complete!
+5ac945|This is your level in each domain right now. The next questions start from where you most need practice.
+fd80a9|Start with these:
+522cfd|Start the first practice round ▶
+53a67f|Old password
+2c808e|New password (anything you like)
+6476a7|Parent
+9ff73c|Coach (read-only)
+70bec2|Learner
+8f06fe|Password updated. Use the new password next time you sign in.
+8d0ea0|Update password
+5a4e22|None yet
+770ec6|Loading…
+ddb5c9|Sign-in name
+fd04ee|Display name (optional)
+8a9f2c|Starter password (at least 4 characters)
+6a4887|　Coach view (read-only)
+c30079|Recent practice: 
+0e8068| min
+8e73a1|This week
+aaedd5|Overall accuracy (
+a1350e|Hasn't taken the placement quiz yet
+fb6cbe|No learners have been assigned to you yet. Please contact a parent.
+1ce907|No learners yet
+f76e7a|Add a learner
+66ab5e|Add
+de1233|Coach's sign-in name
+9e0d0c|Password (at least 4 characters)
+49ad00|🧑‍🏫 Coach accounts (read-only)
+d07c25|Coaches can sign in to see assigned learners' practice, notes and question bank, but can't change any data.
+17ce77|New password
+ae7ced|Sign-in name: 
+7531b7|　· Can see 
+8dbf17| learners
+c533a5|Learners this coach can see:
+1b9209|Updated
+950c75|Save assignments
+b721ea|Password reset
+b7ff76|Delete the coach account “
+9da971|Delete account
+acec62|No coach accounts yet.
+0b6457|Add a coach
+d10a42|New password (at least 4 characters)
+88080a|Display name
+40d788|‹ Learners
+32df55|‹ Parent page
+c029d1|👀 Coach view (read-only): you can see their practice, but you can't change any data.
+d6bb59|　Sign-in name: 
+85c51d|Practice this week
+a43571|Overall accuracy
+899af2|Recent practice
+9b48e1|Practice time, last 14 days
+6def3a| min, 
+6c543a|No records yet
+948472|Common mistake types (last 60 days)
+95410f| times
+f3a41b|No data yet
+df83a1|Recently missed questions
+0b2c12|Their answer: 
+6fb212|Explanation: 
+015c84|No missed questions
+08b55f|Manage
+465f15|Change display name
+bc8aaf|Password reset (they will be signed out)
+d92058|Clear their learning progress? They will redo the placement quiz (answer history is kept).
+18cd34|Clear progress and re-place
+b4ff02|⚠ Permanently delete the learner “
+24b059|”?\nTheir account, all answer history and engineering notes will be deleted and can't be recovered.
+806e62|One more check: type their sign-in name “
+eadf13|” to delete
+b412c5|The name doesn't match. Nothing was deleted.
+0bcd9a|Learner deleted
+41fcf8|🗑 Permanently delete this learner
+8614dc|Language / 語言
+aed1df|中
+57375d|Show password
+1c1bf8|Hide password
+67660b|Remember my name
+f056c8|Forgot your password? Ask a parent to reset it on the Parent page.
+5a79ce|Please enter your name and password
+12a9db|Signing in…
+6df39e|Stops the robot from moving.
+8d7cb4|Sets the straight-driving speed. It affects only how fast, not how far it goes.
+19d7f3|Sets the turning speed.
+5bef6e|Calibrates the gyro. The robot must stay perfectly still during calibration.
+b10f17|Sets the speed of this motor.
+4bf280|How it stops: hold locks the arm or claw so it doesn't fall.
+fcf6c7|If your VEXcode is in Chinese: English ↔ Chinese reference
+efaf8c|Reset password
+3277a3|Repeated actions can be wrapped in a "repeat" block, which makes the program shorter, easier to change and less error-prone.
+ae6a89|Sets the straight-driving speed. It affects only how fast, not how far it goes.
+92568a|Sets the turning speed.

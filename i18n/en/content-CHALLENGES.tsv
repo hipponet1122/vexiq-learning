@@ -1,0 +1,115 @@
+ce0e89|Straight Dash
+ec4191|Drive the robot straight from the start on the left to the flag on the right.
+25fa9a|Each cell is 200 mm, and the flag is 5 cells from the start. Think about how many mm to drive.
+ba2d47|First work out the distance: 5 cells × 200 mm.
+7241c9|A single "drive forward for □ mm" block is enough.
+b32412|The distance is 1000 mm. If it stops in the wrong place, first check the battery and whether the start is lined up.
+5f43eb|Take a Turn
+1fa17e|Start from the start point and reach the flag.
+235d6f|The flag is 3 cells to the right and 3 cells up. The robot starts facing right.
+18c94d|Go right first, then turn and go up.
+900b20|To go up, "turn left 90 degrees" (when facing right, turning left points you up).
+b851f9|Drive straight 600, turn left 90, then drive straight 500 (from row 3.5 to row 0.5 is about 2.5 cells = 500).
+abf0cb|Around the Obstacle
+7466ca|Reach the flag without touching the gray obstacle.
+88fc65|The gray wall in the middle blocks the bottom two rows, so you can only go around through the top row.
+7f6bc7|The route looks like an upside-down "U".
+9478d5|First turn left to face up and go to the top row.
+a1eb94|Up 400, turn right, right 800, turn right, down 400.
+cdd4a1|Drive a Square
+8ecf15|Drive a square with 400 mm sides and end back at the start.
+3a6424|Use the "repeat" block; don't write the same blocks four times!
+313493|A square has 4 sides and 4 corners.
+44634a|You do the same thing each time: "drive 400 + turn right 90".
+8df4b6|Repeat 4: drive 400, turn right 90.
+b6843f|Climb the Stairs
+774f8a|Climb up and to the right one step at a time like stairs, to the flag.
+f635f7|Each step: right 200, up 200. 3 steps in total.
+76e402|Find the repeated actions: go right, turn left, go up, turn right.
+833cb1|One step = drive 200 → turn left 90 → drive 200 → turn right 90.
+cb71ce|Repeat 3.
+5af661|Drive an equilateral triangle with 400 mm sides and return to the start.
+ddba14|Think: how many degrees to turn at each corner? (Hint: not 60!)
+94ac25|The robot turns the "exterior angle", and three exterior angles add up to 360 degrees.
+85b840|Repeat 3: drive 400, turn left 120.
+041f31|Two Squares of Different Sizes
+c1f0e4|From the same start, drive a square with sides of 200, then a square with sides of 400.
+5d12d3|Use a "My Block" to make a square that takes a "side length" parameter, and call it twice.
+c2546f|In "Operators – My Blocks", press "Make a Block", name it and add a parameter size.
+a3b384|Inside the block: repeat 4 { drive forward for size; turn right 90 }.
+0c2785|Main program: square(200), square(400).
+02c115|Stop at Red (Color Sensor)
+9ffa47|Keep driving forward and stop as soon as you see a red floor.
+3b519a|You don't know how far away the red is, so let the robot decide. In the simulator's Sensing category, find "Color sees red?" and drag it into the hexagon slot of "repeat until".
+88ea24|First make the robot "keep driving forward": use "drive forward" (the one without a distance).
+30de26|Then use "repeat until" with the condition "Color sees red?"; the loop can be empty inside.
+1d5929|After the loop ends, remember to use "stop driving" to stop the robot.
+3d2059|Illustration: a real Color Sensor must be added in VEXcode's Devices, and tested at a fixed distance under fixed lighting.
+567b6a|Back Up After Hitting the Wall (Bumper)
+9b5566|Drive forward, detect the hit on the wall with the Bumper, then back up 200 mm.
+5b675e|In this challenge you "do" hit the wall (detected with the Bumper), so hitting the wall isn't penalized. In the Sensing category find "Bumper pressed?".
+4dde47|Keep driving forward until the Bumper is pressed: "repeat until" + "Bumper pressed?".
+91464b|After the hit, first "stop driving".
+e733dc|Then back up with "drive reverse for 200 mm".
+247260|Illustration: a real Bumper must be mounted at the very front of the robot and added in Devices.
+a7841e|Stop in Front of the Wall (needs the Distance Sensor)
+7be701|Drive forward and stop about 150 mm from the wall without hitting it.
+06e9f9|You don't know the exact distance (the wall may be moved), so let the robot decide. Try adding the Distance Sensor.
+8d37dc|You don't know how far to go, but you know "when to stop": use "repeat until" or "while".
+7e737e|Condition: the distance read by the Distance Sensor is greater than 150.
+5eaca2|The actual wording of the sensor blocks follows the Distance sensor you add in VEXcode; the ones below are illustrations.
+1952f6|Illustration: for the actual sensor block wording, first add the Distance Sensor in VEXcode's Devices and compare.
+0b8713|Round Trip
+f29ac4|Drive right to the far right, then return to the start.
+01ecf8|For this one, come back by "turning around", not reversing. Think: how many degrees to turn to face the opposite direction?
+78ade6|Facing right, to face left you need half a turn.
+b2b81a|Half a turn is 180 degrees.
+87f078|Drive 800, turn right 180, drive 800.
+07bfae|S-Shaped Maze
+2e37dd|Two walls, one blocking the top and one blocking the bottom, make the route look like an "S". First draw the route on paper, then count the cells in each leg.
+c0e8b5|First go right along the bottom row, past the first wall.
+594b59|Turn order: left, right, left.
+b913be|Drive 600, turn left 90, drive 400, turn right 90, drive 400, turn left 90, drive 200.
+34eaff|Regular Hexagon
+2a9c54|Drive a regular hexagon with 300 mm sides and return to the start.
+d9ca2c|Same idea as the triangle: how many degrees to turn at each corner? Work out the exterior angle first, then use "repeat".
+d1bc7a|Six exterior angles add up to 360 degrees.
+cc464d|Repeat 6: drive 300, turn left 60.
+64392a|Level Up: One Delivery Run
+8c4b29|Illustration: the robot carries a bean bag from the left straight to the goal on the right.
+b2a54c|⚠ This is an illustrative field (200 mm per cell), not the official size. Measure the distance on your own field and adjust. Think: what's the distance? How many seconds does a run take? (Use a stopwatch!)
+5d80f1|First measure your field: the distance from the start to the goal.
+a5636b|Use "drive forward for □ mm"; the illustrative field is 5 cells = 1000 mm.
+c3325e|Use a stopwatch to time one run and write it in your "test record"; this time goes into the "Score Planner".
+86bdda|The actual arm movement that drops the ball uses your motor blocks; match the wording to your VEXcode devices.
+37689c|Level Up: Two Round Trips
+2c7ef4|Illustration: deliver one bean bag to the goal (600 mm), return to the start, then deliver a second, two runs in all.
+6c15ca|Use the "repeat" block; don't copy and paste. To reverse back to the start, use "reverse".
+b6bda0|One run = forward 600 + back 600.
+d7ebb4|The "drive" block's direction dropdown has "forward" and "reverse".
+706300|Repeat 2: drive forward 600, drive reverse 600.
+3ef617|In a real competition you pause in front of the goal to drop the ball: that's your arm / claw action, added between the two drive blocks.
+84d787|Level Up: Around to the Pyramid
+3e3946|Illustration: start at the bottom left, go around the obstacle in the middle, and reach the pyramid (flag) at the top right.
+7eb638|An illustrative field. Think: can the route be shorter? A shorter route saves time on every run.
+0a653c|First go up past the height of the obstacle, then go right.
+782788|To go up turn left, and to go right turn right again ("right" = right).
+558812|Turn left 90; drive 600; turn right 90; drive 800.
+5b6666|🐛 Debug Detective: The Crooked Square
+feff57|This program was meant to drive a square with 400 mm sides, but it has 1 bug hidden inside! Press RUN, watch what looks odd, and fix it.
+23c9b4|No need to rewrite it! Just change the one wrong block in the workspace.
+751cc6|First press RUN and watch which block lights up when the robot turns.
+4b4db7|Every corner of a square is a right angle, so how many degrees should it turn?
+cf463a|Change the 60 in turn right to 90.
+8ba3fd|🐛 Debug Detective: The Robot That Turns the Wrong Way
+2b4e4f|This program should go right and then up to the flag, but it hits the bottom border! Find the block that turns the wrong way and fix it.
+8206c1|Watch the blocks light up as it runs and see which one has the direction backwards.
+8fb993|The robot starts facing right (east).
+fa0745|When facing right, to turn to "up" should it be a left turn or a right turn?
+7c6802|Change right in turn to left.
+7a3423|🐛 Debug Detective: The Sensor That Won't Stop
+a7d6ba|This program should stop the robot 150 mm before the wall, but the greater-than / less-than is the wrong way around, so the robot doesn't move at all! Fix the symbol.
+24779a|Check the condition symbol inside while (< or >).
+da91bd|The start is far from the wall (about 800 mm). Is that greater than 150 or less than 150?
+ef3ce0|We want "while the distance is still greater than 150 mm, keep driving forward".
+cccfb1|Change the < in while to >.

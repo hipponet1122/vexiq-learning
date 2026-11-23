@@ -51,7 +51,7 @@
   // 課文裡的 <code>…</code> 積木、挑戰提示裡的「…」積木，也改成英文（程式用的 code 陣列不動）
   const enHtml = (s) => (typeof s !== 'string' ? s : enProse(s.replace(/<code>([^<]+)<\/code>/g, (m, x) => { if (NAMES[x.trim()]) return '<code>' + NAMES[x.trim()] + '</code>'; const e = toEn(x); return BLOCKY.test(x.trim()) && e !== x.trim() ? '<code>' + e.replace(/[\[\]()]/g, '') + '</code>' : m; })));
   function localizeDeep(o, skip) {
-    skip = skip || ['code', 'path'];
+    skip = skip || ['code', 'starter', 'path'];
     if (Array.isArray(o)) { o.forEach((v, i) => { if (typeof v === 'string') o[i] = enHtml(v); else localizeDeep(v, skip); }); return o; }
     if (o && typeof o === 'object') Object.keys(o).forEach((k) => { if (skip.includes(k)) return; const v = o[k]; if (typeof v === 'string') o[k] = enHtml(v); else localizeDeep(v, skip); });
     return o;

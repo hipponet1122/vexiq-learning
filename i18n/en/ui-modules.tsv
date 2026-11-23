@@ -1,0 +1,271 @@
+669b3c|200 mm per cell
+e77545| ✓ Done
+146a4c|🖥 Passed in simulator
+7df543|Custom field (
+a2e064| cells, 
+6247de| walls)
+e7ec01|▶ Take this challenge
+90f72f|Delete custom level “
+0c06d4|Delete
+01be6c|Run your program on a real robot! After each challenge, remember to write a "test record" page. Completed: 
+ae9e67|🐛 Debug Detective (fix the broken program)
+6df11c|No need to start from scratch! A program with a hidden bug is already loaded. Open the simulator, catch the culprit and fix it.
+7b27dc|Basic Challenges
+83e3f3|🎯 Level Up Practice
+1ca7c5|Practice routes and timing using this season's game. The fields are schematic, so measure your own; use a stopwatch for times and take them to the "Score Planner".
+f6f275|🎨 My custom levels (make puzzles for parents / teammates)
+44e559|No custom levels yet. In the simulator's free practice, tap "🎨 Design a level" to place walls and a flag and make your own puzzle!
+66721c|🎨 Design my level
+ebf118|🧮 Score Planner
+1a1109|Season scoring practice questions
+2fe903|Challenge Bank
+6385bf|Hint 
+8bd239|Give me a hint (
+706418|Reference solution
+e5e88c|The green dashed line is the reference route. Yours doesn't have to be identical — reaching the goal is what counts. Comparing two approaches is great too!
+45578c|Have you thought about it and tried it? Are you sure you want to see the reference solution?
+2ccd60|I'm really stuck — show the reference solution
+a2a451|✅ You've completed this challenge!
+9b4a6a|📓 Write a test record page
+4f08d3|Next challenge
+7583f8|Awesome, you finished a challenge!
+c1d62b|✔ It worked on my robot
+38b0f3|‹ Back to challenge list
+a54a5b|Difficulty 
+9d9c17|Goal: 
+056715|First draw the field on paper or on the floor (200 mm per cell), then write the program. This isn't just on paper — actually run it and measure the error.
+82aa83|🖥 Try it in the simulator
+9c9358|📤 Upload my VEXcode file
+a7fc80|🏆 Skills practice
+2536b5|🎤 Interview practice
+770ec6|Loading…
+1ba760|Engineering Notebook
+339100|💬 A parent left 
+c9ad45| new comments. Tap the notes marked "New comment" below to read them.
+6e245e|📖 Learn first: how to write an engineering notebook
+d4933c|🎓 Make it a portfolio (printable)
+9d1453|✍️ Start a page
+d706d1|My notes (
+309528|　·　self-check 
+ca047b|　💬 Has a comment
+e552e2|　🔔 New comment
+aea31e|No notes yet. Pick a type and write your first page!
+689ed9|Title (e.g. Testing the wobbly arm)
+78ace4|Check how accurately “
+1a8eed|” drives on the real robot
+4ff1e7|Date
+60d045|Name
+8d6271|Self-check 
+1669e5|　🎉 This page is complete!
+1dd83a|Saved ✔
+823ff3|💬 Parent comment (
+dbf24f|‹ Back to notebook
+1ae323|Title
+684b3e|✅ Self-check
+bacf9b|When you finish, check each item. Did you do them all?
+e9dabe|Save
+a30600|Delete this note page?
+1af559|Option A
+37cbb1|Option B
+9e0537|Option C
+e7fb08|Decision matrix
+0958f8|Write the criteria on the left; a bigger weight means more important; scores are 1–5. Total = score × weight.
+a6f22e|Criterion
+a4ae0c|Weight
+b51035|e.g. Grips well
+ebedc2|Total
+86f9f7|＋ Add a criterion
+07825b|Draw a sketch
+80909b|Draw with your finger or mouse. Then label sizes and part names below.
+a4b797|Pen
+6f4a9e|Eraser
+da35ac|Clear all
+de71b0|Test data
+d176cb|Change only one variable at a time and test at least 3 times. Enter numbers for "Actual result".
+f3c5a3|Average actual result: 
+23e0e2|(
+b7da02| entries)
+6e04d3|Trial
+21e1dc|What I changed
+fd3e47|Target
+ddb4a2|Actual result
+0fb49f|Notes
+4d0ce1|＋ Add another test
+4bdaf8|Understand the principle first, then build. Every lesson has a "Try it" mini experiment — write the results in your engineering notebook.
+ed10b3|Practice questions: 
+7c0172|📓 Write a test record
+360f80|🔩 Parts Catalog
+f000b1|The parts list matches what you see under "Add a device" in VEXcode. Photos of your own robot will be added later.
+ec1fad|Build Lessons
+dfe666|Overview
+3b7f27|This Season: Level Up
+33343e|Score Planner
+90cbf5|Skills Practice
+f3549f|English–Chinese Term Cards
+74def1|Interview Practice
+aecbfe|🏆 Competition Zone
+c65de6|The long-term goal is to compete at regionals and internationals. Here you practice both "robot skills" and "communication skills".
+4609d7|Rules, scoring, strategy
+172079|Log scores and see progress
+6ef84b|Competition vocabulary
+baf8e4|Practice explaining to judges
+32c8ec|Keys to the Design Award
+b69ace|Learning Resources
+50e25d|Official VEX and open-source projects
+1351e0|What do competitions judge? (concepts)
+4a3068|Robot Skills
+b4843f|: one robot scores as much as it can in a limited time, in "driver" and "autonomous" runs. You can practice alone.
+92818a|Teamwork
+2219e6|: two teams form an alliance and score together. You need to communicate and cooperate.
+01183f|Judged awards
+d8a999|: judged on the engineering notebook, the judge interview and the robot design. This is where your notebook and English come in handy.
+bdcfc1|This season is VEX IQ 2026–2027 "Level Up". The rules summary is on the "This Season: Level Up" page. Rules change every year and the manual gets updated, so the official Game Manual always wins.
+17c185|Competition Zone
+ef9c64|0 pts
+3db3e9| pts
+3f94da|The robot throws 2 bean bags into L2 and 1 into L3 (all correct colors). How many points in total?
+f6b07f|3 bean bags are in floor goals and 1 yellow bean bag is in L4. How many points in total?
+053557|Which goal can a red bean bag score in?
+f8ac77|Red floor goal
+d8f1d8|Blue floor goal
+28fbc1|L4 goal
+98d113|None of them
+2a12a8|A red bean bag can only go in a "red" goal; L4 takes only yellow.
+523d6f|Which goal takes only yellow bean bags?
+e5bc87|L1 goal
+535f8a|L2 goal
+714235|L3 goal
+6d2080|L4 (16 points) takes only yellow, while yellow can go in any color's L1–L3 and floor goals.
+64b7c8|Does Teamwork have an autonomous period?
+fdb169|No, it's driver-controlled the whole match
+f8e97d|Yes, 15 seconds
+dda47c|Yes, 30 seconds
+48eb79|Only in the finals
+7faee8|Teamwork has no autonomous period; practice autonomous programs in the "Autonomous Skills" run.
+23213c|❌ Correct answer: 
+65044b|📌 Summarized from the official Game Manual 
+da61a2|. I include only the sections I've read; for exact field dimensions, penalties, event rules and judged-award details, see the original. The manual gets updated, so check the latest version before competing: 
+e8a481|Match formats
+675be0|Field and scoring objects
+a39241|The field is about 6 ft × 8 ft (official manual).
+e22583|Scoring table
+6525c8|Where it goes
+0a216d|Each bean bag
+ee171e|Your count
+879915|Subtotal
+62271a|Estimated total: 
+ffacaa|Robot rules (highlights)
+89a8c4|Common rule mistakes
+4b9a75|💡 Strategy ideas
+50c888|These ideas come from my reading of the scoring table. They aren't official and haven't been tested. A truly good strategy comes from timing and testing, then writing it in your engineering notebook.
+edcf6c|📓 Turn the idea into a "brainstorm" page
+581430|⏱️ Go log a skills practice run
+cf7928|🧠 Scoring quiz
+0c1fec|s
+22fc35| pts/s
+b66c05|Estimated score: 
+56f196| pts　Time used: 
+a4a5f7| / 60 s
+68917b|　⚠ Over 60 seconds!
+9e2cf1|The highest points per second is “
+a59208| pts/s). But don't forget: how hard the mechanism is to build, and how stable it is, matter too.
+1a5d6d|Example times filled in (assumed values, not real)
+24b335|: each run 
+2f8a84| s × 
+c9fc0b| runs = 
+205120|Fill in a few run counts first
+5a0356|Level Up score plan
+29cf8e|Saved as a note ✔
+4e7ffd|🧮 Level Up Score Planner
+7d59bb|Treat 60 seconds as a budget: for each goal, enter "seconds per run" (measure with a stopwatch) and how many runs you plan, then see the estimated score. This is the best data for strategy and the "decision matrix".
+c2691c|Enter times measured on "your" robot. The times from "Fill in example" are only assumptions, to show how it works.
+ac325b|Seconds per run
+bbcf7e|Runs planned
+915120|Points per second
+5ad39f|Fill in example
+ce9fa7|📓 Save as a note
+f516fc|Reminder: L4 takes only yellow bean bags and there are few of them. How many runs you can actually do depends on which bags are on the field; check the official manual.
+726a25|Driver
+e02528|Autonomous
+51abfb|Score
+fefcba|What happened this time? Where did it go wrong? What do you want to change next time?
+2a04cf|⏱️ Skills practice log
+cb9ddf|After each practice, write down the score and your thoughts so you can see your progress at a glance. (Scoring follows the season's Game Manual.)
+9fbeb9|Please enter a score
+4f12c8|Logged ✔
+ad827f|Log this run
+4d8513|Score trend
+edc2d5|Blue = driver　Green = autonomous
+11e4ed|Log
+b482bf|Delete this entry?
+5fed3e|Tap to see Chinese
+9a996b|Remembered 
+dc1d4b| terms
+1fa665|🔤 English–Chinese Term Cards
+c5c84a|First think about what this English word means, then tap the card to see the answer. Press "Got it" if you remembered; if not, it will show up more often.
+65be5b|✔ I remember
+ceee6d|✘ Not yet
+41c497|All terms
+a7bac2|Chinese
+d244b7|Description
+90d2b0|Writing it in Chinese first is fine; change it to English gradually.
+046756|Sentence starters: 
+61d10e|Judges will ask about your design and ideas. Pick one question, write your answer, then say it out loud to practice.
+65df43|Write something first
+d6265d|Save my answer
+42f19e|My answers (
+8f74d6|Delete this answer?
+c08a41|Answer
+84c1fa|Type
+b5502a|Idea
+25486a|Question
+053481|⬇ Download their VEXcode file
+7229ec| times
+5bba63|Actual
+2a253f|📓 Engineering notebook and practice (
+0a60aa|Give them a word of encouragement, or ask a question (e.g. where is the data behind this conclusion?)
+45df58| · self-check 
+44fcfb| · commented
+21e43a|💬 Parent comment: 
+ce7222|Comment sent
+6014ed|Send comment
+869cd0|No notes yet
+5836a2|🎯 Official season course (free, 7 lessons)
+46e7d2|Competition 101: VEX IQ Level Up (official STEM Lab)
+9dff57|An official intro course designed for this 2026–27 season, in English. Lesson 2, "Building Your First Robot", builds this season's Hero Bot "Flop" step by step. Do them in order; our site handles "practice, simulate, check and write notes".
+2af9ff|Official course × how to pair it with this site
+a1fabd|Lesson 1: Team up and learn the game
+72c27e|Pair with: this site's "Competition Zone → This Season: Level Up" plus the scoring quiz.
+40b850|Lesson 2: Build Flop (your first robot)
+794b94|Pair with: the build steps in this site's "Starter Tasks"; after building, do the simulator's first program.
+a10354|Lesson 3: Drive the robot
+b608f9|Pair with: upload your driver-control program file and this site will make a "controls table" and check it.
+86f755|Lesson 4: Your first strategy
+63156c|Pair with: this site's "Score Planner" — use measured times to estimate a score.
+e6b5e8|Lesson 5: Improve the robot
+d67f38|Pair with: the decision matrix and test records in this site's "Engineering Notebook" (change one variable at a time).
+0d6924|Lesson 6: Get ready for your first competition
+abf0a1|Pair with: this site's "Interview Practice" and "Skills Practice".
+239daf|Lesson 7: Post-competition reflection
+21ddbf|Pair with: this site's "Practice reflection" notebook page.
+a32e2a|Official (VEX)
+7a8086|VEXcode IQ (web version)
+3145e0|Where he writes block programs; it works in the browser (Traditional Chinese or English).
+5e354b|VEXcode VR (virtual robot)
+4c1a24|Use blocks or Python to control a 3D virtual robot through missions without a physical robot. Great for practicing programming logic.
+f5233e|VEX IQ STEM Labs (Traditional Chinese)
+b5ab01|Official unit-based courses: building, motors and sensors, competition. ⚠ The Chinese is machine-translated and some sentences read oddly; compare with the English version.
+5f0517|VEX Knowledge Base (Traditional Chinese)
+8bae1a|Like a "VEX IQ encyclopedia": Brain firmware updates, controller pairing, how sensors work, troubleshooting.
+a65434|Season Game Manual (Level Up)
+cf8333|The only authority for competition rules. It gets updated, so read it again before competing.
+cc95d1|RobotEvents (registration and lookup)
+8f1efd|Find competitions, register, look up teams.
+f5f384|Community open-source projects (third party — judge their content and accuracy yourself)
+22103a|Level Up scoring practice (3D web)
+52322a|Practice scoring on a 3D field, with easy / medium / hard. By Jerrylum (open source, GPL-3.0). A good extension of our "scoring quiz".
+82b7a7|iqdraw (build-instruction generator)
+b6d932|Describe part positions in text and get printable step-by-step build instructions. Handy later for making build lessons for your own robot.
+e33983|A collection of VEX IQ beginner courses and examples (not updated since 2023, so somewhat outdated).
+e23cb3|Source code of a site that teaches blocks-to-Python syntax.
+43874f|These are external sites and open in a new tab. Official sites are mostly in English; some Traditional Chinese pages are machine-translated.

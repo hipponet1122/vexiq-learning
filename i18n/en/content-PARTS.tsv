@@ -1,0 +1,20 @@
+db7501|The robot's brain; the program is downloaded here to run. The 2nd generation has 12 Smart Ports and a built-in inertial sensor.
+434d50|Turns the wheels and arms. Plugs into a Brain port; set the same port number in the program.
+69c136|For driving by hand. The driver-controlled period depends on it.
+93499d|Bumper Switch
+90d16e|Detects whether it was pressed or bumped.
+6443bb|Touch LED
+46eace|Detects touch, and can also emit different colors of light.
+f3c2e4|Distance Sensor
+e4f028|Measures how far away the object ahead is.
+86c59f|Color Sensor
+4d7d47|Recognizes the color of objects or the ground.
+2e9507|Optical Sensor
+3e6030|Detects light, color and proximity.
+47e0a0|Measures how many degrees the robot has turned and which way it faces.
+00d795|Vision / AI Vision
+8ce903|Recognizes objects with a camera; AI Vision can use preset models.
+4c3124|Pneumatics
+5d0ce8|Mechanisms pushed by air (needs pneumatic parts).
+12bfec|Beams, pins, axles, gears, wheels
+463e91|The basic parts of structure and drive: beams make the frame, pins connect, axles carry rotation, gears change speed and force, wheels do the moving (including omni wheels).

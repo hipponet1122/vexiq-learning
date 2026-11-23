@@ -149,7 +149,13 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); bo
 .qhint-body { font-size: .94rem; line-height: 1.55; }
 .opt.elim { opacity: .45; text-decoration: line-through; background: var(--bg); }
 .coachcard { border-left: 5px solid var(--accent); }
-.vxtip { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,.15); font-weight: 600; color: var(--deep); }
+.vxdiag { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,.15); font-weight: 600; color: var(--deep); }
+.vxnewrec { margin: 4px 0; padding: 4px 8px; border-radius: 6px; background: rgba(241,174,52,.22); color: #7a4c00; font-weight: 700; }
+.vxstars { margin-bottom: 6px; font-size: .95rem; font-weight: 600; }
+.vxscrub { flex: 1; min-width: 80px; accent-color: var(--accent); cursor: pointer; }
+.vxedit { margin: 8px 0; padding: 8px 10px; border-radius: 8px; background: var(--bg); border: 1px dashed var(--line); }
+.blk.running { outline: 3px solid #f2cd16; box-shadow: 0 0 0 5px rgba(242,205,22,.45), 0 4px 12px rgba(0,0,0,.22); transform: scale(1.02); transition: transform .08s; }
+.dailycard { border-left: 5px solid var(--m-control-s); margin: 12px 0; }
 .vxcoach { margin-top: 10px; padding: 12px 14px; border-radius: 10px; border-left: 5px solid var(--accent); background: rgba(8,117,226,.08); }
 .vxcoach.ok { border-left-color: var(--ok); background: var(--okbg); }
 .vxhint-item { margin-top: 6px; padding: 6px 10px; background: #fff; border: 1px solid var(--line); border-radius: 7px; font-size: .92rem; }

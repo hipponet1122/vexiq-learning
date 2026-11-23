@@ -1,0 +1,264 @@
+77a7bd|This isn't a VEXcode blocks file (the format can't be read). Please choose a file ending in .iqblocks.
+ff877a|No block program was found in this file. Python and C++ projects can't be checked yet; please use a blocks project (.iqblocks).
+5d9cc8|This is a "
+2d8344|" project. Only blocks projects (.iqblocks) can be checked for now.
+ee0e1f|The blocks couldn't be read; the file may be damaged. Please save it again in VEXcode.
+cd05e4|Must fix
+30b786|Suggested improvement
+01bfee|Small reminder
+d26791|(empty condition)
+4c739b|Speed unit: rpm
+d4967e|The program isn't attached under "when started"
+2b977c|A program only runs if it starts from "when started". Blocks not attached under it won't move when you press RUN.
+1a7eab|In VEXcode, open the Events category on the left and drag "when started" into the workspace.
+66a841|Attach your blocks directly underneath it.
+4bc35e|Save again and upload again.
+1a53e0|Hint: this file has no "when started" block, or nothing is attached under it.
+e2fa52|There are 
+898766| "when started" stacks
+0e023b|Every "when started" stack runs at the same time. The simulator only simulates the first one, so results may differ from the real robot.
+611ce0|Check whether you really need several running at once.
+038d72|An autonomous program usually needs only one.
+17bd3c|There are no blocks under "when started"
+05bfa1|The program is empty, so the robot won't do anything.
+d17aa1|Attach drive, turn and other blocks under "when started".
+05f8d8| kinds of blocks the simulator doesn't understand
+2596ee|The simulator can't simulate these blocks, so the "simulation result" may be inaccurate:
+21c7b3|This isn't necessarily a mistake; it just means you need to confirm this part on the real robot.
+2a0bc5|Please record this part's real-robot result in your test record.
+a17e08|Used "and don't wait"
+f43a02|With this ticked, the block moves on to the next one right away instead of waiting for it to finish. The simulator waits for each to finish, so it may differ from the real robot.
+f456f2|Only use it when you really need to do two things at once.
+249afc|There seems to be no Drivetrain in the devices
+410480|Blocks like drive and turn need a Drivetrain added in Devices first, so VEXcode knows which two motors are the wheels.
+6089e6|In VEXcode, click Devices at the top right.
+1518e2|Click Add a device and choose Drivetrain 2-motor.
+23a6bc|Choose the ports for the left and right motors and press Done.
+1494c1|For comparison, your file has these devices:
+cb4bed|(none)
+4d1c5c|Action no. 
+fa8593| : the turn direction differs from the target route
+28d98b|"right" turns right and "left" turns left. Which way you face after turning decides where the next leg goes; one wrong direction puts the whole route off.
+557d61|In VEXcode, find movement block no. 
+83b3da| (drive or turn).
+55ac74|Click the dropdown and switch the direction to the other side.
+8c20e2|Press RUN (or go back to the site and upload again) to check.
+8152fd|Hint 1: one turn direction in the whole route differs from the target.
+173c3e|Hint 2: the problem is in movement no. 
+cb8f8c| .
+ec6465|Hint 3: you wrote "
+4116f5|", and the target route here is "
+e46597| : action no. 
+5fed99|distance traveled
+f66d4c|angle turned
+a2fd5e|is quite far from the target
+76e880|Work out distance from the field: each cell on this field is 200 mm. Cells traveled × 200 = the distance.
+b6a22d|Turn angles should match the route: a right angle is 90°, a U-turn is 180°.
+099201|First measure or work out the correct 
+16463c|distance (200 mm per cell)
+40d39c|angle
+213b3d|Change the number in block no. 
+1bc92d| .
+7a9fde|Run it again and upload again.
+49a155|Hint 1: one action has the wrong number.
+3edd9f|Hint 3: you wrote "
+671cf7|", and the target is about "
+71d72e| : wrong kind of action (should it drive or turn?)
+afdbd6|The route alternates "drive a leg, turn a bit". Think about whether the robot should drive straight or turn at this step.
+b4fd95|Compare with the field map and see what the robot should do at step 
+074046| .
+8f9e59|Swap the block for the right kind.
+21dd94|Hint 1: at some step it should have driven straight but turned, or the other way around.
+313191| .
+9d52a3|", and here the target is "
+72b024|Missing actions: the route isn't finished
+9bbbb2|The target route has 
+659169| movement actions, but your program has only 
+64503c| .
+7d9f45|Compare with the field map to see where the robot still needs to go.
+63c4dc|Add the missing drive / turn blocks (or use repeat).
+8e30ed|Hint 1: your program ends before the route is finished.
+7a3fe4|Hint 2: actions are missing from no. 
+9015f0| on.
+fb7e8b|Hint 3: what's missing is "
+9052eb|Extra actions: there are more actions after the route ends
+2d91f8|The target route has only 
+23543c| movement actions, but your program has 
+7f8512| . The extra actions may make the robot overshoot.
+bec456|Check whether you added extra blocks at the end.
+e669f8|Delete the extra actions and try again.
+d41181|Hint: the extra actions start from no. 
+ce5182| (
+15b08b| : an action's number is a variable or an expression
+6bdc79|The simulator can't know a variable's value in advance, so it can't compare step by step.
+2846aa|Make sure the variable's value is set correctly.
+f47138|The program uses conditions or variables in a loop, so it can't be compared step by step
+34a80c|Judge only by the simulation result. If it's wrong, first check the conditions (e.g. distance numbers) and the variables' values.
+103805|Simulation result: 
+82752d|This is the result of running your program on the simulator field.
+05c010|First look at "Compare with the reference route" below to find which step differs.
+f7227e|After fixing it, save in VEXcode and upload again.
+7a2a41|The same blocks are written 
+a36b7a|Drag a "repeat" from the Control category.
+0ffb56|Put the repeated group of blocks inside it, and set the count to 
+dcd855|No speed is set
+c18a97|If you don't set it, the default speed is used. For more accurate runs, lower the speed first and write the speed you used in your test record.
+6ea4b1|In the Drivetrain - Settings category, drag "set drive velocity to ... %" to the very top.
+040a39|When stopping with the distance sensor, go slower
+33c598|When a robot stops, inertia makes it slide a bit farther, and the faster it goes the farther it slides, so it often stops closer than you expect.
+a7bf10|Lower the drive velocity to around 50% and try again.
+eb1620|Or make the stopping distance threshold larger.
+f53cf4|The simulation passed! Next, try it on a real robot
+39a215|The simulator is ideal and a real robot has errors. Run the same program on the robot and measure the actual result. That gap makes the best content for your engineering notebook.
+89420b|In VEXcode, press Download, then RUN.
+3645d3|Measure the actual distance traveled with a ruler.
+8f34fd|Press "Save as engineering notebook" below and add the numbers you measured.
+919349|There's no program in the workspace
+3fd5dc|Go back to VEXcode, drag blocks in, write your program and save again.
+12660a|(empty condition)
+ddd099|otherwise (other cases)
+bdeb75| programs (
+0beac8|The program has no block starting with "when"
+ea1158|With no "when started" or other event block, nothing happens when you press RUN.
+37a26f|Drag "when started" from the Events category and attach your blocks under it.
+03637f|The controller is only checked once at the start
+77b61f|The controller buttons must be checked "continuously" for the robot to follow your hands. If you check only once inside when started, nothing happens however you press afterward.
+743546|Drag a "forever" from the Control category.
+fea0e9|Put the stack of "if button pressed" blocks inside forever.
+46dbee|Save again and upload.
+133cf5|Hint 1: your controller checks aren't inside a block that "repeats".
+d85e87|Hint 2: look at stack no. 
+31e278| 
+1b7688|program
+e20bbb|'s if checks.
+6148e7|Hint 3: put the whole group inside a forever loop.
+4606db|There's no place to stop some motors once they start spinning:
+da8bf6|A spin block keeps the motor spinning. You must have a "stop" block (for example when the button is released) or the motor never stops.
+713973|After each "if button pressed then spin", add an "else" (put "stop this motor" in the else).
+2ef01a|Or use a "when button released" event block to stop.
+3a5ef2|Hint 1: some motors only have spin and no stop.
+28b8b9|Hint 2: motors without stop: 
+25fc48|Hint 3: put "stop this motor" in the if's else.
+044ea4|In one stack, the same motor is told to spin in two directions
+65b4fb|When the same motor spins forward and then reverse in the same action, the later one overrides the earlier one, so the motor won't move as you intended.
+093fb7|Check the spin direction of 
+bb599e| in 
+d1c992| .
+1a631e|In one group of actions, each motor needs only one direction.
+86fe4a|Blocks use devices that aren't set up:
+964869|The motor names in your blocks must match what's set up in Devices, or you'll get errors when downloading to the robot.
+130350|In VEXcode's Devices, check whether this motor exists.
+755572|If not, add it; if it does, change the blocks to the right name.
+a236bd|Your file has these devices:
+502278|The same button appears more than once in one if group:
+e3ad2a|After the earlier condition is true, the identical later condition never runs.
+0b7435|Check that if / else if group and change the repeated button to a different one, or merge them.
+bf2d43|The same motor is controlled by several programs at once:
+1bf43d|Several programs (when started, when button…) run at the same time. If they all control the same motor, they may fight over commands and the movement can look odd.
+6a7958|Try to have each motor controlled by only one program.
+f37069|Or make sure they can't be triggered at the same time.
+f1ee86|These motors have no speed set:
+700489|If you don't set it, the default speed is used. Arms and claws usually need their own speed so they don't move too fast.
+26d733|At the very start of when started, add "set motor velocity to … %".
+cb72e0|Arms and claws can use "stopping: hold"
+124048|By default the motor coasts after release; setting hold "locks" the arm or claw so it doesn't drop.
+0f0d00|At the very start of when started, add "set motor stopping to hold".
+d2c887| buttons are driving and turning the robot
+b6ca5e|This feels like an ordinary RC car. You can control it directly with the joystick (axis): the motor spins as fast as you push the stick, which feels smoother and makes the program much shorter.
+8538db|In the Sensing category, find the "controller axis position" block.
+d2c1aa|Use its value to set the left and right motor speeds (tank or arcade control).
+359216|This is an advanced technique; you can try it later.
+77c79c|The structure check found no obvious problems
+7152fa|Next, use the real robot: press every button once and see whether the robot moves as the "controls table" says.
+e7e218|Download to the robot and test one button at a time.
+374344|Use "Save as engineering notebook" below to generate a test sheet you can tick off.
+de3fb8|Not specified (general checks only)
+47a23f|Detect automatically
+9174fc|Autonomous program (drives a route)
+d1a958|Driver-control program (started by controller)
+5fbc2c|This file is too large (over 500 KB) to be a VEXcode file.
+806086|After writing your program in VEXcode, save it and upload it here. The site checks it for problems, guides you step by step if something's wrong, and finally drafts an engineering notebook page for you.
+89053e|How do I save the file?
+9a0fce|In VEXcode, press "File" at the top left → "Save as".
+f929c5|Save it to your computer (on iPad, save to the "Files" app). The file extension is .iqblocks.
+048e63|Come back here and press "Choose file" below.
+1838a8|1. Which challenge is this program for?
+6ba402|Choose one to compare against its route; if you don't, only general checks are done.
+95ff67|2. Program type
+5be833|3. Choose a VEXcode file (.iqblocks)
+449418|🔒 The file is analyzed only in your browser. It is not uploaded automatically.
+b07112|Upload a VEXcode file
+ff8356|⚠️ No errors, but there are 
+b69d56| suggestions
+f07c3b|✅ No problems found
+5725c5| to fix
+63a9c3|Type: 
+ecf801|Driver-control program
+e02528|Autonomous program
+bb9b0f|　·　Blocks: 
+59e6e2| generation Brain)
+b14878|Devices: 
+7ccd37|(no device data in the file)
+024b59|🔁 Compared with your last upload
+a9b6b8|Last time: 
+14141b| items to improve
+329e10|✅ Already fixed 
+0e260f| items: 
+5e3744|Still to fix: 
+f36ed1| items.
+8c4297|New this time: 
+ccbaaa|No problems either time.
+f739b7|🧩 Your program (converted to simulator blocks)
+99812b|(no blocks to show)
+c3923d|🗺️ Simulation result
+a7f40c|No challenge was chosen, so only the route the robot drove is shown.
+8f7831|✅ Simulation passed
+63d9b2| s, traveled about 
+ad78b2|Edit it yourself in the simulator
+c8dc06|🎮 Controls table (what the program actually says)
+ce876b|When
+9b1f36|What the robot does
+f5e08f|(no action)
+c699fc|(no controller button mapping found)
+1cf750|Motors: 
+0dca43|　·　total 
+251216|🎯 Handle this one first (just fix one at a time)
+e514b8|📋 All check results
+9d35e7|After fixing, save again in VEXcode and upload again here. I'll tell you how many you fixed.
+10b439|📓 Write it up as an engineering notebook
+d99d1b|The site turns "what you did, what the check found, how you fixed it" into a draft notebook page, plus a table you can take to the real robot to test. You add your own thoughts.
+efc30c|Save as engineering notebook (with the VEXcode file)
+1f216e|Save the notes only, without the file
+050a30|Give me another hint (
+fde05a|All hints used
+64cd7e|Give me a hint (0/
+93e8cc|Why: 
+cd77aa|How to fix: 
+a6782d|Blue line = the path your robot drove; green dashed line = target route (shown only if it didn't succeed).
+c662e9|(This check found nothing that needs changing)
+cc2b73|Simulator: 
+330363|passed
+39795f|not passed
+bdde13|, used 
+88692e| s, traveled about 
+e79719|No program that can be simulated
+0af3b3|Autonomous practice (
+e1267f|Goal: flag position
+3e02e9|Simulator (same program)
+059036|(mm from flag)
+97a234|Simulation
+ab97d5|Real robot, 1st run
+89f942|Real robot, 2nd run
+1425b3|Real robot, 3rd run
+688b1e|Driver-control structure check: 
+ed92a4| to fix.
+2375af|No obvious problems found.
+db860a|Driver-control program (
+b1a838|): motors 
+4c73b5|Press 
+29d3c1|Expected: 
+577f61|Real-robot practice: 
+369257|Test record: 
+523224|Compare the gap between the "simulator" and the "real robot" and record the numbers.
+53778e|Press every button once to confirm the robot moves as the controls table says.
+b992d6|Saved 2 notes ✔

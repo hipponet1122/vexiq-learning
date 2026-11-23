@@ -1,0 +1,30 @@
+c42ac2|The whole mechanism that moves the robot (motors + wheels).
+084723|The robot runs by itself using a pre-written program; the controller can't be used.
+82a07c|Controlled by the driver with the controller.
+a53822|An event where a single robot scores as much as it can in a limited time, with driver-controlled and autonomous runs.
+1100c3|Two teams form an alliance and score together.
+e59edc|A notebook that records the design and thinking process.
+b12831|Judges ask you about your design and thinking face to face.
+a5eb6a|The official rules of the season's game. You must read them.
+2c0de5|Checking before a match that the robot meets the rules (size, parts, etc.).
+85938d|The playing field used for matches.
+add627|One match.
+e6777a|Points.
+0f3746|A part that lets the robot sense its environment.
+ed55a4|A part that provides rotational power.
+6113f7|The ratio of the number of teeth on two gears; it decides speed and strength.
+159db1|The force of turning.
+303909|How fast something moves.
+753e92|Bringing a sensor back to the correct reference.
+fc0fcc|Finding and fixing errors in a program.
+dd9341|Testing and modifying again and again.
+bc9c41|A first version used to test an idea.
+0480f2|A prediction of the result: "I think…".
+cbd637|The one condition changed in an experiment, or a box that stores a number in a program.
+b790f4|How to arrange time and actions to score the most.
+9a5d67|Respect for each other, dividing work and communicating.
+cb4a81|Rewards good design and engineering notebooks (a judged award).
+cd8b48|For a team that is excellent across the board (a judged award).
+bc2dbd|The people who run interviews and read notebooks.
+610404|A program structure that repeats.
+4fa314|An "if…" decision.

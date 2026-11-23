@@ -126,6 +126,10 @@
     { id: 'sense', icon: '📡', name: '感測器高手', desc: '「條件與感測器」領域平均 60%', test: (st) => domAvg(st, 'D') >= 0.6 },
     { id: 'lu', icon: '🎯', name: 'Level Up 專家', desc: '當季計分、規劃、規則都到 60%', test: (st) => ['F1', 'F2', 'F3'].every((id) => pOf(st, id) >= 0.6) },
     { id: 'vocab', icon: '🔤', name: '英文術語 10 個', desc: '術語卡記住 10 個詞', test: (st) => Object.values(st.vocab || {}).filter((v) => v >= 2).length >= 10 },
+    { id: 'grit', icon: '🐛', name: '抓蟲偵探', desc: '同一關試錯 3 次以上最後模擬通過', test: (st) => Object.entries(st.ch || {}).some(([id, r]) => r.sim && (r.fails || 0) >= 3 && CHALLENGES.some((c) => c.id === id)) },
+    { id: 'apply', icon: '💡', name: '現學現賣', desc: '看完提示／小抄後完成類似題練習', test: (st) => !!(st.flags && st.flags.drillOk) },
+    { id: 'star3', icon: '🏆', name: '三星工程師', desc: '任一挑戰拿到 3 顆星（精簡又精準）', test: (st) => Object.entries(st.ch || {}).some(([id, r]) => (r.stars || 0) >= 3 && CHALLENGES.some((c) => c.id === id)) },
+    { id: 'maker', icon: '🎨', name: '關卡設計師', desc: '設計第一個自己的自訂關卡', test: (st) => Array.isArray(st.customCh) && st.customCh.length >= 1 },
   ];
   VX.badges = {
     list: BADGES, streak: streakOf,
@@ -135,6 +139,7 @@
       st.badges = st.badges || {}; const fresh = [];
       BADGES.forEach((b) => { if (!st.badges[b.id] && b.test(st)) { st.badges[b.id] = Date.now(); fresh.push(b); } });
       if (fresh.length && !silent) fresh.forEach((b, i) => setTimeout(() => VX.toast('🏅 獲得徽章：' + b.icon + ' ' + b.name), i * 1600));
+      if (fresh.length && !silent && window.VXFX) setTimeout(() => window.VXFX.confetti(), 200);
       if (fresh.length) VX.saveState();
       return fresh;
     },
@@ -179,17 +184,35 @@
     return wrap;
   };
 
-  /* ---------- 新手導覽（第一次進首頁）---------- */
+  /* ---------- 新手導覽（第一次進首頁）：4 張可左右翻的小卡 ---------- */
   VX.guide.maybeTour = function () {
     const st = VX.st; if (!st || st.tour || VX.user.role !== 'learner') return;
-    const done = () => { st.tour = true; VX.saveState(); ov.remove(); };
-    const ov = h('div', { class: 'tourov' }, h('div', { class: 'tourbox' },
-      h('h2', null, '歡迎來到 VEX IQ 自學！'), h('p', { class: 'sub' }, '這個網站會陪你一步一步學。只要記得三件事：'),
-      h('div', { class: 'tourstep' }, h('b', null, '① 先做定位測驗'), h('div', { class: 'sub' }, '約 10 分鐘。網站會知道你現在會到哪裡。')),
-      h('div', { class: 'tourstep' }, h('b', null, '② 每次來都看「今天要做的事」'), h('div', { class: 'sub' }, '在首頁最上面，大約 20 分鐘，照順序做就好。')),
-      h('div', { class: 'tourstep' }, h('b', null, '③ 用真的機器人試試看，再寫進筆記'), h('div', { class: 'sub' }, '在模擬器練熟後，放到機器人上測；工程筆記是比賽評審最看重的。')),
-      h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: st.done ? '#/' : '#/placement', onclick: done }, st.done ? '知道了，開始吧' : '開始定位測驗 ▶'), h('button', { class: 'btn', onclick: done }, '我先看看網站'))));
-    document.body.append(ov);
+    const slides = [
+      { ic: '🤖', t: '歡迎來到 VEX IQ 自學！', d: '這個網站會陪你一步一步學機器人。只要記得三件事，我們馬上開始！' },
+      { ic: '🧭', t: '① 先做定位測驗', d: '約 10 分鐘。網站會知道你現在會到哪裡，再幫你挑適合的題目。不會的按「我還不會」就好。' },
+      { ic: '📅', t: '② 每次來先看「今天要做的事」', d: '在首頁最上面，大約 20 分鐘，照順序做。沒時間？做「今日 1 分鐘小謎題」也算有練習！' },
+      { ic: '💡', t: '卡住了？網站會幫你', d: '答錯先給提示再試一次；模擬器裡拖曳時間軸，看每一步發光的積木，教練也會一步一步幫你。' },
+      { ic: '🏁', t: '③ 用真的機器人試試看', d: '在模擬器練熟後放到機器人上測，再把發現寫進工程筆記。過關還能拿 ⭐ 和徽章！' },
+    ];
+    let i = 0;
+    const finish = (go) => { st.tour = true; VX.saveState(); ov.classList.add('closing'); setTimeout(() => ov.remove(), 250); if (go) location.hash = go; };
+    const box = h('div', { class: 'tourbox', role: 'dialog', 'aria-modal': 'true' });
+    const ov = h('div', { class: 'tourov' }, box);
+    const draw = () => {
+      const sl = slides[i], last = i === slides.length - 1;
+      box.replaceChildren(
+        h('div', { class: 'tourslide' }, h('div', { class: 'tourem' }, sl.ic), h('h2', null, sl.t), h('p', { class: 'sub' }, sl.d)),
+        h('div', { class: 'tourdots' }, slides.map((_, k) => h('button', { type: 'button', class: k === i ? 'on' : '', 'aria-label': (k + 1) + ' / ' + slides.length, onclick: () => { i = k; draw(); } }))),
+        h('div', { class: 'row gap', style: 'justify-content:space-between' },
+          h('button', { class: 'btn ghost sm', type: 'button', onclick: () => finish() }, '跳過'),
+          h('div', { class: 'row gap', style: 'margin:0' },
+            i ? h('button', { class: 'btn sm', type: 'button', onclick: () => { i--; draw(); } }, '‹ 上一步') : null,
+            last ? h('button', { class: 'btn primary', type: 'button', onclick: () => finish(st.done ? '' : '#/placement') }, st.done ? '知道了，開始吧' : '開始定位測驗 ▶')
+              : h('button', { class: 'btn primary', type: 'button', onclick: () => { i++; draw(); } }, '下一步 ›'))));
+      const nb = box.querySelector('.btn.primary'); if (nb) nb.focus();
+    };
+    ov.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' && i < slides.length - 1) { i++; draw(); } else if (e.key === 'ArrowLeft' && i > 0) { i--; draw(); } else if (e.key === 'Escape') finish(); });
+    draw(); document.body.append(ov);
   };
 
   /* ---------- 起步任務頁 ---------- */
@@ -218,39 +241,134 @@
       isLearner && pr.done === pr.total ? h('div', { class: 'callout' }, '🎉 起步任務全部完成！之後每天看首頁的「今天要做的事」就好。') : null), { title: '起步任務', icon: '🚀' }));
   }
 
-  /* ---------- 網站怎麼用 ---------- */
-  const SECT = (title, kids) => h('div', { class: 'panel' }, h('h2', null, title), kids);
-  const Q = (q, a) => h('details', { class: 'lessonbox' }, h('summary', null, q), h('div', { class: 'body' }, a));
-  function viewGuide(tab) {
-    const kid = tab === 'kid';
-    const nav = h('div', { class: 'row gap', style: 'margin:10px 0' }, h('a', { class: 'btn sm' + (kid ? '' : ' primary'), href: '#/guide' }, '給家長'), h('a', { class: 'btn sm' + (kid ? ' primary' : ''), href: '#/guide/kid' }, '給孩子'));
-    const parent = [
-      SECT('這個網站是什麼？', [h('p', null, '幫孩子在補習班以外自己學 VEX IQ 機器人。網站會：'), h('ul', null, h('li', null, '先測他的程度，再出適合的題目（太難、太簡單都不會）。'), h('li', null, '教他寫「工程筆記」——比賽評審最看重的東西。'), h('li', null, '提供網頁模擬器，沒有機器人也能練程式；有機器人就拿去實測。'), h('li', null, '讓你在「家長頁」看到他學到哪、卡在哪。'))]),
-      SECT('你不需要會 VEX IQ', [h('p', null, '你的角色很簡單，每週大約 10 分鐘：'), h('ol', null, h('li', null, h('b', null, '確認他有排時間'), '：每週 3～4 次，每次 20 分鐘就夠。短而固定，比一次練很久有效。'), h('li', null, h('b', null, '看一次家長頁'), '（約 3 分鐘）：看他本週練了多久、哪裡進步、哪裡常錯。'), h('li', null, h('b', null, '在他的筆記上留一句話'), '：鼓勵，或問一個問題（例如「這個結論的數據在哪裡？」）。')), h('div', { class: 'callout' }, '不需要你教他寫程式。你只要陪他、問他問題，他自己講得出來，就代表真的懂了。')]),
-      SECT('第一週怎麼開始', [h('table', { class: 'tbl' }, h('tr', null, h('th', null, '哪一天'), h('th', null, '做什麼'), h('th', null, '大約時間')),
-        ...[['第 1 天', '登入、做「定位測驗」。', '15 分鐘'], ['第 2 天', '看「組裝 → 零件圖鑑」，認識自己的套件；開始「起步任務」。', '20 分鐘'], ['第 3 天', '練習題＋在模擬器完成第一個挑戰「直線衝刺」。', '20 分鐘'], ['第 4 天', '把同一個程式放到真的機器人，量一量誤差，寫第一頁工程筆記。', '30 分鐘'], ['週末', '你看家長頁、在他的筆記留言，聊聊他學到什麼。', '10 分鐘']].map((r) => h('tr', null, r.map((x) => h('td', null, x))))), h('p', { class: 'sub' }, '還沒有機器人也可以，先用模擬器；機器人到了再補「起步任務」裡的步驟。'), h('a', { class: 'btn primary', href: '#/start' }, '看起步任務')]),
-      SECT('怎麼看家長頁', [h('ul', null, h('li', null, h('b', null, '雷達圖'), '：六個領域的熟練度，越外圈越熟。'), h('li', null, h('b', null, '常見錯誤類型'), '：例如「角度與距離搞混」，代表他需要加強哪一種觀念。'), h('li', null, h('b', null, '最近答錯的題目'), '：看他的答案和解釋，可以直接問他「你當時怎麼想？」。'), h('li', null, h('b', null, '工程筆記'), '：點開可以看他寫的內容並留言。'), h('li', null, h('b', null, '這週陪他做什麼'), '：家長頁最上面，依他的進度給你具體建議。'))]),
-      SECT('幾個詞，聽到不用慌', [h('table', { class: 'tbl' }, h('tr', null, h('th', null, '詞'), h('th', null, '白話意思')), ...[['Brain（主機）', '機器人的大腦，程式放在裡面執行。'], ['Motor（馬達）', '讓輪子、手臂轉動的零件。'], ['Sensor（感測器）', '讓機器人「知道」周圍的零件，例如量距離、偵測碰撞。'], ['VEXcode', '他寫積木程式的軟體，用拖拉積木的方式。'], ['Autonomous（自動階段）', '機器人只靠事先寫好的程式自己跑，不能用遙控器。'], ['Engineering Notebook（工程筆記）', '記錄設計與測試過程的筆記，比賽評審很看重。'], ['Skills（技能賽）', '一台機器人在限定時間內盡量得分。']].map((r) => h('tr', null, r.map((x) => h('td', null, x)))))]),
-      SECT('常見問題', [
-        Q('他說不想做、沒興趣怎麼辦？', h('p', null, '先降低門檻：只做「今天要做的事」的第 1 項（約 8 分鐘）。也可以讓他先玩「模擬器」，看到機器人動起來通常比較有成就感。')),
-        Q('題目太難，他一直答不出來？', h('p', null, '網站會自動降低難度，並在答錯後給解釋。如果他連續卡在同一個技能，家長頁會顯示；你可以把那個技能拿去問補習班老師。')),
-        Q('還沒有機器人，可以先開始嗎？', h('p', null, '可以。「起步任務」裡和機器人有關的步驟可以先略過，先用模擬器練習。')),
-        Q('他忘記密碼？', h('p', null, '在家長頁點他的名字，往下找「管理」，可以重設他的密碼。')),
-        Q('需要多久才會看到進步？', h('p', null, '通常練習 1～2 週，家長頁的雷達圖就會有明顯變化。真正的重點是持續。')),
-      ]),
-    ];
-    const kidG = [
-      SECT('三件事就好', [h('ol', null, h('li', null, h('b', null, '先做定位測驗'), '（約 10 分鐘）。不會的就按「我還不會」，沒關係！'), h('li', null, h('b', null, '每次來，先看首頁的「今天要做的事」'), '，照順序做，大約 20 分鐘。'), h('li', null, h('b', null, '用真的機器人試試看'), '，再把你發現的寫進「筆記」。'))]),
-      SECT('每個按鈕在哪裡？', [h('table', { class: 'tbl' }, h('tr', null, h('th', null, '想做什麼'), h('th', null, '點哪裡')), ...[['看今天要做什麼', '上面的「首頁」'], ['做題目、被考', '「練習」'], ['挑戰一個任務', '「挑戰」'], ['不用機器人，在電腦上試程式', '「模擬器」'], ['寫工程筆記', '「筆記」'], ['把 VEXcode 寫好的程式交給網站檢查', '「上傳存檔」'], ['學組裝、認識零件', '「組裝」'], ['查積木怎麼用', '「速查表」'], ['看比賽規則和練習', '「比賽」']].map((r) => h('tr', null, r.map((x) => h('td', null, x)))))]),
-      SECT('用真的機器人練習之後', [h('ol', null, h('li', null, '在 VEXcode 按 File → Save as，把程式存成檔案（.iqblocks）。'), h('li', null, '到網站的「上傳存檔」，選挑戰、選檔案。'), h('li', null, '網站會檢查；不對的話，會一步一步告訴你哪裡要改。'), h('li', null, '改好再存檔、再上傳一次，直到沒問題；最後存成工程筆記。'))]),
-      SECT('卡住的時候', [h('ol', null, h('li', null, '先看題目的「解釋」。'), h('li', null, '挑戰有「提示」，一個一個點開，先想再看。'), h('li', null, '真的卡住再看「參考解答」，看完自己重做一次。'), h('li', null, '還是不懂，記下來，問補習班老師或爸媽。'))]),
-      SECT('在模擬器寫程式', [h('ol', null, h('li', null, '從左邊把積木拖到「when started」下面。'), h('li', null, '改數字，按上面的 RUN。'), h('li', null, '手指或滑鼠停在積木上 1 秒，會跳出中文意思。'), h('li', null, '成功了，記得去真的機器人上試一次！'))]),
-    ];
-    VX.app.replaceChildren(VX.shell(h('div', null, nav, kid ? kidG : parent), { title: '網站怎麼用', icon: '🧭' }));
+  /* ---------- 網站怎麼用（分頁、孩子版／家長版）---------- */
+  const Q = (q, a) => h('details', null, h('summary', null, q), h('div', { class: 'body' }, a));
+  const P = (...k) => h('p', null, ...k);
+  const STEPS = (arr) => h('ol', { class: 'gd-steps' }, arr.map((x) => h('li', null, x)));
+  const TIP = (...k) => h('div', { class: 'gd-tip' }, ...k);
+  const CARDS = (arr, linked) => h('div', { class: 'gd-feat' }, arr.map(([ic, t, d, href, go]) => h('div', { class: 'gd-card' }, h('div', { class: 'gi' }, ic), h('h4', null, t), h('p', null, d), linked && href ? h('a', { class: 'btn sm', href }, go) : null)));
+
+  const GUIDE_KID = [
+    { id: 'quick', icon: '🚀', t: '快速開始', body: () => [
+      P('第一次來？只要記得三件事：'),
+      STEPS([[h('b', null, '先做定位測驗'), '（約 10 分鐘）。不會的就按「我還不會」，不會被扣分，沒關係！'],
+        [h('b', null, '每次來，先看首頁的「今天要做的事」'), '：照順序做，大約 20 分鐘就夠。'],
+        [h('b', null, '用真的機器人試試看，再寫進筆記'), '：在模擬器練熟後放到機器人上測，工程筆記是比賽評審最看重的。']]),
+      TIP('💡 每週練 3～4 次、每次 20 分鐘，比一次練很久有效。只有 10 分鐘？只做「今天要做的事」第 1 項就好。'),
+      h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/start' }, '🚀 看起步任務（7 步）'), h('a', { class: 'btn', href: '#/' }, '回首頁')),
+    ] },
+    { id: 'pages', icon: '🧭', t: '每個功能', body: () => [
+      P('上面（手機在下面）的分頁列可以到每個地方：'),
+      CARDS([
+        ['✏️', '練習', '依你的程度出題。答錯先給提示再試一次；連錯會有 30 秒重點小抄；回合結束還能「專練類似題」。', '#/practice', '開始練習'],
+        ['⚡', '今日 1 分鐘小謎題', '首頁每天換 1 題輕鬆暖身，答完就算今天有練習，連續天數不中斷。', '#/', '回首頁'],
+        ['🏁', '挑戰', '一個個機器人任務。提示一步一步看，過關拿 ⭐：積木精簡、終點準，可以拿到 3 顆星。', '#/challenge', '看挑戰'],
+        ['🐛', '除錯偵探', '給你一段藏著 bug 的程式，用發光的積木和時間軸抓出兇手、修好它。', '#/challenge', '去抓蟲'],
+        ['🖥️', '模擬器', '不用機器人也能試程式。可以拖曳時間軸看每一步，失敗時教練會幫你診斷。', '#/sim', '打開模擬器'],
+        ['🎨', '自訂關卡', '在模擬器自由練習裡放牆壁和旗子，設計自己的關卡，出題考爸媽或隊友。', '#/sim', '去設計'],
+        ['📤', '上傳存檔', '把 VEXcode 存的 .iqblocks 交給網站檢查，不對會一步一步教你改。', '#/import', '上傳存檔'],
+        ['📓', '筆記', '工程筆記有教學、檢查清單，還能整理成可以列印的作品集。', '#/notebook', '寫筆記'],
+        ['🔧', '組裝', '機構原理與零件圖鑑，每一課有動手做小實驗。', '#/build', '看組裝'],
+        ['🏆', '比賽', '當季規則整理、得分規劃器、技能賽記錄、英中術語卡、面談練習。', '#/compete', '比賽專區'],
+        ['📋', '速查表', '積木怎麼用，VEXcode 英文原版字樣一看就懂。', '#/cheat', '看速查表'],
+        ['🏅', '徽章與連續天數', '做到特定的事就拿徽章；每天練習，連續天數會越來越長。', '#/', '看我的徽章'],
+      ], true),
+    ] },
+    { id: 'stuck', icon: '🆘', t: '卡住了怎麼辦', body: () => [
+      P('卡關是學習的一部分！網站會一步一步幫你，不會直接把答案丟給你。'),
+      h('h3', null, '練習題卡住'),
+      STEPS(['按「💡 給我一點提示」：會劃掉一個錯的選項，並顯示這個技能的重點。', '答錯一次不會馬上公布答案，你可以再試一次。', '同一個技能連錯 2 題，會跳出「🧭 30 秒重點小抄」，再出一題簡單的暖身題。', '回合結束按「🎯 專練類似題」，確認自己真的會了。']),
+      h('h3', null, '模擬器／挑戰卡住'),
+      STEPS(['按 RUN 之後，拖曳上面的時間軸：每一步對應的積木會亮起來，看看哪一步開始不對。', '失敗結果下面有白話診斷（撞牆？走反了？停不下來？）。', '連續失敗 2 次，「🧭 教練小幫手」出現，可以一個一個打開提示。', '第 3 次可以顯示參考路線；第 4 次才可以載入參考解答（用了參考解答只能拿 1 星）。', '距離旗子比上次近，會出現「🔥 新紀錄」，代表你在進步！']),
+      TIP('🐛 除錯偵探：不用從零開始。先 RUN 看發光的積木，找出哪一塊怪怪的，只改那一塊就好。'),
+      P('還是不懂？記下來，問補習班老師或爸媽。把問題寫進工程筆記也很棒。'),
+    ] },
+    { id: 'sim', icon: '🖥️', t: '模擬器', body: () => [
+      STEPS(['從左邊的積木庫把積木「拖」或「點」到「when started」下面。', '改數字，按上面的 RUN；也可以用 ▶／⏸ 暫停，用時間軸拉到任何一步。', '手指或滑鼠停在積木上 1 秒，會跳出說明。', '成功了，記得拿同一個程式去真的機器人上測一次，再把差距寫進筆記。']),
+      TIP('📱 手機畫面小，模擬器建議用 iPad 或電腦；iPad 橫放最好用。'),
+      h('h3', null, '設計自己的關卡'),
+      STEPS(['進模擬器，場地選「自由練習／設計關卡」。', '按「🎨 設計自己的關卡」，用 🧱 牆壁、🚩 旗子、🟥 紅區 點格子擺放。', '按「💾 存成關卡出題」取名字，就會出現在挑戰頁的「我的自訂關卡」。']),
+    ] },
+    { id: 'tips', icon: '📱', t: 'iPad／手機小技巧', body: () => [
+      STEPS(['用 Safari 打開網站，按「分享」→「加入主畫面」，下次像 App 一樣全螢幕打開。', '模擬器請把 iPad 橫放；手機直放時，分頁列在畫面下方，方便用拇指點。', '右上角的「中／EN」可以切換中文與英文介面。', '想看更大的畫面，可以用兩指放大圖片或場地。']),
+      TIP('⌨️ 用電腦的話：在輸入框按 Enter 就能送出，不用去點按鈕。'),
+    ] },
+    { id: 'faq', icon: '❓', t: '常見問題', body: () => [
+      h('div', { class: 'gd-faq' },
+        Q('答錯會被扣分嗎？', P('不會。答錯只是讓網站知道你還需要練什麼；「我還不會」也不會被扣分。')),
+        Q('靠提示答對，算不算答對？', P('算！熟練度會加分，只是加得比較少；也會提醒你回合結束再驗收一次。')),
+        Q('我的進度會不見嗎？', P('進度存在網站上，換裝置登入同一個帳號就在。')),
+        Q('我忘記密碼了？', P('請家長在「家長頁」點你的名字，往下找「管理」重設密碼。')),
+        Q('沒有機器人可以學嗎？', P('可以。先用模擬器練習；起步任務裡和機器人有關的步驟可以先略過。'))),
+    ] },
+  ];
+
+  const GUIDE_PARENT = [
+    { id: 'what', icon: '🏠', t: '這是什麼', body: () => [
+      P('幫孩子在補習班以外自己學 VEX IQ 機器人。網站會：'),
+      h('ul', null, h('li', null, '先測他的程度，再出適合的題目（太難、太簡單都不會）；卡住時給提示、小抄與類似題，不讓他一直鬼打牆。'), h('li', null, '教他寫「工程筆記」——比賽評審最看重的東西。'), h('li', null, '提供網頁模擬器，沒有機器人也能練程式；有機器人就拿去實測。'), h('li', null, '讓你在「家長頁」看到他學到哪、卡在哪。')),
+      TIP('你不需要會 VEX IQ。你的角色很簡單：陪他、問他問題，他自己講得出來，就代表真的懂了。'),
+      h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/start' }, '🚀 看孩子的起步任務'), h('a', { class: 'btn', href: '#/parent' }, '去家長頁')),
+    ] },
+    { id: 'week', icon: '📅', t: '每週怎麼陪', body: () => [
+      P('每週大約 10 分鐘：'),
+      STEPS([[h('b', null, '確認他有排時間'), '：每週 3～4 次，每次 20 分鐘就夠。短而固定，比一次練很久有效。'], [h('b', null, '看一次家長頁'), '（約 3 分鐘）：看他本週練了多久、哪裡進步、哪裡常錯。'], [h('b', null, '在他的筆記上留一句話'), '：鼓勵，或問一個問題（例如「這個結論的數據在哪裡？」）。']]),
+      h('h3', null, '第一週怎麼開始'),
+      h('table', { class: 'tbl' }, h('tr', null, h('th', null, '哪一天'), h('th', null, '做什麼'), h('th', null, '大約時間')),
+        ...[['第 1 天', '登入、做「定位測驗」。', '15 分鐘'], ['第 2 天', '看「組裝 → 零件圖鑑」，認識自己的套件；開始「起步任務」。', '20 分鐘'], ['第 3 天', '練習題＋在模擬器完成第一個挑戰「直線衝刺」。', '20 分鐘'], ['第 4 天', '把同一個程式放到真的機器人，量一量誤差，寫第一頁工程筆記。', '30 分鐘'], ['週末', '你看家長頁、在他的筆記留言，聊聊他學到什麼。', '10 分鐘']].map((r) => h('tr', null, r.map((c) => h('td', null, c))))),
+      P('還沒有機器人也可以，先用模擬器；機器人到了再補「起步任務」裡的步驟。'),
+      h('h3', null, '可以這樣問他（不用懂 VEX）'),
+      h('ul', null, h('li', null, '這週你寫的程式，機器人做了什麼？'), h('li', null, '哪一題讓你想最久？你後來怎麼想通的？'), h('li', null, '如果要改進你的機器人，你會先改哪裡？為什麼？'), h('li', null, '你抓到哪個 bug？是怎麼發現的？')),
+    ] },
+    { id: 'page', icon: '📊', t: '看懂家長頁', body: () => [
+      h('ul', null,
+        h('li', null, h('b', null, '雷達圖'), '：六個領域的熟練度，越外圈越熟。'),
+        h('li', null, h('b', null, '累計正確率'), '：只算「第一次、沒看提示」就答對的題目。看提示或重試後才答對，會記成「未獨立答對」，所以這個數字會比較誠實，也可能比以前低一些。'),
+        h('li', null, h('b', null, '常見錯誤類型'), '：例如「角度與距離搞混」，代表他需要加強哪一種觀念；就算靠提示後答對，第一次選錯的類型也會記下來。'),
+        h('li', null, h('b', null, '最近答錯的題目'), '：看他的答案和解釋，可以直接問他「你當時怎麼想？」。'),
+        h('li', null, h('b', null, '工程筆記'), '：點開可以看他寫的內容並留言。'),
+        h('li', null, h('b', null, '每週學習報告'), '：練習時間、題數、完成的挑戰，還有「🌟 克服卡關亮點」，很適合稱讚他願意反覆試錯；也有可以貼到 LINE 的文字版。'),
+        h('li', null, h('b', null, '這週陪他做什麼'), '：家長頁最上面，依他的進度給你具體建議。')),
+    ] },
+    { id: 'admin', icon: '⚙️', t: '帳號管理', body: () => [
+      STEPS(['新增學員：家長頁最下面「新增學員」，輸入登入名字和初始密碼。', '重設密碼：點孩子的名字，往下找「管理」。他的登入會被登出。', '教練帳號：可以幫孩子新增「教練（唯讀）」帳號，只能看被指派學員的練習、筆記和題庫，不能修改任何資料。', '刪除學員：會永久刪除他的帳號、作答紀錄和筆記，要輸入名字再確認一次。']),
+      TIP('🔒 資料只存在這個網站自己的伺服器，不使用第三方追蹤或廣告。請不要在筆記裡寫真實全名、學校或聯絡方式。'),
+      TIP('🌐 右上角的「中／EN」可以切換介面語言，選擇會記在這台裝置上。'),
+    ] },
+    { id: 'words', icon: '🔤', t: '幾個詞', body: () => [
+      h('table', { class: 'tbl' }, h('tr', null, h('th', null, '詞'), h('th', null, '白話意思')),
+        ...[['Brain（主機）', '機器人的大腦，程式放在裡面執行。'], ['Motor（馬達）', '讓輪子、手臂轉動的零件。'], ['Sensor（感測器）', '讓機器人「知道」周圍的零件，例如量距離、偵測碰撞。'], ['VEXcode', '他寫積木程式的軟體，用拖拉積木的方式。'], ['Autonomous（自動階段）', '機器人只靠事先寫好的程式自己跑，不能用遙控器。'], ['Engineering Notebook（工程筆記）', '記錄設計與測試過程的筆記，比賽評審很看重。'], ['Skills（技能賽）', '一台機器人在限定時間內盡量得分。']].map((r) => h('tr', null, r.map((c) => h('td', null, c))))),
+    ] },
+    { id: 'faq', icon: '❓', t: '常見問題', body: () => [
+      h('div', { class: 'gd-faq' },
+        Q('他說不想做、沒興趣怎麼辦？', P('先降低門檻：只做「今天要做的事」的第 1 項，或首頁的「今日 1 分鐘小謎題」。也可以讓他先玩「模擬器」，看到機器人動起來通常比較有成就感。')),
+        Q('題目太難，他一直答不出來？', P('網站會自動降低難度，答錯會先給提示、再給小抄與類似題。如果他連續卡在同一個技能，家長頁會顯示；你可以把那個技能拿去問補習班老師。')),
+        Q('還沒有機器人，可以先開始嗎？', P('可以。「起步任務」裡和機器人有關的步驟可以先略過，先用模擬器練習。')),
+        Q('他忘記密碼？', P('在家長頁點他的名字，往下找「管理」，可以重設他的密碼。')),
+        Q('需要多久才會看到進步？', P('通常練習 1～2 週，家長頁的雷達圖就會有明顯變化。真正的重點是持續。'))),
+    ] },
+  ];
+
+  function viewGuide(who, sec) {
+    const role = VX.user && VX.user.role;
+    const aud = who === 'kid' || who === 'parent' ? who : (role === 'learner' ? 'kid' : 'parent');
+    const list = aud === 'kid' ? GUIDE_KID : GUIDE_PARENT;
+    const cur = list.find((x) => x.id === sec) || list[0];
+    const sections = list.map((x) => h('section', { class: 'gd-sec' + (x === cur ? ' on' : ''), id: 'gd-' + x.id }, h('h2', null, x.icon + ' ' + x.t), x.body()));
+    const btns = list.map((x) => h('button', { type: 'button', class: x === cur ? 'on' : '', onclick: (e) => {
+      btns.forEach((b) => b.classList.remove('on')); e.currentTarget.classList.add('on');
+      sections.forEach((s) => s.classList.toggle('on', s.id === 'gd-' + x.id));
+      history.replaceState(null, '', '#/guide/' + aud + '/' + x.id); window.scrollTo({ top: 0, behavior: 'smooth' });
+    } }, x.icon + ' ' + x.t));
+    const switchAud = h('div', { class: 'row gap', style: 'margin:0' },
+      h('a', { class: 'btn sm' + (aud === 'kid' ? ' primary' : ''), href: '#/guide/kid' }, '給孩子'), h('a', { class: 'btn sm' + (aud === 'parent' ? ' primary' : ''), href: '#/guide/parent' }, '給家長'));
+    VX.app.replaceChildren(VX.shell(h('div', null,
+      h('div', { class: 'gd-hero' }, h('div', { class: 'em' }, aud === 'kid' ? '🤖' : '👪'), h('div', null, h('h2', null, aud === 'kid' ? '歡迎！這裡教你怎麼用這個網站' : '給家長的使用說明'), h('p', null, aud === 'kid' ? '挑一個分頁看就好，不用一次看完。' : '你不需要會 VEX IQ，每週大約 10 分鐘就夠。'))),
+      switchAud, h('div', { class: 'gd-tabs', role: 'tablist' }, btns), sections), { title: '網站怎麼用', icon: '🧭' }));
   }
 
   VX.routes.start = () => viewStart();
-  VX.routes.guide = (tab) => viewGuide(tab);
+  VX.routes.guide = (who, sec) => viewGuide(who, sec);
 
   /* ---------- 家長頁：這週陪他做什麼 ---------- */
   VX.guide.parentCard = function (box, state, learner) {

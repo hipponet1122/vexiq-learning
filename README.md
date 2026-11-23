@@ -5,7 +5,7 @@
 A website for upper-elementary to middle-school students to teach themselves **VEX IQ (2nd generation, VEXcode IQ Blocks)**. A placement quiz finds the learner's level, then the site adapts: practice questions, build lessons, block programming, engineering notebook coaching, a web simulator, and competition practice (current season: Level Up 2026–2027). Parents and coaches can see how the child is doing.
 
 > Unofficial project. Not affiliated with VEX Robotics, Innovation First or the REC Foundation. See [`NOTICE.md`](NOTICE.md).
-> The interface is in Traditional Chinese (Taiwan). Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](CONTRIBUTING.md).
+> The interface is available in Traditional Chinese (Taiwan) and English. Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Features
 - **Adaptive practice**: 6 domains, 26 skills, 138 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
@@ -16,6 +16,8 @@ A website for upper-elementary to middle-school students to teach themselves **V
 - **Challenges, build lessons with a parts catalog, competition zone** (season rules summary, score planner, skills-run log, English–Chinese term cards, interview practice).
 - **Guidance**: daily task, starter path, badges and streaks, parent guide and weekly report.
 - **Three roles**: learner, parent (admin), coach (**read-only**, sees only assigned learners).
+- **Bilingual interface**: switch between Traditional Chinese and English with the "中 / EN" button; questions, lessons, challenges and messages are all translated.
+- **Phone / tablet friendly**: bottom tab bar on phones, a Blocks / Field switch in the simulator, layouts tuned for iPad portrait and landscape, and gentle animations (off when "reduce motion" is on).
 - **Version info**: version, Git commit, update time and author contact in the footer and `#/about`; `/healthz` health check.
 
 ## Tech

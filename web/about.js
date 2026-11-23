@@ -32,7 +32,8 @@
         : '—';
       const subject = '【VEX IQ 自學】問題回報（' + ver + (v.commit_short ? ' / ' + v.commit_short : '') + '）';
       const body = '請描述發生了什麼事、在哪一頁、你原本預期什麼：\n\n\n----（以下請保留，方便我查問題）----\n版本：' + ver + '\n提交：' + (v.commit_short || '—') + '\n更新：' + (v.built_at || '—') + '\n網址：' + location.href + '\n瀏覽器：' + navigator.userAgent + '\n';
-      const mail = 'mailto:' + a.email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      const T = (window.VXI18N && window.VXI18N.tr) || ((x) => x);
+      const mail = 'mailto:' + a.email + '?subject=' + encodeURIComponent(T(subject)) + '&body=' + encodeURIComponent(T(body));
       const health = hz && hz.ok ? h('span', { class: 'okpill' }, '✅ 伺服器運作正常') : h('span', { class: 'badpill' }, '⚠ 無法連到伺服器');
       const log = (v.changelog || []).map((c) => h('details', { open: c === (v.changelog || [])[0] },
         h('summary', null, h('b', null, 'v' + c.version), '　', c.date),
@@ -52,7 +53,7 @@
           h('p', null, h('b', null, a.name), '　', h('a', { href: 'mailto:' + a.email }, a.email)),
           h('p', { class: 'sub' }, '遇到錯誤、題目有疑問、或想要新功能，都可以來信。按下面按鈕會自動帶入版本與瀏覽器資訊，我比較好查。'),
           h('a', { class: 'btn primary', href: mail }, '✉️ 回報問題／提供建議')),
-        h('div', { class: 'card' }, h('h3', null, '更新紀錄'), log.length ? log : h('p', { class: 'sub' }, '尚無紀錄')),
+        h('div', { class: 'card' }, h('h3', null, '更新紀錄'), log.length ? h('div', { 'data-notrans': '1' }, log) : h('p', { class: 'sub' }, '尚無紀錄')),
         h('div', { class: 'card' }, h('h3', null, '資料與隱私'),
           h('ul', null,
             h('li', null, '資料只存放在本站自己的伺服器，不使用第三方追蹤或廣告。'),

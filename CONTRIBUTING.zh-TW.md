@@ -26,6 +26,9 @@
 - 不要提交 `seed_users.json`、`data/`、`.env`、密碼或任何個資。
 - 內容貢獻視同以 CC BY-SA 4.0、程式碼視同以 MIT 授權（見 `LICENSE-CONTENT.zh-TW.md`）。
 
+## 翻譯介面
+程式裡維持中文字串，英文由字典提供。要新增或修正翻譯：先跑 `node tools/i18n_extract.js`（列出全站中文字串），用 `python3 tools/i18n_todo.py <區域>` 找出還沒翻的，把 `雜湊|English` 加進 `i18n/en/<區域>.tsv`，再跑 `python3 tools/i18n_build.py` 重新產生 `web/i18n-en.js`。`node tests/run.js` 會檢查有沒有漏翻。
+
 ## 提交前先自我檢查
 ```bash
 python3 tools/check.py     # 簡體字、不該入庫的檔案、疑似金鑰（CI 也會跑）

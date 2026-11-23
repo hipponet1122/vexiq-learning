@@ -39,9 +39,10 @@
   }
 
   function toast(msg) {
-    const t = h('div', { class: 'toast' }, msg);
+    const t = h('div', { class: 'toast', role: 'status', 'aria-live': 'polite' }, msg);
     document.body.append(t);
-    setTimeout(() => t.remove(), 3200);
+    setTimeout(() => t.classList.add('out'), 2900);
+    setTimeout(() => t.remove(), 3250);
   }
 
   /* ---------- 積木外觀（VEXcode IQ 風格）----------
@@ -177,7 +178,10 @@
       toast('這題的紀錄沒有存到（' + e.message + '）');
     }
   }
+  let sizeWarned = false;
+  function checkStateSize() { try { if (!sizeWarned && JSON.stringify(st).length > 90000) { sizeWarned = true; toast('進度資料快滿了，請到「挑戰」刪掉用不到的自訂關卡，或請家長協助整理'); } } catch (e) { /* ignore */ } }
   async function saveState() {
+    checkStateSize();
     try { await api('/api/answer', { state: st }); } catch (e) { toast('進度沒有存到：' + e.message); }
   }
 
@@ -507,6 +511,12 @@
   }
   function finishPractice() {
     const S = session; session = null;
+    if (S.drillSkills && S.right > 0) {
+      st.flags = st.flags || {}; st.flags.drillOk = true;
+      if (VX.badges) VX.badges.check(false);
+      saveState();
+    }
+    if (window.VXFX && S.right >= Math.ceil(S.n * 0.7)) setTimeout(() => window.VXFX.confetti(), 250);
     const rows = Object.keys(st.m).filter((id) => Math.abs((st.m[id].p || 0) - ((S.before[id] && S.before[id].p) || 0)) > 0.005).map((id) => ({ id, a: (S.before[id] && S.before[id].p) || 0, b: st.m[id].p }));
     const weakArr = [...S.weakSkills].filter((id) => SK[id]);
     const drillN = Math.min(4, Math.max(2, weakArr.length * 2));
@@ -536,6 +546,12 @@
 
   /* ---------- 畫面骨架 ---------- */
   const TABS = [['#/', '🏠', '首頁', ''], ['#/practice', '✏️', '練習', 'practice'], ['#/challenge', '🏁', '挑戰', 'challenge'], ['#/sim', '🖥️', '模擬器', 'sim'], ['#/import', '📤', '上傳存檔', 'import'], ['#/notebook', '📓', '筆記', 'notebook'], ['#/build', '🔧', '組裝', 'build'], ['#/compete', '🏆', '比賽', 'compete'], ['#/cheat', '📋', '速查表', 'cheat'], ['#/resources', '🔗', '資源', 'resources'], ['#/guide', '🧭', '怎麼用', 'guide']];
+  /* 語言切換（中／EN）；選擇存在這台裝置的 localStorage，重新載入後生效 */
+  function langBtn(cls) {
+    const cur = window.VXI18N ? window.VXI18N.lang : 'zh';
+    return h('button', { class: 'langsw ' + (cls || ''), type: 'button', title: 'Language / 語言', 'aria-label': 'Language / 語言', 'data-notrans': '1', onclick: () => window.VXI18N && window.VXI18N.setLang(cur === 'en' ? 'zh' : 'en') },
+      h('span', { class: cur === 'zh' ? 'on' : '' }, '中'), h('span', { class: cur === 'en' ? 'on' : '' }, 'EN'));
+  }
   function shell(content, opts) {
     opts = opts || {};
     if (opts.bare) return h('div', null, content);
@@ -547,7 +563,8 @@
     const bar = h('header', { class: 'topbar' },
       h('a', { class: 'logo', href: '#/' }, h('b', null, 'IQ'), h('span', null, '自學')),
       h('div', { class: 'tabs' }, tabs),
-      user ? h('a', { class: 'tab', href: '#/me' }, h('span', { class: 'ti' }, '👤'), user.display || user.name) : null,
+      user ? h('a', { class: 'tab', href: '#/me' }, h('span', { class: 'ti' }, '👤'), h('span', { 'data-notrans': '1' }, user.display || user.name)) : null,
+      langBtn('top'),
       user ? h('button', { class: 'tab', style: 'background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-size:.72rem;cursor:pointer', onclick: doLogout }, h('span', { class: 'ti' }, '🚪'), '登出') : null);
     const parts = [bar];
     let hidePw = false; try { hidePw = sessionStorage.getItem('vx_pwtip') === '1'; } catch (e) { /* ignore */ }
@@ -564,7 +581,7 @@
     } else if (opts.full) parts.push(h('div', { class: 'fullwrap' }, content));
     else parts.push(h('div', { class: 'wrap' }, main));
     if (!opts.full && VX.footer) parts.push(VX.footer());
-    return h('div', null, parts);
+    return h('div', opts.full ? { class: 'simpage' } : null, parts);
   }
 
   function radarSvg(vals, labels, colors) {
@@ -586,21 +603,68 @@
 
   /* ---------- 各頁面 ---------- */
   function viewLogin() {
-    const nm = h('input', { type: 'text', placeholder: '名字', autocomplete: 'username', autocapitalize: 'none' });
-    const pw = h('input', { type: 'password', placeholder: '密碼', autocomplete: 'current-password' });
-    const msg = h('div', { class: 'errmsg' });
-    const go = async () => {
+    let saved = ''; try { saved = localStorage.getItem('vexiq_name') || ''; } catch (e) { /* ignore */ }
+    const robot = h('div', { class: 'lg-robot', 'aria-hidden': 'true' });
+    robot.innerHTML = '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">'
+      + '<line x1="60" y1="8" x2="60" y2="26" stroke="#0875e2" stroke-width="3" stroke-linecap="round"/><circle class="ant" cx="60" cy="8" r="5" fill="#f2cd16" stroke="#b4982e" stroke-width="2"/>'
+      + '<rect x="14" y="44" width="8" height="20" rx="4" fill="#86bef1"/><rect x="98" y="44" width="8" height="20" rx="4" fill="#86bef1"/>'
+      + '<rect x="20" y="26" width="80" height="62" rx="18" fill="#fff" stroke="#0875e2" stroke-width="3.5"/>'
+      + '<rect x="29" y="35" width="62" height="38" rx="12" fill="#0b3d75"/>'
+      + '<g class="eye"><ellipse cx="46" cy="52" rx="8" ry="9" fill="#cfe8ff"/><circle class="pupil" id="lgpl" cx="46" cy="53" r="4.2" fill="#0b3d75"/></g>'
+      + '<g class="eye"><ellipse cx="74" cy="52" rx="8" ry="9" fill="#cfe8ff"/><circle class="pupil" id="lgpr" cx="74" cy="53" r="4.2" fill="#0b3d75"/></g>'
+      + '<path d="M50 64 Q60 71 70 64" fill="none" stroke="#73c7ca" stroke-width="3" stroke-linecap="round"/>'
+      + '<g class="hand"><rect x="32" y="40" width="26" height="22" rx="9" fill="#f2a579" stroke="#b37b5e" stroke-width="2.5"/><rect x="62" y="40" width="26" height="22" rx="9" fill="#f2a579" stroke="#b37b5e" stroke-width="2.5"/></g>'
+      + '<rect x="36" y="90" width="48" height="14" rx="6" fill="#77b2ff" stroke="#5a85bb" stroke-width="2.5"/>'
+      + '<g class="wheel"><circle cx="44" cy="110" r="8" fill="#5d6b7e"/><circle cx="44" cy="110" r="3" fill="#fff"/></g><g class="wheel"><circle cx="76" cy="110" r="8" fill="#5d6b7e"/><circle cx="76" cy="110" r="3" fill="#fff"/></g></svg>';
+    const look = (v) => { const dx = Math.max(-3, Math.min(3, (v.length - 6) * 0.45)); ['lgpl', 'lgpr'].forEach((id) => { const e = robot.querySelector('#' + id); if (e) e.style.transform = 'translate(' + dx + 'px, 0)'; }); };
+
+    const nm = h('input', { type: 'text', id: 'lgname', placeholder: ' ', autocomplete: 'username', autocapitalize: 'none', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'next', value: saved });
+    const pw = h('input', { type: 'password', id: 'lgpw', placeholder: ' ', autocomplete: 'current-password', enterkeyhint: 'go' });
+    const eye = h('button', { type: 'button', class: 'eyebtn', 'aria-label': '顯示密碼', title: '顯示密碼', onclick: () => {
+      const show = pw.type === 'password'; pw.type = show ? 'text' : 'password'; eye.textContent = show ? '🙈' : '👁'; eye.title = eye.ariaLabel = show ? '隱藏密碼' : '顯示密碼'; eye.setAttribute('aria-label', eye.title);
+      robot.classList.toggle('shy', !show && document.activeElement === pw);
+    } }, '👁');
+    const rem = h('input', { type: 'checkbox', id: 'lgrem', checked: !!saved });
+    const msg = h('div', { class: 'errmsg', role: 'alert', 'aria-live': 'assertive' });
+    const btn = h('button', { type: 'submit', class: 'lg-go' }, '登入');
+    const card = h('form', { class: 'lg-card', novalidate: 'novalidate' },
+      langBtn('lg'), robot,
+      h('h1', null, 'VEX IQ 自學'), h('p', { class: 'sub' }, '登入後，網站會依你的程度出題'),
+      h('div', { class: 'lg-field' }, nm, h('label', { for: 'lgname' }, '名字')),
+      h('div', { class: 'lg-field pwf' }, pw, h('label', { for: 'lgpw' }, '密碼'), eye),
+      h('div', { class: 'lg-row' }, h('label', null, rem, '記住我的名字')),
+      msg, btn,
+      h('div', { class: 'lg-foot' }, '忘記密碼？請家長在「家長頁」幫你重設。'));
+
+    nm.addEventListener('input', () => look(nm.value)); nm.addEventListener('focus', () => { robot.classList.remove('shy'); look(nm.value); });
+    pw.addEventListener('focus', () => { if (pw.type === 'password') robot.classList.add('shy'); });
+    pw.addEventListener('blur', () => robot.classList.remove('shy'));
+    nm.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pw.focus(); } });
+    const fail = (text) => {
+      msg.textContent = text; msg.classList.remove('shake'); card.style.animation = 'none'; void card.offsetWidth; msg.classList.add('shake');
+      card.style.animation = 'vx-shake .42s ease'; if (window.VXFX) window.VXFX.buzz(30);
+    };
+    let busy = false;
+    card.addEventListener('submit', async (e) => {
+      e.preventDefault(); if (busy) return;
       msg.textContent = '';
+      if (!nm.value.trim() || !pw.value) { fail('請輸入名字和密碼'); (nm.value.trim() ? pw : nm).focus(); return; }
+      busy = true; btn.disabled = true; btn.replaceChildren(h('span', { class: 'spin' }), '登入中…'); robot.classList.remove('shy'); robot.classList.add('busy');
       try {
         user = await api('/api/login', { name: nm.value.trim(), pw: pw.value });
-        await loadMe(); location.hash = (user.role === 'parent' || user.role === 'coach') ? '#/parent' : '#/'; render();
-      } catch (e) { msg.textContent = e.message; }
-    };
-    pw.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
-    $app.replaceChildren(h('div', { class: 'wrap narrow' }, h('div', { class: 'panel login' },
-      h('div', { class: 'big' }, '🤖'), h('h1', null, 'VEX IQ 自學'), h('p', { class: 'sub' }, '登入後，網站會依你的程度出題'),
-      nm, pw, msg, h('button', { class: 'btn primary wide', onclick: go }, '登入')), VX.footer ? VX.footer() : null));
-    nm.focus();
+        try { if (rem.checked) localStorage.setItem('vexiq_name', nm.value.trim()); else localStorage.removeItem('vexiq_name'); } catch (e2) { /* ignore */ }
+        await loadMe();
+        robot.classList.remove('busy'); robot.classList.add('ok'); btn.classList.add('done'); btn.replaceChildren('✓');
+        card.classList.add('leaving'); if (window.VXFX) window.VXFX.buzz(15);
+        setTimeout(() => { const next = (user.role === 'parent' || user.role === 'coach') ? '#/parent' : '#/'; if (location.hash === next) render(); else location.hash = next; }, 380);
+      } catch (err) {
+        busy = false; btn.disabled = false; btn.replaceChildren('登入'); robot.classList.remove('busy'); fail(err.message); pw.select();
+      }
+    });
+    $app.replaceChildren(h('div', { class: 'loginpage' },
+      h('div', { class: 'lg-bg', 'aria-hidden': 'true' }, h('i', { class: 'g1' }), h('i', { class: 'g2' }), h('i', { class: 'g3' }), h('i', { class: 'g4' }), h('i', { class: 'g5' })),
+      card, VX.footer ? VX.footer() : null));
+    (saved ? pw : nm).focus(); look(nm.value);
   }
 
   function viewHome() {
@@ -628,8 +692,40 @@
       tile('#/notebook', '📓', '工程筆記', '學會寫、也真的寫', '#f2cd16', '#b4982e'),
       tile('#/build', '🔧', '組裝教學', '機構原理與零件圖鑑', '#f2a579', '#b37b5e'),
       tile('#/compete', '🏆', '比賽專區', 'Robot Skills、英文術語、面談', '#5ecd98', '#4a9873'));
+    const dailyPuzzle = () => {
+      const today = todayStr();
+      if (st.dailyDone === today) {
+        return h('div', { class: 'callout', style: 'margin:12px 0' }, h('b', null, '⚡ 今日 1 分鐘小謎題已完成！'), ' 今天的連續練習已打卡，明天會換新題目。');
+      }
+      let hash = 0; for (let i = 0; i < today.length; i++) hash = (hash * 31 + today.charCodeAt(i)) >>> 0;
+      const pool = QS.filter((q) => q.l <= 2);
+      const q = (pool.length ? pool : QS)[hash % (pool.length ? pool.length : QS.length)];
+      const wrap = h('div', { class: 'panel dailycard' });
+      const openBtn = h('button', { class: 'btn primary sm', onclick: () => {
+        wrap.replaceChildren(
+          h('div', { class: 'row', style: 'justify-content:space-between;margin-bottom:8px' }, h('b', null, '⚡ 今日 1 分鐘小謎題'), h('span', { class: 'tag' }, '做完就打卡')),
+          renderQuestion(q, {
+            allowHint: true,
+            onDone: async (res) => {
+              applyResult(q, res.correct, res.assisted);
+              st.dailyDone = today;
+              await save(q, res, 'daily');
+              if (VX.badges) VX.badges.check(false);
+              toast('⚡ 今日 1 分鐘打卡完成！');
+              viewHome();
+            },
+          })
+        );
+      } }, '⚡ 馬上挑戰（1 題）');
+      wrap.append(
+        h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap' },
+          h('div', null, h('b', null, '⚡ 今日 1 分鐘小謎題'), h('div', { class: 'sub' }, '每天換 1 題輕鬆暖身，答完就能維持連續天數！')),
+          openBtn)
+      );
+      return wrap;
+    };
     const guideEl = (VX.guide && VX.guide.homeCard) ? VX.guide.homeCard() : null;
-    $app.replaceChildren(shell(h('div', null, guideEl || top, tiles, st.done ? h('div', { class: 'radarbox' }, radarSvg(domainAvg(st), DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke))) : null, maps), { rail: true, title: '首頁', icon: '🏠' }));
+    $app.replaceChildren(shell(h('div', null, guideEl || top, st.done ? dailyPuzzle() : null, tiles, st.done ? h('div', { class: 'radarbox' }, radarSvg(domainAvg(st), DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke))) : null, maps), { rail: true, title: '首頁', icon: '🏠' }));
     if (VX.guide && VX.guide.maybeTour) VX.guide.maybeTour();
   }
 
@@ -829,7 +925,9 @@
         h('div', { class: 'row gap' }, h('button', { class: 'btn danger', onclick: async () => { if (!confirm('確定要清掉學習進度嗎？他會重新做定位測驗（作答紀錄會保留）。')) return; try { await api('/api/parent/learner/' + uid + '/clear', {}); viewParent(uid); } catch (e) { msg.className = 'errmsg'; msg.textContent = e.message; } } }, '清掉學習進度，重新定位')),
         h('div', { class: 'row gap' }, h('button', { class: 'btn danger', onclick: async () => {
           if (!confirm('⚠ 確定要「永久刪除」學員「' + d.display + '」嗎？\n他的帳號、所有作答紀錄和工程筆記都會被刪除，無法復原。')) return;
-          const again = prompt('再確認一次：請輸入他的登入名字「' + d.name + '」才會刪除');
+          const tr = (s) => (window.VXI18N ? window.VXI18N.tr(s) : s);
+          const rawP = (window.VXI18N && window.VXI18N.rawPrompt) || window.prompt;
+          const again = rawP(tr('再確認一次：請輸入他的登入名字「') + d.name + tr('」才會刪除'));
           if (again === null) return;
           if (again.trim() !== d.name) { toast('名字不一樣，沒有刪除'); return; }
           try { await api('/api/parent/learner/' + uid + '/delete', {}); toast('已刪除學員'); location.hash = '#/parent'; viewParent(); } catch (e) { msg.className = 'errmsg'; msg.textContent = e.message; }
@@ -875,12 +973,12 @@
   }
 
   const VX = window.VX = {
-    routes: {}, h, api, shell, toEn, blocksEl, oneBlock, toast, DOM, SK, DOMAINS, SKILLS, QS, TAGS, TAG_HINTS, radarSvg, domainAvg, pOf, newState, clamp, shuffle, startPractice, startDrill, pickQuestion,
+    routes: {}, h, api, shell, langBtn, toEn, blocksEl, oneBlock, toast, DOM, SK, DOMAINS, SKILLS, QS, TAGS, TAG_HINTS, radarSvg, domainAvg, pOf, newState, clamp, shuffle, startPractice, startDrill, pickQuestion,
     get user() { return user; }, get st() { return st; }, saveState, render, app: $app, plainOrBlock, todayStr,
   };
   window.addEventListener('hashchange', render);
   // 等所有功能檔（modules／guide／extras／sim／iqimport…）都載入、註冊完路由，再開始第一次繪製；
   // 否則直接開 #/sim 這類網址時，可能因為路由還沒註冊而退回首頁。
-  async function init() { await loadMe(); render(); }
+  async function init() { if (window.VXI18N && window.VXI18N.ready) await window.VXI18N.ready; await loadMe(); render(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

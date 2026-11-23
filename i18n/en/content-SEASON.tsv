@@ -1,0 +1,46 @@
+2f806f|v2.1 (October 8, 2026)
+cad26b|Score by throwing Bean Bags into Goals; the higher the goal, the more points. A robot can carry only one bean bag at a time, and most bean bags have to be fetched from across the whole field.
+7d83fb|Bean Bag
+9a86a2|The only scoring object. Red, blue and yellow, 38 in all: 16 red, 16 blue, 6 yellow (2 of them are Preloads brought onto the field at the start, one per team).
+c597b1|Floor Goal
+40d19d|One each for red and blue, the floor area from next to the pyramid's L1 to the edge of the field.
+c9b10e|Pyramid Goal
+0d0c2b|One each for red and blue, with three levels: L1, L2 and L3.
+b2ba18|The gray top surface of one tower; it has no color.
+fbe933|Load Zone
+9620c6|One each for red and blue, in the corners. People at the field edge put bean bags in one by one (only the matching color).
+93fc9e|Teamwork
+52b9a5|Two teams per alliance, one robot each, scoring together within 1 minute. **There is no autonomous period**; it's driver-controlled throughout.
+aae4c1|Driving Skills
+10672c|One team, one robot, 1 minute of driving by hand.
+2e7d2a|Autonomous Coding Skills
+c85482|One team, one robot, 1 minute **running only on its own program**, with no controller. This is the event where you most need to practice coding!
+7ceebe|The skills ranking is the sum of the "driving" and "autonomous" scores. Skills scoring rules are the same as Teamwork.
+8f2131|L4 Goal (yellow only)
+9fb9a1|A bean bag must be "the same color as the goal" or "yellow" to score in floor goals and L1–L3.
+e008e0|The L4 goal takes only yellow bean bags.
+dfe6e5|If one bean bag counts at several levels, only the highest level's points count.
+b52cc0|Scoring happens after the match ends and everything has stopped, judged visually by the referee.
+c8339f|Size
+f41f01|At pre-match inspection and at the start of each match, the robot must fit within 11" × 20" × 15" (about 279 × 508 × 381 mm).
+8ad9e7|At most 6 VEX IQ Smart Motors. Extras count too, even if not connected.
+0c39ca|Brain and Controller
+127e21|One Brain and one Controller per robot; no other microcontrollers (such as Raspberry Pi or Arduino).
+5ff6cd|Parts
+220c8c|Only official VEX IQ parts may be used (except the listed exceptions); 3D-printed parts aren't allowed.
+a8e9ff|Inspection
+a479d3|The robot must pass inspection before every match.
+ed6293|Hands out of the field
+a8311a|During a match, team members can't touch the field, the robot or the bean bags (except with a referee's permission).
+f89351|Don't start early, don't be late
+72c611|Move only after the timer starts, and the robot must stop when time is up.
+77ef88|Handle only one bean bag at a time
+529bda|A robot may "hold" at most one bean bag at a time, or push one bean bag along the floor (Plowing, manual SG6). Carrying or pushing several at once is a violation. See the original manual for details.
+882342|Safety first
+7441f3|Unsafe operation can get a team disqualified. Students must be accompanied by an adult, and every team member needs a signed participation consent form.
+e4bec2|Only one bean bag at a time → the value of each "run" varies a lot: a Floor throw is 1 point, L3 is 12, L4 is 16. Higher levels score more but the mechanism is harder to build. First work out: how many seconds per run? At most how many runs in 60 seconds?
+a7cc1b|There are only 6 yellow bean bags, L4 (16 points) takes only yellow, and yellow can also go in a goal of any color → yellow is precious, so plan how to get it.
+e37187|Teamwork has two robots → you can divide the work (one fast on low levels, one on high levels), and agree on routes so you don't block each other.
+5c2559|The 60-second autonomous skills run has no driving → the route must be fixed and run the same every time. Reliability beats flashiness: get "one scoring action" working every time, then add more.
+4c575f|The two skills scores are added → driving practice builds mechanisms and operating skill, autonomous practice builds accuracy; practice both.
+27ee9e|Motors

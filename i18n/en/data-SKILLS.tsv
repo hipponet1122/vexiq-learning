@@ -1,0 +1,52 @@
+c41386|Know the Main Parts
+e391bd|The core of VEX IQ: the <b>Brain</b> runs programs; <b>Smart Motors</b> move the wheels and arms; <b>sensors</b> (Distance, Color, Gyro, Bumper Switch, Touch LED) let the robot "know" its surroundings; the <b>Controller</b> is for driving by hand.
+d5a18f|Ports and Wiring
+d6b8a5|The Brain has <b>12 Smart Ports</b>. Whichever port a motor or sensor is plugged into, set the same port number in VEXcode's Devices. When two motors are mounted facing opposite directions on the left and right sides, one of them must be set to <b>Reverse</b>.
+324c3e|Download and Run a Program
+b32b68|After writing a program you must <b>Download</b> it to the Brain before it can run on the robot without the computer. At a competition you pick the program to run on the Brain. If the battery is low, motors weaken and behave unpredictably, so charge it fully before competing.
+05b4a5|VEXcode Basics
+063ba5|VEXcode blocks are grouped by color (Drivetrain, Sound, Looks, Sensing, Inertial, Control, Operators, Variables…; categories for a device appear only after you add it). A program runs only if it starts from <b>when started</b>. To use a sensor, add it in Devices first. To try a different approach, use <b>Save as</b> to keep the old version, and note the difference in your notebook.
+d5ced5|Beams, Pins and Sturdy Structures
+bf44be|A <b>triangle</b> is the most stable structure; a four-sided frame easily skews. A <b>diagonal brace</b> turns a four-sided frame into two triangles. A joint with only one pin wobbles; fixing it at two or more points is steadier. Put heavy parts <b>low and near the middle</b> so the robot is less likely to tip over.
+0d5032|Wheels and How Far You Go
+e4be34|One turn of a wheel moves the robot about one <b>circumference</b>.<br>Distance = turns × circumference; turns = distance ÷ circumference.<br>Circumference = diameter × π (use π = 3.14).
+175f97|Gear Ratio
+4abf04|Two meshing gears <b>turn in opposite directions</b>. A small gear driving a big gear: <b>slower, more force</b> (reduction); a big gear driving a small gear: <b>faster, less force</b> (speed-up).<br>Driven turns = driving turns × driving teeth ÷ driven teeth.
+0c77ed|Drivetrain and Turning
+7f3afd|Two-wheel (or four-wheel) differential drive: when the left and right wheels spin <b>the same direction at the same speed</b> the robot goes straight; spinning them in <b>opposite directions</b> turns it in place. If the speeds differ, it veers toward the slower side. Omni wheels can slide sideways and have less resistance when turning in place. A 180° turn needs twice as much wheel rotation as a 90° turn.
+2dcf68|Arms and Claws
+0648b2|To lift something heavy: use <b>reduction</b> to trade speed for force. The longer the arm, the harder it is at the tip (a longer lever arm). A claw surface made of a <b>high-friction</b> material like rubber is less likely to let things slip. Follow the design process: find the need → think of ideas → build a prototype → test → improve.
+639062|Programs Run in Order
+535ca6|A program runs <b>from top to bottom, one block at a time</b>.<br><code>drive forward for 200 mm</code> makes the robot go forward; <code>turn right for 90 degrees</code> turns it right 90 degrees. A different order makes the robot take a different path.<br>⚠ The Chinese VEXcode interface translates "right" as 「<b>正確的</b>」 (literally "correct"), so 「正確的」 = turn right and 「左邊」 = turn left.
+04f97e|Turning Angles
+289517|<b>turn left / right</b> turns the robot left / right, followed by the <b>angle</b>. 90° is a right angle, 180° is a U-turn, 360° is a full spin. To drive a square, turn 90° at every corner; to drive an equilateral triangle, turn <b>120°</b> at every corner (not 60°, because what you turn is the "exterior angle").
+d605de|Speed and Waiting
+7c343a|<code>set drive velocity to 50 %</code> sets the speed. Speed affects only <b>how fast</b>, not the distance (the distance is decided by the number after "for"). <code>wait 2 seconds</code> pauses the program. If you go too fast, inertia makes the robot slide when it stops and causes errors.
+7165fc|Repeat Blocks
+1f5b03|<code>repeat 4</code> repeats the blocks inside 4 times. To drive a square, put "drive + turn right 90" inside <code>repeat 4</code> instead of writing 8 lines. Loops can be <b>nested inside loops</b>; the total counts multiply.
+2db574|Forever, Events and Loop Conditions
+3fdcca|<code>forever</code> repeats forever and never ends. To "keep doing something until something happens", use <code>repeat until</code> or <code>while</code> with a condition. <b>Event blocks</b> (for example "when Bumper pressed") can wait alongside the main program and react at any time.
+00ec31|Conditions (if)
+321ec8|<code>if &lt;condition&gt; then</code>: the blocks inside run only if the condition is <b>true</b>; <code>else</code> runs when it is false. <code>and</code> needs both sides true; <code>or</code> needs only one. Watch the direction of &lt; and &gt;.
+48c86e|Distance Sensor
+000288|The Distance Sensor measures <b>the distance from the sensor to the object ahead</b>. It's often used for "stop when near the wall". Robots have inertia and sensors have delay, so leave some room in the threshold, or slow down.
+23a1f1|Bumper Switch and Touch
+601118|The <b>Bumper Switch</b> detects whether it is pressed / bumped; the <b>Touch LED</b> detects touch and shows a light color. You can use <code>wait until &lt;Bumper pressed?&gt;</code> to "start only after a press", or to back up after hitting a wall.
+3f9413|Color Sensor
+e2333b|The Color Sensor recognizes <b>colors</b> and brightness. If it's too far away or the ambient light is too bright it becomes inaccurate, so test at a fixed distance under fixed lighting. To sort several colors use <code>if … else if … else</code>.
+2f2525|Gyro Sensor
+e656ea|The Gyro measures <b>which way the robot faces / how many degrees it has turned</b>. Run <b>calibrate</b> when the program starts, and keep the robot <b>perfectly still</b>. When wheels slip, turning with the Gyro is more accurate than counting wheel turns. The 2nd-generation Brain also has a built-in inertial sensor (VEXcode's "Inertial" blocks, e.g. BrainInertial heading), so you can measure heading even without a separate Gyro.
+26f460|Variables
+87252a|A variable is a <b>named box</b> that holds a number that can change. <code>set score to 0</code> sets it to 0; <code>change score by 1</code> <b>adds</b> 1 to the current number (it doesn't set it to 1).
+97c68c|Operators and Comparisons
+316306|+ − × ÷ can work out distance and time. <b>Make units match first</b>: 1 cm = 10 mm. Time = distance ÷ speed. <code>and</code> / <code>or</code> combine several conditions.
+d6cda1|My Blocks (custom blocks)
+4d4ed8|A <b>My Block</b> wraps a group of blocks you use often into one (press "Make a Block" in "Operators – My Blocks"), then you just call it. Benefits: reuse, and <b>change one place and everything updates</b>. A <b>parameter</b> (for example distance) lets the same block take a different number each time.
+b4f6a4|Debugging and Competition Strategy
+be9e31|Good debugging habits: <b>observe → guess the cause → change only one thing → retest → record</b>. Write test results in your <b>engineering notebook</b>; judges care about it. For strategy, get <b>one scoring task</b> working reliably first, then add more; don't write everything at once.
+f132a4|Level Up Scoring
+6b2e72|Bean bags score when thrown into goals: <b>floor 1, L1 3, L2 6, L3 12, L4 16</b>. A bean bag counts only if it's <b>the same color as the goal or yellow</b>; <b>L4 takes only yellow</b>. A bean bag counted at several levels scores only at the highest one. For the full rules see "Competition Zone → This Season: Level Up".
+cd6711|Score Planning (runs and time)
+35677e|You can handle only one bean bag at a time, so one run is one chance to score. <b>60 seconds ÷ seconds per run = the most runs</b>; <b>score = runs × points per bean bag</b>. Higher levels score more but usually take longer per run — compare "total score", not a single run. You must <b>measure</b> these times; the times in the questions are only assumptions.
+cc694b|Season Rules and Robot Limits
+7d1e29|Teamwork: two robots, 1 minute, no autonomous period. Skills: 1 minute of driving + 1 minute of autonomous program (no controller during autonomous), ranked by the total of both runs. The robot must fit inside <b>11"×20"×15"</b> and use at most <b>6</b> Smart Motors.

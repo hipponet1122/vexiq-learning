@@ -248,6 +248,9 @@ async def guard(request: Request, call_next):
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"  # 孩子的學習網站，不要被搜尋引擎收錄
     if request.url.path.startswith("/api"):
         resp.headers["Cache-Control"] = "no-store"
+    else:
+        # 網頁、JS、CSS 每次都向伺服器確認有沒有更新（沒更新就回 304，很便宜），避免升版後瀏覽器還在跑舊的程式
+        resp.headers.setdefault("Cache-Control", "no-cache")
     return resp
 
 
@@ -351,7 +354,7 @@ async def change_password(request: Request):
 
 
 def valid_state(s):
-    return isinstance(s, dict) and len(json.dumps(s)) < 40000
+    return isinstance(s, dict) and len(json.dumps(s)) < 100000
 
 
 @app.post("/api/answer")

@@ -1,0 +1,60 @@
+9f27f8|Problem definition / Goal
+558bdc|What problem am I solving?
+4fd4ad|Use one sentence. For example: the robot veers right when it drives 1 meter.
+7442ee|Why does this matter?
+f66ebb|How does solving it help in the competition or task?
+b5406e|What counts as success? (it must be measurable)
+b81c22|For example: 5 times in a row, with an error under 20 mm each time.
+2cc6cf|Wrote the date and name
+68708d|The problem is clear in one sentence
+441fcd|Wrote why it matters
+23cc2e|"Success" can be measured with numbers
+01360c|Brainstorm
+10eff3|Ideas I came up with (at least 3)
+d5b866|One per line; don't criticize yet.
+6151d0|Pros of each idea
+4ff237|Cons of each idea
+562f50|Came up with at least 3 ideas
+069121|Every idea has pros and cons
+5f4c11|Some ideas differ from other people's
+e09ca2|My conclusion and reasons
+daebc2|Do you always pick the one with the highest total? Why?
+874c2f|At least 3 options and 3 criteria
+b39afd|Every criterion has a weight
+11b746|Worked out the totals
+71c935|Wrote the reason for the final choice
+021ac2|Design sketch
+f111eb|Notes on the drawing
+0f099a|Write sizes, part names and why you designed it this way.
+889bd3|The drawing shows the overall shape
+4bb4db|Has labeled sizes or part names
+6cda4f|Wrote the design reasons
+8f263e|Test record
+af8f1a|What does this test need to confirm?
+99b908|Test only one variable at a time.
+084acf|Conclusion and next step
+5beba9|Explain with numbers; don't just write "better".
+40d146|Explained the only variable changed this time
+4b958c|Tested at least 3 times
+158d2a|Recorded the actual numbers
+2a3c99|The conclusion is based on the data
+a3bfd1|Wrote the next step
+0c363b|Program explanation
+e6c373|What should this program do?
+661071|Which blocks are mainly used, and why?
+5acebd|For example: use "repeat 4" to drive a square, because every side does the same thing.
+9858b5|The actual result when run
+1c0509|Was it as expected?
+9b22d5|How could it be improved?
+41b5b3|Explained the purpose of the program
+0ba36d|Explained why the blocks are used this way
+8aea6f|Wrote the actual result
+22026e|Thought of a direction for improvement
+8ec3ac|Practice reflection
+fd4624|What went well today
+73a56f|Difficulties I ran into
+a3f9e8|What I learned
+38ce27|Next step
+bef115|Wrote a specific difficulty
+8d30c6|Wrote what was learned
+0a2b3e|Has a next step

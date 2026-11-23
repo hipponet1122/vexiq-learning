@@ -4,6 +4,9 @@
 
 These are things we **intend** to do, not promises; the order depends on contributors' time and feedback. To claim one, comment on the matching Issue.
 
+## Done (v1.3.0)
+- Bilingual interface (Chinese / English), animations and a redesigned sign-in page, iPad / iPhone layouts, a rewritten guide, plus the "sense of progress" features (daily puzzle, Debug Detective, stars, custom levels).
+
 ## Done (v1.2.0)
 - Anti-frustration loop: hints and a second try, concept cheat sheets after repeated misses, similar-question practice, simulator coaching after repeated failures and follow-ups after a pass; security hardening (rate limiting, CSP, non-root container).
 
@@ -25,7 +28,6 @@ These are things we **intend** to do, not promises; the order depends on contrib
 ## Long term: sustainable
 - **Yearly season process**: a clear update checklist once the new Game Manual is out (`SEASON`, season questions, challenges, simulated field).
 - Deployment and backup guide for multiple teams / classrooms.
-- English interface (optional).
 
 ## Not planned
 - Collecting children's personal data, ads, third-party tracking.

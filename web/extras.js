@@ -30,6 +30,16 @@
     const topTag = Object.entries(tags).sort((a, b) => b[1] - a[1])[0];
     const chDone = Object.entries(state.ch || {}).filter(([, r]) => r.done && r.t && r.t >= now - 7 * DAY).map(([id]) => (CHALLENGES.find((c) => c.id === id) || {}).title || id);
     const simOk = Object.entries(state.ch || {}).filter(([, r]) => r.sim).length;
+    const gritHighlights = Object.entries(state.ch || {})
+      .filter(([id, r]) => r.sim && r.gritT && r.gritT >= now - 7 * DAY && CHALLENGES.some((c) => c.id === id))
+      .slice(0, 3)
+      .map(([id, r]) => {
+        const title = (CHALLENGES.find((c) => c.id === id) || {}).title || id;
+        const parts = [];
+        if ((r.fails || 0) >= 2) parts.push('試錯 ' + r.fails + ' 次後破關');
+        if ((r.stars || 0) >= 3) parts.push('拿到 ⭐⭐⭐');
+        return '「' + title + '」' + parts.join('、');
+      });
     let notes = [];
     try { notes = (await api('/api/parent/learner/' + d.id + '/notes')).notes.filter((n) => n.updated * 1000 >= now - 7 * DAY); } catch (e) { /* ignore */ }
     const mastered = SKILLS.filter((s) => pOf(state, s.id) >= 0.8).length;
@@ -42,11 +52,13 @@
       topSkills.length ? '💪 練得最多：' + topSkills.join('、') : '',
       topTag ? '⚠️ 常見錯誤：' + (TAGS[topTag[0]] || topTag[0]) + '（' + topTag[1] + ' 次）' : '',
       chDone.length ? '🏁 完成挑戰：' + chDone.join('、') : '',
+      gritHighlights.length ? '🌟 克服卡關亮點：' + gritHighlights.join('；') : '',
       notes.length ? '📓 工程筆記 ' + notes.length + ' 頁：' + notes.slice(0, 3).map((n) => n.title).join('、') : '📓 這週還沒寫工程筆記',
       newBadges.length ? '🏅 新徽章：' + newBadges.map((b) => b.icon + b.name).join('、') : '',
       '🎯 已精通 ' + mastered + ' / ' + SKILLS.length + ' 個技能',
     ].filter(Boolean);
-    const textOut = lines.join('\n');
+    const trI = (window.VXI18N && window.VXI18N.tr) || ((x) => x);
+    const textOut = trI(lines.join('\n')); // 英文介面時，複製出去的文字也是英文
     const item = (label, val, sub) => h('div', null, h('b', null, val), h('small', null, label + (sub ? '　' + sub : '')));
     box.replaceChildren(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, '📊 每週學習報告　', h('small', null, range)),
       h('div', { class: 'stats' }, item('練習天數', T.days + ' 天', trend(T.days, Lw.days, ' 天')), item('練習時間', Math.round(T.min) + ' 分', trend(Math.round(T.min), Math.round(Lw.min), ' 分')), item('答題數', T.n + ' 題', trend(T.n, Lw.n, ' 題')), item('正確率', T.n ? acc(T) + '%' : '—', Lw.n ? '上週 ' + acc(Lw) + '%' : '')),
@@ -54,6 +66,7 @@
         topSkills.length ? h('li', null, h('b', null, '練得最多：'), topSkills.join('、')) : h('li', null, '這週還沒有練習紀錄。'),
         topTag ? h('li', null, h('b', null, '最常見的錯誤：'), (TAGS[topTag[0]] || topTag[0]) + '（' + topTag[1] + ' 次）——可以問他：「這一類題目你是怎麼想的？」') : null,
         h('li', null, h('b', null, '挑戰：'), chDone.length ? '本週完成 ' + chDone.join('、') : '本週沒有新完成的挑戰', '（累計模擬通過 ' + simOk + ' 個）'),
+        gritHighlights.length ? h('li', null, h('b', null, '🌟 克服卡關亮點：'), gritHighlights.join('；'), '——非常適合稱讚他願意反覆試錯的精神！') : null,
         newBadges.length ? h('li', null, h('b', null, '新徽章：'), newBadges.map((b) => b.icon + ' ' + b.name).join('、')) : null,
         h('li', null, h('b', null, '工程筆記：'), notes.length ? '本週寫了 ' + notes.length + ' 頁' : '本週還沒寫，提醒他每次練習後寫一小頁')),
       h('details', { class: 'lessonbox' }, h('summary', null, '可貼到 LINE 的文字版'), h('div', { class: 'body' }, h('pre', { style: 'white-space:pre-wrap;font:inherit;margin:0 0 8px' }, textOut), h('button', { class: 'btn sm primary', onclick: async () => { try { await navigator.clipboard.writeText(textOut); toast('已複製，可以貼到 LINE'); } catch (e) { toast('這個瀏覽器不能自動複製，請手動選取文字'); } } }, '複製文字')))));
@@ -73,7 +86,7 @@
     const byKind = {};
     rest.forEach((n) => { (byKind[n.kind] = byKind[n.kind] || []).push(n); });
     const sections = Object.entries(byKind).map(([k, list]) => h('section', { class: 'pfsec' }, h('h2', null, VX.kindName ? VX.kindName(k) : k),
-      list.map((n) => h('div', { class: 'pfnote' }, h('h3', null, n.title, h('small', null, '　' + fmtDate(n.created * 1000))), VX.noteReadonly ? VX.noteReadonly(n) : null))));
+      list.map((n) => h('div', { class: 'pfnote' }, h('h3', null, h('span', { 'data-notrans': '1' }, n.title), h('small', null, '　' + fmtDate(n.created * 1000))), VX.noteReadonly ? VX.noteReadonly(n) : null))));
     VX.app.replaceChildren(shell(h('div', { class: 'portfolio' },
       h('div', { class: 'row gap noprint' }, h('button', { class: 'btn primary', onclick: () => window.print() }, '🖨 列印／存成 PDF'), h('a', { class: 'btn', href: '#/notebook' }, '回筆記')),
       h('p', { class: 'sub noprint' }, '這份作品集會把你寫過的工程筆記整理在一起。按「列印」後，在列印視窗選「存成 PDF」就可以存檔。'),

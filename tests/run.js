@@ -192,5 +192,104 @@ t('所有挑戰都有對應有效技能（過關小考不落空）', () => {
   });
 });
 
+group('除錯偵探、積木追蹤與三星評分');
+content.CHALLENGES.filter((c) => c.starter).forEach((ch) => {
+  t(ch.id + ' ' + ch.title + '：初始 bug 程式不通過，修正後通過', () => {
+    const bad = run(ch.starter, ch);
+    assert(!bad.j.ok, ch.id + ' 的 starter 應該要失敗');
+    const good = run(ch.code, ch);
+    assert(good.j.ok, ch.id + ' 的參考解答應該要通過');
+  });
+});
+t('模擬執行會記錄當下執行中的積木編號（frames[i][3]）', () => {
+  const ch = content.CHALLENGES[0];
+  const parsed = S.parseDsl(ch.code);
+  S.tagBids(parsed.main, parsed.defs);
+  const res = S.simulate(parsed, S.makeWorld(ch));
+  const bids = new Set(res.frames.map((f) => f[3]).filter(Boolean));
+  assert(bids.has('b1'), '應追蹤到 b1 積木，實際：' + [...bids].join(','));
+});
+t('三星評分：精簡獨立過關 3 星、載入解答 1 星、過長寫法 1 星、未過關 0 星', () => {
+  const ch = content.CHALLENGES[0]; // drive 1000
+  const ref = S.parseDsl(ch.code);
+  const resOk = S.simulate(ref, S.makeWorld(ch)); resOk.j = S.judge(resOk);
+  assert.strictEqual(S.calcStars(ch, ref.main, ref.defs, resOk, false), 3);
+  assert.strictEqual(S.calcStars(ch, ref.main, ref.defs, resOk, true), 1);
+  const longLines = ['何時開始', ...Array(10).fill('驅動 [向前] 為 (100) [毫米]')];
+  const longP = S.parseDsl(longLines);
+  const resLong = S.simulate(longP, S.makeWorld(ch)); resLong.j = S.judge(resLong);
+  assert(resLong.j.ok);
+  assert.strictEqual(S.calcStars(ch, longP.main, longP.defs, resLong, false), 1);
+  const bad = run(['何時開始'], ch);
+  assert.strictEqual(S.calcStars(ch, [], [], bad.r, false), 0);
+});
+t('judge 回傳 goalDist 供「更靠近旗子」新紀錄比較', () => {
+  const ch = content.CHALLENGES[0];
+  const a = run(['何時開始', '驅動 [向前] 為 (200) [毫米]'], ch).j;
+  const b = run(['何時開始', '驅動 [向前] 為 (600) [毫米]'], ch).j;
+  assert(typeof a.goalDist === 'number' && typeof b.goalDist === 'number' && b.goalDist < a.goalDist);
+});
+
+t('積木編號 _bid 不會被序列化進存檔', () => {
+  const p = S.parseDsl(content.CHALLENGES[0].code);
+  S.tagBids(p.main, p.defs);
+  assert(p.main[0]._bid, '應有編號');
+  assert(!JSON.stringify(p).includes('_bid'), '存檔不該含 _bid');
+});
+t('dbg3 的 bug 程式：診斷說「有執行但沒動」，不是「還沒放積木」', () => {
+  const ch = content.CHALLENGES.find((c) => c.id === 'dbg3');
+  const { r } = run(ch.starter, ch);
+  const tips = S.diagnoseFail(r, ch);
+  assert(tips.length && !tips[0].includes('還沒有讓車子動'), tips.join('|'));
+});
+
+
+group('介面語言（中／English）');
+const fs = require('fs'), path = require('path'), crypto = require('crypto');
+const I18N = path.join(__dirname, '..', 'i18n');
+const H = (z) => crypto.createHash('md5').update(z).digest('hex').slice(0, 6);
+const enMap = {};
+fs.readdirSync(path.join(I18N, 'en')).filter((f) => f.endsWith('.tsv')).forEach((f) => {
+  fs.readFileSync(path.join(I18N, 'en', f), 'utf8').split('\n').forEach((ln) => { const m = ln.match(/^([0-9a-f]{6})[|\t](.*)$/); if (m && m[2].trim()) enMap[m[1]] = m[2]; });
+});
+const srcOf = (a) => JSON.parse(fs.readFileSync(path.join(I18N, 'src', a + '.json'), 'utf8'));
+const missing = (a) => srcOf(a).filter((z) => !enMap[H(z)]);
+t('擷取清單內的字串雜湊不衝突', () => {
+  const seen = {};
+  fs.readdirSync(path.join(I18N, 'src')).forEach((f) => srcOf(f.replace('.json', '')).forEach((z) => { const h = H(z); assert(!seen[h] || seen[h] === z, '雜湊衝突 ' + h); seen[h] = z; }));
+});
+[['data-QS', 0], ['data-SKILLS', 0], ['data-DOMAINS', 0], ['data-TAGS', 0], ['content-CHALLENGES', 0], ['content-NB_LESSONS', 0], ['content-NB_KINDS', 0], ['content-BUILD', 0], ['content-PARTS', 0],
+  ['content-INTERVIEW', 0], ['content-SEASON', 0], ['server', 0], ['page', 0], ['ui-app', 12], ['ui-modules', 2], ['ui-guide', 0], ['ui-extras', 0], ['ui-about', 0], ['ui-a11y', 0], ['ui-iqimport', 5], ['ui-sim', 70]].forEach(([a, allow]) => {
+  t('英文翻譯齊全：' + a + (allow ? '（容許 ' + allow + ' 句中文積木字樣不翻）' : ''), () => { const m = missing(a); assert(m.length <= allow, '還有 ' + m.length + ' 句沒翻：' + m.slice(0, 3).join(' | ')); });
+});
+t('翻譯過的課文 HTML 標籤跟原文一致（不會把頁面弄壞）', () => {
+  const tags = (x) => (x.match(/<\/?(?:b|i|em|strong|code|br|p|ul|ol|li|table|tr|td|th|div|small|span|a|svg|text)\b[^>]*>/g) || []).map((s) => s.replace(/\s.*>/, '>')).sort().join(',');
+  let n = 0;
+  fs.readdirSync(path.join(I18N, 'src')).forEach((f) => srcOf(f.replace('.json', '')).forEach((z) => { if (/<[a-zA-Z]/.test(z) && enMap[H(z)]) { n++; assert.strictEqual(tags(enMap[H(z)]), tags(z), '標籤不同：' + H(z) + ' ' + z.slice(0, 30)); } }));
+  assert(n > 30, 'HTML 翻譯數量異常：' + n);
+});
+t('web/i18n-en.js 是最新的（改了翻譯要跑 python3 tools/i18n_build.py）', () => {
+  const js = fs.readFileSync(path.join(__dirname, '..', 'web', 'i18n-en.js'), 'utf8');
+  const dict = JSON.parse(js.slice(js.indexOf('{'), js.lastIndexOf('}') + 1));
+  const want = new Set(Object.keys(enMap)); let have = 0;
+  fs.readdirSync(path.join(I18N, 'src')).forEach((f) => srcOf(f.replace('.json', '')).forEach((z) => { if (want.has(H(z))) { have++; assert(dict[z] !== undefined, '字典缺：' + z.slice(0, 30)); } }));
+  assert(have > 2000, '字典條目太少：' + have);
+});
+
+t('逐段翻譯：中文句子拼著數字也能翻對，不會翻成一半中一半英', () => {
+  const vm = require('vm');
+  const js = fs.readFileSync(path.join(__dirname, '..', 'web', 'i18n-en.js'), 'utf8');
+  const dict = JSON.parse(js.slice(js.indexOf('{'), js.lastIndexOf('}') + 1));
+  const box = { window: {}, document: { documentElement: {}, addEventListener() {}, write() {} }, location: { search: '' }, localStorage: { getItem: () => 'en', setItem() {} }, navigator: { language: 'en' }, URLSearchParams };
+  box.window = box; vm.createContext(box);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'web', 'i18n.js'), 'utf8'), box);
+  const { tr } = box.VXI18N.makeTr(dict);
+  const ZH = /[一-鿿]/;
+  const cases = ['熟練度 2 顆星（滿分 3 顆）', '預估得分：5 分　用掉時間：48 / 60 秒', '這回合答對 3 題', '已精通 4 / 26 個技能　·　連續練習 3 天', '模擬時間 5.2 秒　·　走了約 1000 mm'];
+  cases.forEach((c) => { const r = tr(c); assert(!ZH.test(r), c + ' → ' + r); });
+  assert.strictEqual(tr('熟練度 2 顆星（滿分 3 顆）'), 'Mastery 2 stars (out of 3)');
+  assert.strictEqual(tr('測試'), '測試'); // 使用者名字不亂翻
+});
+
 console.log(`\n${pass} 通過、${fail} 失敗`);
 process.exit(fail ? 1 : 0);

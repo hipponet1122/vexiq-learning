@@ -1,0 +1,35 @@
+66cc76|Triangles Are Strongest: Reinforcing Structures
+808b15|With a diagonal brace = two triangles
+b425dd|A triangle doesn't skew
+cf6d8f|<p>A four-sided frame is easily pushed out of shape (into a parallelogram), but a triangle isn't, because the lengths of its three sides already decide the shape. If the robot's arm or chassis wobbles, first look for where there's a "four-sided frame" and add a diagonal brace.</p>
+313261|Try it: build a four-sided frame with 4 beams and 4 pins and push it by hand to see whether it skews. Then add a diagonal brace and compare. Write how the two felt on a "test record" page.
+1e98fc|How Far One Wheel Turn Goes
+dba920|radius
+57b241|One turn = circumference
+a0cfab|Circumference = diameter × 3.14
+51bbe0|<p>When a wheel (without slipping) turns once, the robot moves one <b>circumference</b>. So: distance = turns × circumference; turns = distance ÷ circumference. This is the principle behind the program's "drive forward for □ mm" — VEXcode converts it using the wheel size you set.</p>
+2cb326|Try it: measure your wheel's diameter (mm) and work out the circumference. Draw a straight line on the floor, turn the wheel by hand 3 times, measure how far the robot actually goes, compare it with the calculation and note the error.
+82ee2a|Gear Ratio: Speed vs. Force
+6f1a13|12 teeth (driving)
+2e68c6|36 teeth (driven) → 3× slower, 3× more force
+c99baa|Opposite directions
+b5195d|<p>Two meshing gears <b>turn in opposite directions</b>. A small gear driving a big gear: <b>slower, more force</b> (reduction), good for an arm lifting heavy things. A big gear driving a small gear: faster, less force (speed-up). Driven turns = driving turns × driving teeth ÷ driven teeth.</p>
+8203b0|Try it: mesh a 12-tooth gear with a 36-tooth gear, turn the 12-tooth gear 3 times and count how many times the 36-tooth gear turns (it should be 1). Write the result in your notebook.
+d90a7d|How a Drivetrain Turns
+60eb9a|Left wheel ▶ forward
+762933|Right wheel ◀ backward
+4d3959|→ Turns right in place
+44cd01|<p>A robot with drive wheels on the left and right (differential drive): when both sides go <b>the same direction at the same speed</b> it goes straight; in <b>opposite directions</b> it turns in place; if one side is faster it arcs toward the slower side. If it drifts when you want a straight line, the two sides often have different speeds or friction.</p>
+5bd814|Try it: run "drive forward for 1000 mm", measure how far it drifted and to which side. Guess the cause, change one thing, test again and record it in a "test record".
+5d9940|Arms and Lever Arms
+8bd9bb|Object
+1f1052|Pivot
+1551af|Force ↓
+575de6|The longer the lever arm, the harder it is
+b4ef41|<p>The longer the arm, the farther the load at its tip is from the pivot (a longer <b>lever arm</b>), and the harder the motor has to work. To lift heavy things: shorten the arm, or use reduction gears to gain force. Use rubber on claw surfaces; more friction grips more securely.</p>
+d8ae48|Try it: hang the same weight near the pivot and then far from the pivot of an arm and compare which one can be lifted. Record it in your notebook.
+15bd47|Center of Gravity and Stability
+0dcca4|Low center of gravity: stable
+14738e|High center of gravity: tips easily
+b93a95|<p>Put heavy parts (battery, Brain) <b>low and near the middle</b> so the robot is less likely to tip over when turning, stopping suddenly or hitting something.</p>
+a56efe|Try it: mount the Brain high first and then low, push the robot at an angle by hand and see which is harder to tip.

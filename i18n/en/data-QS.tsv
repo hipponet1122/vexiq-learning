@@ -1,0 +1,617 @@
+622a91|Which part is the robot's "brain", which runs the program you wrote?
+a94c60|Brain
+42b0b1|Controller
+1c9a53|Smart Motor
+392257|Distance Sensor
+69517c|The Brain is the main unit, and the program is downloaded into it to run. The Controller is for driving by hand.
+2384f6|You want the robot to know how far away the wall ahead is. Which sensor should you use?
+80a5b7|Gyro
+46783c|Bumper Switch
+ec8475|Color Sensor
+57f248|The Distance Sensor measures the distance to the object ahead. The Bumper only knows after you hit something, and the Gyro measures how many degrees you've turned.
+85d9b9|What is the Controller mainly used for?
+f4bff5|Storing programs
+3ca94d|Letting a person drive the robot by hand
+970d58|Measuring distance
+5eea14|Charging the robot
+cbfd8d|The Controller lets the driver operate by hand; the autonomous period relies on a program written beforehand and downloaded to the Brain.
+b3457f|Which "sensor → what it measures" pair is correct?
+6ca208|Gyro → how many degrees the robot has turned
+119d63|Bumper → distance ahead
+91aacb|Color Sensor → motor speed
+a95a9a|Distance Sensor → whether a switch is pressed
+74e054|The Gyro measures angle / heading. The other three are mismatched: the Bumper detects presses, the Color Sensor detects color, and the Distance Sensor measures distance.
+3aa23b|How many Smart Ports does a VEX IQ 2nd-generation Brain have?
+52d012|4
+8ce57a|8
+605aa2|12
+6a3a11|20
+119214|The 2nd-generation Brain has 12 Smart Ports, where motors and sensors plug in.
+b3d0c0|You plug a motor into Brain port 3. What must you do in VEXcode so the program can control it?
+a598a7|Nothing; the program finds it by itself
+19d6ca|Add the motor in Devices and set it to port 3
+8a7893|Move the motor to port 1 instead
+0b414e|Reinstall VEXcode
+ea2748|The program needs to know which port a device is on, so the port numbers in Devices must match the actual wiring.
+6252c1|The left and right motors are mounted facing opposite directions, but neither is set to Reverse. When you run "drive forward", what will the robot most likely do?
+92983e|Drive forward normally
+24be2d|Spin in place
+96ee13|Not move at all
+6fad7f|Drive backward
+ff2812|Because the two sides turn in opposite directions, one side pushes the robot forward while the other pushes backward, so it spins in place. Fix: set one side to Reverse.
+f1532f|The distance sensor never gives a reading. What should you check first?
+f4d0d0|Whether the cable is plugged in firmly and whether the port number matches the program's settings
+7f6b69|Swap in a new Brain
+6b87e2|Rewrite the whole program
+de9272|Debug from the simplest, most likely cause first: wiring and settings.
+dcf8eb|To make a finished program run by itself on the robot (not connected to a computer), what do you need to do first?
+9e1a8d|Download the program to the Brain
+5e99f8|Just press save on the computer
+c851de|Press any key on the Controller
+95f807|Connect to the internet
+253535|You must download it to the Brain first; only then does the program exist on the robot.
+a5ad1d|What usually happens to a robot when the battery is nearly empty?
+b23542|No difference
+639d6d|The motors get weaker and behave unstably
+512a9b|It runs faster
+61f060|The program fixes itself
+7f3835|With low power the motors weaken, so the same program can produce different distances and angles.
+c940f4|At a competition you pick the program to run on the Brain instead of pressing Start on a computer. So before the competition you must first:
+27ba8b|Write it in a notebook
+6fe59c|Download it to the Brain
+462026|Hand it to the referee
+060e33|Save it to the Controller
+42a6c3|You usually can't plug in a computer at the venue, so the program must be downloaded beforehand.
+a23167|The night before a competition you notice the battery is very low. What's the best thing to do?
+eb77c3|No problem, just use it tomorrow
+c61a11|Charge it fully, and note the charging time in your notebook
+90a826|Set all speeds to 100%
+6edf79|Switch to a new program
+20805e|Battery level directly affects robot performance, so charging fully is the most basic preparation.
+71ce59|In VEXcode, what are the "Drivetrain" blocks (drive, turn…) mainly used for?
+325d57|Controlling robot movement
+4c76a5|Detecting colors
+112902|Showing text
+2234ce|Creating variables
+0d1a97|The Drivetrain category contains movement blocks such as drive (forward), turn, and setting speed.
+c6a2ea|Before you can use a Distance Sensor in a program, you must first:
+782737|Add and set up the sensor in Devices
+35df14|Plug the sensor into the Controller
+38fc3b|Finish writing all the blocks first
+8925b5|Do nothing
+9a5b68|If it isn't set up in Devices, the program can't find that sensor to use.
+325dd4|A program has a pile of blocks, but none of them are attached under "when started". What happens when you press Start?
+362008|They all run from top to bottom
+ba846c|They don't run automatically
+2b4054|Only the last one runs
+338998|The robot spins in place
+e7763c|"when started" is where the program begins; blocks not attached under it won't be run.
+255a34|You want to compare which of two ways of driving is more accurate. What's the better approach?
+4be40e|Just overwrite the old program
+33e3ab|Save as a new file to keep the old version, and note the differences and results in your notebook
+a72d41|Pick one just by feel
+8bec22|Ask a classmate to pick for you
+d0ee12|Keeping versions lets you compare; writing results in your engineering notebook is also a record-keeping habit judges value.
+771c9b|You build a four-sided frame and a triangle with beams and push on them by hand. Which is less likely to deform?
+8942c4|The four-sided frame
+29f12d|The triangle
+cf4304|The same
+eb0ec1|It depends on the beam color
+56538a|The three sides of a triangle fix its shape, so it can't skew. A four-sided frame is easily pushed into a parallelogram.
+e04f41|The robot's arm keeps wobbling. What's the most likely cause?
+135ce2|The joint is held by only one pin with no reinforcement
+52dc4f|The motor is too new
+1fa503|The battery is too full
+22973f|The program has an error
+b426a0|A single fixing point lets it rotate and wobble; adding a second fixing point or a diagonal brace makes it steadier.
+443713|Why should heavy parts (such as the battery and Brain) go low and near the middle of the robot?
+7c8a62|It looks nicer
+13d00f|A low, centered center of gravity doesn't tip over easily
+d918d3|Motors use less power
+e4068b|Sensors can only read that way
+2a5247|The lower the center of gravity, the steadier it is, so it doesn't tip when turning, accelerating or hitting something.
+53b2e0|What is the main purpose of adding a "diagonal" beam to a four-sided frame?
+717b94|To make the robot heavier
+ea9629|To split the frame into two triangles and prevent skewing
+580dc6|To make the motors spin faster
+04943b|To make it look symmetrical
+92895b|A diagonal brace uses the stability of triangles.
+856150|When a wheel turns once (without slipping), about how far does the robot move?
+b0d057|One wheel circumference
+318c61|One wheel radius
+c7b678|10 centimeters
+4a0c2e|It depends on the motor's color
+5ed02c|In one turn, the length of the wheel's outer edge that touches the ground is the circumference.
+49f03d|A wheel's circumference is 200 mm and it turns 3 times. How many mm does the robot move?
+de2a70|Distance = turns × circumference = 3 × 200 = 600 mm.
+8577e7|A wheel's circumference is 200 mm and you want to drive 1000 mm. How many turns must the wheel make?
+a9b381|Turns = distance ÷ circumference = 1000 ÷ 200 = 5 turns.
+a39f22|turns
+cf6464|A wheel has a diameter of 60 mm (use π = 3.14). To drive 942 mm, about how many turns must the wheel make?
+627361|Circumference = 60 × 3.14 = 188.4 mm; turns = 942 ÷ 188.4 = 5 turns.
+dcf60a|When a small gear drives a big gear, the big gear's speed will be:
+2f3ddd|Slower, but with more force
+23d9b0|Faster, and with more force
+2f0d10|Exactly the same
+28f887|Faster, but with less force
+145a49|Small drives big = reduction: trading speed for force. The reverse, big driving small, is a speed-up.
+dc4930|A 12-tooth gear drives a 36-tooth gear. When the 12-tooth gear turns 3 times, how many times does the 36-tooth gear turn?
+d9a0ea|Driven turns = 3 × 12 ÷ 36 = 1 turn. (It has 3 times the teeth, so it turns 3 times slower.)
+f4a3eb|Two meshing gears turn in:
+361339|The same direction
+e24d69|Opposite directions
+b06f8d|Depends on size
+a2d641|The same, then opposite
+55473f|Two meshing gears always turn in opposite directions.
+ae5669|A 36-tooth gear drives a 12-tooth gear. When the 36-tooth gear turns 2 times, how many times does the 12-tooth gear turn?
+f6a742|Driven turns = 2 × 36 ÷ 12 = 6 turns (a speed-up with less force).
+045473|A robot has a set of drive wheels on each side. To "turn right in place", the left and right wheels should:
+4262b7|Left wheel forward, right wheel backward
+f8c0b8|Both wheels forward
+9a6e6b|Both wheels still
+2daba3|Left wheel backward, right wheel forward
+445295|With the left wheel pushing forward and the right wheel pulling backward, the body turns right in place.
+0de77f|You want to drive straight, but the left wheel spins a bit faster than the right wheel. What does the robot do?
+d9a483|Veers right
+df765d|Veers left
+febe02|Still goes straight
+d2126e|Spins in circles
+38fe70|It veers toward the slower side: if the left wheel is faster, it veers right. This is what to adjust when it won't drive straight.
+76112e|What's special about an Omni Wheel?
+41a6c1|It can only turn forward
+1ae1bf|It can slide sideways and has less resistance when turning in place
+f465f6|It's always slower
+2cb440|It needs no motor
+e88028|An Omni Wheel has small rollers on its edge, so it slides sideways and is less likely to catch when turning.
+2b9a94|For a turn in place, how does the wheel rotation needed for a 180° turn compare with a 90° turn?
+e10997|Half
+cd1442|Twice
+4eaac7|Four times
+da771e|With twice the angle, the arc each wheel travels is also twice as long.
+959673|To let an arm lift something heavier, how is it usually designed?
+96824d|Use reduction (a small gear driving a big gear) to get more force
+759019|Use a speed-up to make it spin faster
+f91665|Remove the motor
+775ec7|Make the arm thinner
+49bb66|Reduction trades speed for more force.
+d65996|When a claw grips a ball, why is a rubber surface better than smooth plastic?
+6c6fbd|It's lighter
+c0e72b|More friction, so the ball is less likely to slip
+57e898|It's cheaper
+fad9c4|The more friction, the steadier the grip.
+c5b737|When the same object is lifted at the end of a longer arm, it is:
+532087|Easier
+2ca4a9|Harder
+e1e5fc|Depends on color
+c6d94f|The farther from the pivot (the longer the lever arm), the more force is needed.
+2536be|You're designing a "pick-up mechanism". What's a sensible order of the process? (tap in order)
+9fec8f|Confirm what to grab and what the requirements are
+0c228a|Think of several options and sketch them
+e2bc05|Build a prototype
+8c0749|Test and record the results
+b0e500|Improve based on the results
+1c3b8a|This is the engineering design process: define the problem → brainstorm → build → test → improve. Record it in your engineering notebook.
+337f12|In the program below, what does the robot do first?
+3312ad|Drives straight 200 mm first
+2b6f3f|Turns right 90 degrees first
+0cc800|Drives straight 100 mm first
+3a0164|Does everything at once
+3f3c90|A program runs from top to bottom, and the first line is "drive forward for 200 mm".
+18cbc3|To make the robot "drive forward 300 mm → turn right 90 degrees → drive forward 300 mm", tap the blocks in the correct order:
+e9d7dd|The order decides the route; blocks run in sequence.
+c80d44|The robot starts from the start point and runs the program below. How far from the start does it end up? (Imagine drawing it on paper.)
+4b96f7|The route is a U shape: forward 200 → turn right and go right 100 → turn right again and come back 200. It's back on the same line as the start, just 100 mm to the right.
+3f3998|After running the program below, where is the robot and which way does it face? (It starts facing "north".)
+be92e4|400 mm north and 200 mm east of the start, facing north
+07e6ab|200 mm north and 400 mm east of the start, facing east
+4e61d5|Back at the start, facing north
+058bee|600 mm north of the start, facing north
+dea007|North 200 → turn right and go east 200 → turn left and go north 200: 400 north and 200 east in total, and finally facing north.
+b0e2d4|Which block should you use to make the robot turn "left" 90 degrees?
+179c76|"left" turns left and "right" turns right (the Chinese VEXcode translates right as 正確的), followed by the angle.
+86b645|After running "turn right for 180 degrees", the robot will:
+1799d8|Face the opposite direction from before
+3484f7|Return to its original direction
+b14be7|Spin a full turn
+647a5b|Turn right by a right angle
+975659|180° is a U-turn. 90° is a right angle and only 360° is a full turn.
+29d234|To make the robot drive a square, how many degrees should it turn at each corner?
+5bc83f|45 degrees
+be8609|60 degrees
+7680f7|90 degrees
+2886d5|180 degrees
+10fb61|All four corners of a square are right angles, so it turns 90° each time.
+d0daa2|To make the robot drive an "equilateral triangle" (all three sides equal), how many degrees should it turn at each corner?
+268b36|The robot turns the exterior angle: 360 ÷ 3 = 120°. The triangle's interior angle is 60°, but the robot turns "how far it swings forward".
+a9f36f|degrees
+1a2476|Which is faster: "set drive velocity to" 100% or 30%?
+c0d70a|Depends on the battery
+2cd053|The bigger the percentage, the faster the speed.
+6eeaca|What does the "wait 2 seconds" block do?
+8aa812|Pauses the program for 2 seconds, then continues
+4144ad|Makes the robot drive for 2 seconds
+2860de|Sets the speed to 2
+b5efa1|"wait" only pauses; it doesn't make the robot move.
+94f3d4|To make the robot stop very accurately, what's the most common problem if the speed is set too high?
+88eda6|It slides forward from inertia when stopping, causing error
+d59675|The battery will explode
+206d9e|The program will crash
+56ed70|The sensor will break
+9e988e|The faster it goes the more inertia it has, so it slides a bit farther when stopping.
+76b5a3|A program first does "set drive velocity to 50 %", then "drive forward for 1000 mm". If you change the speed to 100%, the distance the robot drives will be:
+3ddc88|Still 1000 mm, just faster
+7993b6|2000 mm
+d6c906|500 mm
+5dbbde|It won't move
+55d463|The distance is decided by the number after "for"; speed only affects how fast.
+7755eb|In the program below, how many mm does the robot drive in total?
+6e5493|Repeat 4 times, 100 each time: 4 × 100 = 400 mm.
+d7da00|To make the robot drive a square (side 200 mm), which program is correct?
+4830ab|Repeat 4: drive forward 200 mm, turn right 90 degrees
+5c4fd8|Repeat 4: drive forward 200 mm; then (outside the loop) turn right 90 degrees
+4fe9ce|Repeat 2: drive forward 200 mm, turn right 90 degrees
+f5b1a0|Repeat 4: turn right 90 degrees; then (outside the loop) drive forward 200 mm
+1b9157|Every side needs "drive + turn", so both actions go inside the loop, 4 times in total.
+49f6e8|In the program below, how many seconds does it wait in total?
+103e53|Repeat 5 times, waiting 1 second each time = 5 seconds.
+a56d7b|In the program below (a loop inside a loop), how many mm does the robot drive in total?
+8880a6|Driving 100 three times inside = 300, and the outer loop runs 2 times: 2 × 300 = 600 mm. (Turning right doesn't add driving distance.)
+39f9ce|What is special about the "forever" block?
+41977c|The blocks inside repeat endlessly
+4a8c66|It runs only once
+44c002|It waits 1 second
+1034ee|"forever" never ends by itself, until the program is stopped.
+fde204|You want the robot to "keep driving until it detects an object". Which block fits better?
+31ba18|repeat until
+ca08eb|set velocity
+e81e66|When you don't know how many times, but you know "when to stop", use "repeat until" or "while" with a condition.
+1be33e|You want the robot to keep monitoring a sensor's value. Where should the sensor check go?
+14ad69|Inside a loop, so it's checked again and again
+084062|Once at the very start of the program
+67b865|At the very end of the program
+9a8990|It's the same wherever you put it
+fa3dd1|Put it inside a loop to keep checking; doing it once only takes a single look.
+446449|While the main program is running, you want the robot to stop immediately when the Bumper is pressed. What's a better approach?
+cdc013|Add a separate "when Bumper pressed" event block
+ae3048|Put the stop block at the end of the main program
+60c69f|Restart the program
+4ffe52|It's impossible
+45fe68|An event block waits independently; it doesn't need the main program to reach that line.
+340d51|What does "if <condition> then …" mean?
+41087b|The blocks inside run only when the condition is true
+d65449|They always run, whatever the condition
+811931|They run only when the condition is false
+01a5cd|They repeat 10 times
+0d0286|"if" means "if". It goes in only when the condition is true.
+58c0df|The distance sensor now reads 150 mm. What does the robot do?
+f0f053|drive forward
+9e7034|stop driving
+d1104d|Both
+47b72f|Does nothing
+6c95f7|150 is not less than 100, so the condition is false and it takes the "else": drive forward.
+dbdfb5|When the sensor reads 80 mm, is the condition "distance < 100 mm":
+5a7958|True
+21b8ad|False
+fa3081|Not necessarily
+fd7c7b|It crashes
+f02dee|80 is less than 100, so the condition is true.
+99f8ef|The condition is "distance < 200 mm and bumper pressed". The distance is now 150 mm and the Bumper is not pressed. What is the whole condition?
+2b89d7|False (because "and" needs both sides true)
+d41490|Half true, half false
+293758|Depends on the order
+d68202|"and" is true only if both sides are true; the Bumper isn't pressed, so the whole thing is false.
+e6c4c2|What does the Distance Sensor measure?
+5b52be|The distance from the sensor to the object ahead
+e74cb7|How many degrees the robot has turned
+fe3b30|The color of the ground
+c1d9ac|How much battery is left
+50208b|It sends out a signal and receives the reflection to measure the distance to the object ahead.
+73dc06|What does the robot do in the program below?
+31b91d|Keeps driving, and stops when the object ahead is within 150 mm
+0269af|Keeps driving and never stops
+cfb998|Drives forward only once
+e1ad72|Stays in place
+c0e99e|The "while" keeps driving as long as the distance is greater than 150, and leaves the loop and stops once it's no longer greater.
+6e0741|You set it to "stop 100 mm from the wall", but the robot always stops closer to the wall. What's the most likely cause and the fix?
+2a343c|Inertia and sensor delay. Make the threshold larger, or lower the speed
+827063|The wall is too hard
+3df5ce|The battery is too new
+9021a1|The program wasn't saved
+5f0f7c|After the robot gets the stop command it still slides a bit, so stop earlier or go slower.
+39e60f|The distance sensor now reads 500 mm and you want to stop 200 mm from the wall. How many more mm must the robot drive forward?
+8407d5|What does the Bumper Switch detect?
+946444|Whether it's pressed / bumped
+e47c7d|Color
+eff15c|Distance
+26190f|The Bumper is a bump switch; it reacts only when pressed.
+2e8180|To make it "start only after pressing the Bumper", what goes at the very start of the program?
+5c59ce|wait until Bumper pressed
+1f2afe|forever
+37ba6d|"wait until" pauses, then continues only once the condition is true.
+832eba|What can the Touch LED do?
+9630a4|Detect touch, and also show a light color
+437586|Only light up
+65a273|Measure distance
+632efe|Measure angle
+f1f1a3|The Touch LED has both touch input and light output.
+37d1f7|After the robot drives forward and hits a wall it should automatically back up. What's the simplest reliable way to sense that?
+c73687|Mount a Bumper on the front of the robot
+e3f313|Use the Gyro
+0df7c1|Use the Color Sensor
+88c96a|Use the Controller
+615343|It reacts only on impact, and the Bumper is the most direct.
+a59138|What can the Color Sensor be used for?
+55c27c|Recognizing the color of objects or the ground
+a1f601|Measuring turning angles
+bf0fa8|Powering motors
+c2b0d0|The Color Sensor recognizes color and brightness.
+215ef4|You want the robot to "stop when it sees red". How should the condition be written?
+748da8|if color is red then stop driving
+e9ede7|if distance < red
+f66911|wait red seconds
+739b53|repeat red
+99f3d8|The condition is "color equals red", and it stops when true.
+119eb7|The Color Sensor sometimes judges the color wrong. What's the most likely cause?
+9f17fd|It's too far from the object, or the ambient light is too bright
+91f4f0|The robot is too light
+1b4e0d|The program is too short
+c981d1|The Color Sensor is strongly affected by distance and lighting, so test under fixed conditions.
+e06c40|On the table are red and blue blocks; red goes left and blue goes right. Which program structure fits better?
+c28af9|if red … else if blue … else …
+f7c2e4|Only use "forever"
+060c3b|Only use "wait"
+eb5299|Use two "repeat 10"
+e94007|When there are several cases, use if / else if to decide.
+8dc898|What can the Gyro measure?
+0eadcb|Which way the robot faces / how many degrees it has turned
+12d65d|Distance ahead
+541331|Motor temperature
+0e531f|The Gyro measures rotation angle.
+3facf6|When the program starts you must calibrate the Gyro. At that moment the robot should be:
+e04d96|Perfectly still
+55599f|Driving while calibrating
+f35922|Spinning in circles
+91834e|Picked up and shaken
+eec8d0|Calibration must happen while still, or the angle will have errors.
+8012d0|What's the advantage of turning with the Gyro rather than just counting wheel turns?
+3ff385|It's more accurate even when the wheels slip
+1be99d|It saves power
+b81940|It needs no motors
+9e0aa3|The robot gets lighter
+79ece6|The Gyro directly measures how many degrees the body turned, so wheel slip doesn't matter.
+5d6267|The target heading is 90° and the Gyro reads 70° now (the angle increases when turning right). How many more degrees must the robot turn right?
+d8ed22|90 − 70 = 20°. The heading angle gets bigger when turning right, so turn right.
+f3e52a|What is a "variable" best compared to?
+2778b8|A named box that holds a value that can change
+3ac7f5|A kind of motor
+bc22c2|A kind of sensor
+3715d0|A number that never changes
+a2a2b3|A variable remembers a value, such as a score or a distance.
+22ee8f|After running the program below, what is score?
+d93974|In the autonomous period, score should go up by 1 for every ball put in. Which block is correct?
+ef9436|change score by 1
+b44892|set score to 1
+3f0ca6|set score to 0
+24496a|"change" means "add to the current number"; "set" means "directly make it a certain number".
+eb4db6|The three distances are 100, 150 and 200: 450 mm in total.
+19f3db|What does the condition "score > 10" mean?
+79e2f6|score is greater than 10
+e45ea4|score is less than 10
+81e1ca|score equals 10
+b254fa|score plus 10
+b96d69|> means greater than and < means less than.
+7b2509|The robot must drive 1200 mm. How many cm is that?
+0bab50|1 cm = 10 mm, so 1200 ÷ 10 = 120 cm.
+a56443|The condition is "A or B", A is true and B is false. What is the whole condition?
+023210|Both must be true
+5168f5|"or" is true when either side is true. Only "and" needs both sides.
+0e7f39|The robot's speed is 200 mm/s and it must drive 1500 mm. How many seconds does it need?
+382e60|Time = distance ÷ speed = 1500 ÷ 200 = 7.5 seconds.
+aa1ebd|What is a "My Block" for?
+3e422b|Wrapping a group of blocks you use often into one so you can reuse it
+c62a19|Making the robot faster
+561445|Connecting sensors
+c69350|Storing the battery level
+aeff00|After wrapping, you just call it.
+72d249|Driving a square appears many times in the program. What's the benefit of wrapping it in a "My Block"?
+398df5|Change one place and every place that uses it changes too
+4cc03c|The battery lasts longer
+447ea3|The sensors become more accurate
+926eba|The program runs automatically
+2e0157|It's managed in one place, so one edit updates everything, and it's less error-prone.
+0abcff|What is a My Block's "parameter" (for example distance) for?
+a55d7b|You can pass different numbers when calling it, so the same block can drive different distances
+aefe48|It makes the block colorful
+e05cc8|It gets the block deleted
+3420f0|It's useless
+b3a51a|A parameter lets one My Block adapt to different situations.
+65b5e3|The My Block "forward_then_turn(d)" does "drive forward d mm, then turn right 90 degrees". If you call forward_then_turn(100) and then forward_then_turn(200), how many mm does the robot drive in total?
+51ffb5|100 + 200 = 300 mm; turning doesn't count as driving distance.
+db1526|The robot drives off course. What's a good debugging order? (tap in order)
+c222b3|Observe what's wrong
+794291|Guess the possible cause
+664daf|Change just one thing
+32972c|Test again
+e55d44|Write the result in your notebook
+9263a3|Changing one thing at a time tells you which change worked; writing it down keeps you from repeating mistakes.
+d7f5c2|The robot is a little off on every turn. What's the best approach?
+e32586|Fine-tune only the turn angle, retest and record
+548e67|Change all the numbers
+c614b2|Swap to another robot
+d2a8e8|Give up on this task
+b0cd06|Change one variable at a time to know whether it helps.
+d91a19|Why record test results in the engineering notebook?
+1f8d04|So you can compare later what worked; it's also a record judges value
+631ded|Because the teacher says so
+a6c878|Just for looks
+588b07|No particular reason
+169283|The engineering notebook records your thinking and improvement process.
+34eb7a|A competition task has 3 scoring objectives and only 60 seconds. What's the better approach?
+40578d|Get one scoring task working reliably first, then add the others one by one
+257bee|Write everything at once, then test
+3eaabf|Write only the hardest one
+dcb3e9|No testing is needed
+3632eb|Build on a stable base first and extend it, so at every step you can be sure everything still works.
+dfe34a|In Level Up, how many points does one bean bag thrown into an L2 goal (correct color) score?
+e79cdd|3 points
+702a0f|6 points
+07cc5d|12 points
+ba9691|16 points
+f9f278|3 bean bags go into L1 (3 points each) and 2 bean bags go into floor goals (1 point each). How many points in total?
+daf783|pts
+8770d2|Where can a "blue" bean bag score?
+97a6f3|Only in blue goals (floor goal and L1–L3)
+1feef4|In goals of any color
+94cba0|Only L4
+2aeb25|Red goals
+cf2678|A bean bag must match the goal's color (or be yellow) to score; L4 takes only yellow, so a blue bean bag can't go in L4.
+a70e3f|2 yellow bean bags: one goes in L4 and one in a red L3. 2 other blue bean bags go in a blue L2. How many points in total?
+52e3f1|L4 16 + L3 12 + two L2 (6 × 2 = 12) = 40.
+274bd2|Suppose one run of your robot takes 12 seconds. At most how many runs fit in 60 seconds?
+ee8bf6|60 ÷ 12 = 5 runs.
+965628|runs
+74e714|Suppose: throwing into L2 (6 points) takes 15 seconds a run; floor goal (1 point) takes 6 seconds a run. Which scores more in 60 seconds?
+f8ecb4|L2: 4 runs = 24 points
+13df38|Floor: 10 runs = 10 points
+dac862|The same
+54c86c|It depends on luck
+fad53a|L2: 60 ÷ 15 = 4 runs × 6 = 24 points. Floor: 60 ÷ 6 = 10 runs × 1 = 10 points. What you compare is the "total score", not who is faster.
+e9a194|Suppose one L3 throw (12 points) takes 20 seconds. What's the most you can score in 60 seconds?
+4c0050|60 ÷ 20 = 3 runs; 3 × 12 = 36 points.
+6c687d|Suppose three approaches: A. L1 (3 points), 10 seconds a run. B. L3 (12 points), 20 seconds a run. C. Floor (1 point), 8 seconds a run. Which scores highest in 60 seconds?
+dd78aa|A: 18 points
+2a0c83|B: 36 points
+0f9b4b|C: 7 points
+6dd023|All three are the same
+204e06|A: 6 runs × 3 = 18. B: 3 runs × 12 = 36. C: 7 runs × 1 = 7 (60 ÷ 8 = 7.5, only whole runs count). B is highest. In a real competition, recompute with the times you measured.
+d90702|At most how many bean bags can a robot "hold" at the same time in Level Up?
+0d43b4|1
+d0b213|2
+d40056|3
+067143|No limit
+2331df|It can hold only one bean bag at a time.
+5b89cd|In Level Up Teamwork, how many robots are in one alliance?
+a153b1|1 robot
+c1e61a|2 robots (one from each of the two teams)
+b4f522|3 robots
+92d4a4|4 robots
+575ee8|An alliance has two teams, each with one robot.
+daa7a9|At pre-match inspection, how much space must the robot fit into?
+2edbc7|The starting size is 11" × 20" × 15" (about 279 × 508 × 381 mm).
+7cf89a|At most how many VEX IQ Smart Motors can a Level Up robot use?
+e1b1f1|2
+70a081|4
+59c443|6
+71d57a|10
+19fa0d|At most 6, and extras you carry count too (even if not connected).
+28bb46|During the 1-minute "Autonomous Skills" run, what can team members do?
+51f33e|They can't use the controller; the robot relies on the program alone
+cbc0c0|Use the controller at any time to correct it
+3cb366|Pick the robot up by hand and adjust it
+6754cd|Ask a teammate to help push
+9e888a|The autonomous skills run has no driving and the controller can't be used, so program reliability matters most.
+d1acfd|You want the robot to "drive forward 200 mm, turn right 90 degrees, then drive forward 100 mm". Which line is wrong? (tap that line)
+4ef592|To turn right you should choose "right" (the Chinese VEXcode translates right as 正確的), not "left".
+8c35da|You want to drive a square with 200 mm sides, but the robot drives forward, turns once and stops. Which line is in the wrong place?
+8a68e1|The turn must also be inside "repeat": every side needs "drive + turn".
+a828b9|You want to add +1 to the score each time, but in the end score is always only 1. Which line is wrong?
+a68407|"set to" directly makes it 1; to accumulate you need "change by".
+98f9d7|The robot starts 600 mm from the wall and should keep driving until it's 150 mm from the wall, but it doesn't move at all. Which line is wrong? (the distance is the sensor reading, for illustration)
+74d827|At the start the distance is 600, which isn't less than 150, so the condition is false and the loop is never entered. It should be "distance > 150" to keep driving.
+ab09b3|With the My Block "square (size)", calling square (300) still drives only 100 mm sides. Which line is wrong?
+c3ed79|The block hard-codes the distance as 100. It should use the parameter size so it changes with the number you pass in.
+90db1e|You want the robot to "drive straight 500 mm first, then turn left 90 degrees". Which program is correct?
+143c87|A program runs in order: first "drive", then "turn". The distance and angle can't be swapped, and left / right can't be mixed up either.
+8aaf45|A program first does "drive forward for 300 mm", then "drive forward for 200 mm". How many mm does the robot drive in total?
+8d4eb5|Both are forward moves, so just add: 300 + 200 = 500 mm.
+7be685|To make the robot "turn around" (face the opposite direction), how many degrees must it turn?
+8dff1d|270 degrees
+856074|360 degrees
+f9c16e|Half a turn is 180°. 90° is a right angle and 360° is a whole turn (back to the original direction).
+039991|The robot starts facing "north". It does: turn right 90°, turn right 90°, turn left 90°. Which way does it face now?
+9e08f6|North
+dde7b2|East
+48029e|South
+d62cb2|West
+b1ca00|North → turn right 90° becomes east → turn right 90° becomes south → turn left 90° becomes east.
+38ebf4|To drive the same 600 mm, which finishes sooner: drive velocity at 100% or at 25%?
+3103cf|Equally fast
+5256c7|The higher the speed, the sooner it finishes; the distance (600 mm) is decided by the number after "for" and doesn't change with speed.
+369a1e|Suppose at 50% speed the robot drives 100 mm per second. To drive 500 mm, how many seconds does it need?
+18d531|Time = distance ÷ speed = 500 ÷ 100 = 5 seconds.
+f083c9|The program is "repeat 5: drive forward 50 mm, turn right 72 degrees". What shape does the robot trace?
+cd6fff|A regular pentagon
+3c5669|A square
+654584|An equilateral triangle
+0b41e0|A straight line
+333497|Turning 72° each time, 5 repeats make exactly 5 × 72 = 360°, a full turn, so it's a regular pentagon.
+e14785|Repeat 6 times, waiting 0.5 seconds each time: 6 × 0.5 = 3 seconds.
+86c167|Inside "repeat until <Bumper pressed?>" there is "drive forward". When does this loop end?
+628fa3|When the Bumper is pressed
+fabc03|Right away
+9b6089|Never
+d34413|After repeating 10 times
+ca8f87|"repeat until" keeps going until the condition is true, then leaves the loop.
+d7976c|A "forever" loop never ends by itself. To make a repeated action stop "when a condition is true", what's the better approach?
+0cd443|Use "repeat until" or "while" with a condition
+c5a5c2|Add more "forever" inside the loop
+897d46|Delete "when started"
+53d96d|Add "wait 10 seconds" outside the loop
+e647fd|With "repeat until" or "while", the loop ends naturally when the condition becomes true (or false).
+e36eb1|A wheel's circumference is 150 mm and it turns 4 times. How many mm does the robot drive?
+833714|Distance = turns × circumference = 4 × 150 = 600 mm.
+8bf47a|A wheel's circumference is 200 mm and you want to drive 500 mm. How many turns must the wheel make?
+77c5f4|Turns = distance ÷ circumference = 500 ÷ 200 = 2.5 turns.
+69e60b|A 12-tooth gear drives a 24-tooth gear. When the 12-tooth gear turns 4 times, how many times does the 24-tooth gear turn?
+f83b91|Driven turns = 4 × 12 ÷ 24 = 2 turns (reduction, more force).
+20f420|To give an arm more strength when lifting something heavy (it can be slower), how should the gears be set up?
+de7644|A small gear drives a big gear
+0bebe4|A big gear drives a small gear
+29edf1|Two gears of the same size
+870fef|No gears; connect directly
+a13c1f|A small gear driving a big gear is a reduction: slower but with more force, good for lifting heavy things.
+1e917a|The left wheel drives forward at 50% and the right wheel doesn't move. How does the robot most likely move?
+c2d3f5|It arcs to the right, pivoting around the right wheel
+a6d1d4|It drives straight ahead
+22de61|With the left wheel pushing forward and the right wheel still, the robot swings right around the stationary right wheel.
+c05462|The larger the distance between the two drive wheels (track width), the distance each wheel must travel to "turn 90 degrees in place" will be:
+dd8c2a|Longer
+357ce7|Shorter
+274ead|A larger track width makes a larger turning circle and a longer arc for each wheel, so the same 90° takes more wheel turns.
+2d32ab|The condition is "score = 5", but score is currently 7. What is the condition?
+ea8142|7 is not equal to 5, so the condition is false.
+6ccd96|The program is "if distance < 100 mm then stop driving, else drive forward". The sensor reads exactly 100 mm. Which does the robot do?
+b73298|Neither
+94d6fc|100 is not "less than" 100, so the condition is false, so it does the "else": drive forward. Less than (<) doesn't include exactly equal.
+172f20|The distance sensor now reads 350 mm. After the robot drives straight toward the object for 100 mm, about how many mm will the sensor read?
+b5abd0|350 − 100 = 250 mm (the closer you get, the smaller the distance).
+3bfc3a|The wall is at 800 mm and you set it to stop when "distance < 200 mm", but the robot slides another 30 mm from inertia. About how many mm from the wall does it end up?
+57fe0a|When the condition becomes true it's about 200 mm from the wall; sliding 30 mm more leaves 200 − 30 = 170 mm. That's why a stop threshold needs some room.
+e3192e|After running the program below, what is n?
+f08521|10 → subtract 2 each time, 3 times: 10 − 6 = 4.
+648516|You want the variable count to go up by 1 each loop, but you wrote "set count to 1" inside the loop. What will count end up as?
+7bedca|Always 1
+4272a1|Exactly the number of loops
+2fba71|It keeps growing
+3b4a5d|"set to" changes it directly to 1 every time and never accumulates. To accumulate, use "change by".
+781f2c|The robot must drive 2.4 meters. How many mm is that?
+fcc7c2|1 meter = 1000 mm, so 2.4 × 1000 = 2400 mm.
+add8a4|Each field cell is 200 mm and the route is 14 cells long. How many meters in total?
+83f90b|14 × 200 = 2800 mm = 2.8 meters.
+019e0b|meters
+564fb3|2 bean bags go into L3 (12 points each) and 4 bean bags go into floor goals (1 point each). How many points in total?
+5ca71c|2 × 12 + 4 × 1 = 28 points.
+9ff096|One bean bag is counted at both "L1" and "L2". Which level's points does it get?
+ecf7c0|The highest level (L2)
+858d90|Both levels
+5dca3d|The lowest level (L1)
+033cc9|Neither
+7fb4ff|When one bean bag is counted at several levels, only the highest level's points count.
+7ef4ea|Suppose one run of your robot takes 15 seconds. At most how many runs fit in 60 seconds?
+35cf31|60 ÷ 15 = 4 runs.
+32dfe4|Suppose: throwing into L1 (3 points) takes 6 seconds a run; throwing into L2 (6 points) takes 12 seconds a run. Which approach scores higher in 60 seconds?
+bd9f2f|Equal
+e1b39b|L1 is higher
+08e1e1|L2 is higher
+8995ee|Can't compare
+979d21|L1: 60 ÷ 6 = 10 runs × 3 = 30 points. L2: 60 ÷ 12 = 5 runs × 6 = 30 points. Equal! So you also need to consider which mechanism is steadier and easier to build.

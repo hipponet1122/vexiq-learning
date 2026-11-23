@@ -1,0 +1,336 @@
+/* 動畫、互動回饋、登入頁、iPad／iPhone 版面。載入在 style.css 之後。
+   「減少動態效果」設定開啟時，所有動畫在檔尾一律關掉。 */
+
+/* ---------- 全域：觸控與安全區 ---------- */
+html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+body { overscroll-behavior-y: none; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+a, button, .btn, .tab, .opt, .card, .tile, .skill, summary, label { touch-action: manipulation; }
+.topbar { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); padding-top: env(safe-area-inset-top); min-height: calc(56px + env(safe-area-inset-top)); }
+input[type=text], input[type=password], input[type=number], textarea, select { font-size: 16px; } /* iOS 輸入框小於 16px 會自動放大畫面 */
+
+/* ---------- 換頁、卡片進場 ---------- */
+@keyframes vx-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes vx-pop { 0% { transform: scale(.92); opacity: 0; } 60% { transform: scale(1.03); opacity: 1; } 100% { transform: none; } }
+@keyframes vx-shake { 0%,100% { transform: none; } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@keyframes vx-pulse { 0% { box-shadow: 0 0 0 0 rgba(31,157,85,.55); } 100% { box-shadow: 0 0 0 16px rgba(31,157,85,0); } }
+@keyframes vx-float { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-14px) rotate(6deg); } }
+@keyframes vx-spin { to { transform: rotate(360deg); } }
+@keyframes vx-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes vx-blink { 0%,92%,100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes vx-glow { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+@keyframes vx-slide-up { from { transform: translate(-50%, 24px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+@keyframes vx-ripple { to { transform: scale(2.6); opacity: 0; } }
+@keyframes vx-fire { 0%,100% { transform: scale(1) rotate(-3deg); } 50% { transform: scale(1.18) rotate(4deg); } }
+
+.page-in { animation: vx-in .34s cubic-bezier(.2,.7,.2,1) backwards; } /* 不能用 both：動畫結束後留著 transform 會讓底部固定分頁列跑到整頁最下面 */
+.tiles > *, .skills > *, .grid2 > .card, .domain { animation: vx-in .4s cubic-bezier(.2,.7,.2,1) both; }
+.tiles > *:nth-child(2), .skills > *:nth-child(2), .grid2 > .card:nth-child(2) { animation-delay: .04s; }
+.tiles > *:nth-child(3), .skills > *:nth-child(3), .grid2 > .card:nth-child(3) { animation-delay: .08s; }
+.tiles > *:nth-child(4), .skills > *:nth-child(4), .grid2 > .card:nth-child(4) { animation-delay: .12s; }
+.tiles > *:nth-child(5), .skills > *:nth-child(5), .grid2 > .card:nth-child(5) { animation-delay: .16s; }
+.tiles > *:nth-child(n+6), .skills > *:nth-child(n+6), .grid2 > .card:nth-child(n+6) { animation-delay: .2s; }
+
+/* ---------- 懸停與按壓回饋 ---------- */
+.tile, .skill, .card { transition: transform .18s ease, box-shadow .18s ease, filter .18s; }
+@media (hover: hover) {
+  .tile:hover, .skill:not(.lock):hover, a.card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(20,40,80,.14); }
+  .btn:not(:disabled):hover { filter: brightness(1.05); box-shadow: 0 2px 8px rgba(20,40,80,.14); }
+}
+.tile:active, .skill:active, a.card:active { transform: scale(.98); }
+.btn { position: relative; overflow: hidden; transition: transform .12s ease, box-shadow .18s, filter .18s; }
+.btn:not(:disabled):active { transform: scale(.96); }
+.tab { transition: background .18s, transform .12s; } .tab:active { transform: scale(.94); }
+.tab.on .ti { animation: vx-bob 2.4s ease-in-out infinite; }
+.opt { transition: border-color .15s, background .15s, transform .12s; } .opt:not(:disabled):active { transform: scale(.985); }
+.ripple { position: absolute; border-radius: 50%; background: currentColor; opacity: .22; pointer-events: none; transform: scale(0); animation: vx-ripple .55s ease-out forwards; }
+.btn.primary .ripple { background: #fff; }
+
+/* ---------- 答題回饋 ---------- */
+.opt.right, .bugline.right { animation: vx-pulse .7s ease-out; }
+.opt.wrong, .bugline.wrong { animation: vx-shake .42s ease; }
+.feedback.ok { animation: vx-pop .4s ease both; } .feedback.bad { animation: vx-in .3s ease both; }
+.qhint { animation: vx-in .3s ease both; } .qbanner { animation: vx-in .3s ease both; }
+.pbar > div, .mbar > div { transition: width .6s cubic-bezier(.2,.7,.2,1); }
+.mastered { animation: vx-glow 2.6s ease-in-out infinite; }
+.hero .big, .panel.center .big { display: inline-block; animation: vx-pop .5s ease both; }
+.vxnewrec, .vxstars { animation: vx-pop .45s ease both; }
+.stars { display: inline-block; }
+.streakfire { display: inline-block; animation: vx-fire 1.2s ease-in-out infinite; transform-origin: 50% 80%; }
+
+/* ---------- 提示訊息 ---------- */
+.toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 1000; max-width: min(92vw, 520px); background: #1b2430; color: #fff; padding: 11px 18px; border-radius: 12px; box-shadow: 0 8px 26px rgba(0,0,0,.28); font-size: .95rem; animation: vx-slide-up .3s cubic-bezier(.2,.8,.2,1) both; }
+.toast.out { opacity: 0; transform: translate(-50%, 14px); transition: opacity .3s, transform .3s; }
+
+/* ---------- 彩帶 ---------- */
+.confetti-piece { position: fixed; z-index: 2000; width: 9px; height: 14px; border-radius: 2px; pointer-events: none; will-change: transform, opacity; }
+
+/* ---------- 語言切換 ---------- */
+.langsw { display: inline-flex; align-items: center; align-self: center; margin: 0 4px; padding: 2px; border: 1.5px solid rgba(255,255,255,.55); border-radius: 999px; background: rgba(255,255,255,.12); cursor: pointer; font: inherit; font-size: .78rem; font-weight: 700; min-height: 30px; }
+.langsw span { padding: 3px 9px; border-radius: 999px; color: #fff; opacity: .75; transition: background .2s, color .2s, opacity .2s; }
+.langsw span.on { background: #fff; color: var(--top); opacity: 1; }
+.langsw.lg { border-color: var(--line); background: var(--card); } .langsw.lg span { color: var(--mute); } .langsw.lg span.on { background: var(--accent); color: #fff; }
+
+/* ---------- 登入頁 ---------- */
+.loginpage { position: relative; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom)); overflow: hidden; background: linear-gradient(160deg, #0b63c4 0%, #1e88f0 45%, #5ab4ff 100%); }
+.lg-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lg-bg i { position: absolute; display: block; opacity: .16; background: #fff; animation: vx-float 9s ease-in-out infinite; }
+.lg-bg i.g1 { width: 120px; height: 120px; left: 6%; top: 10%; border-radius: 50%; border: 18px solid #fff; background: transparent; animation-duration: 11s; }
+.lg-bg i.g2 { width: 70px; height: 70px; right: 9%; top: 18%; border-radius: 14px; transform: rotate(20deg); animation-delay: -3s; }
+.lg-bg i.g3 { width: 160px; height: 160px; right: -40px; bottom: 8%; border-radius: 50%; border: 22px solid #fff; background: transparent; animation-duration: 13s; animation-delay: -5s; }
+.lg-bg i.g4 { width: 44px; height: 44px; left: 14%; bottom: 14%; clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); animation-delay: -2s; }
+.lg-bg i.g5 { width: 28px; height: 28px; left: 48%; top: 6%; border-radius: 50%; animation-duration: 7s; }
+.lg-card { position: relative; z-index: 1; width: min(100%, 410px); background: rgba(255,255,255,.96); color: #1b2430; border-radius: 22px; padding: 26px 24px 20px; box-shadow: 0 24px 60px rgba(4,40,90,.35); animation: vx-pop .55s cubic-bezier(.2,.8,.2,1) both; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lg-card { background: rgba(23,33,49,.96); color: #e8eef8; } }
+.lg-card .langsw { position: absolute; top: 12px; right: 12px; margin: 0; }
+.lg-card h1 { text-align: center; margin: 6px 0 2px; font-size: 1.55rem; letter-spacing: .3px; }
+.lg-card .sub { text-align: center; margin: 0 0 14px; }
+.lg-robot { width: 118px; height: 118px; margin: 4px auto 0; animation: vx-bob 3.2s ease-in-out infinite; }
+.lg-robot svg { width: 100%; height: 100%; overflow: visible; }
+.lg-robot .eye { transform-box: fill-box; transform-origin: center; animation: vx-blink 4.5s infinite; transition: transform .2s; }
+.lg-robot .pupil { transition: transform .12s ease-out; }
+.lg-robot .ant { animation: vx-glow 1.6s ease-in-out infinite; }
+.lg-robot .hand { opacity: 0; transform: translateY(14px); transition: opacity .2s, transform .25s cubic-bezier(.2,.8,.2,1); }
+.lg-robot.shy .hand { opacity: 1; transform: none; }
+.lg-robot.shy .pupil { opacity: 0; }
+.lg-robot .wheel { transform-box: fill-box; transform-origin: center; }
+.lg-robot.busy .wheel { animation: vx-spin .5s linear infinite; }
+.lg-robot.ok { animation: vx-pop .5s ease both; }
+.lg-field { position: relative; margin: 12px 0 4px; }
+.lg-field input { width: 100%; margin: 0; padding: 18px 14px 6px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); color: var(--ink); transition: border-color .2s, box-shadow .2s; }
+.lg-field label { position: absolute; left: 15px; top: 14px; color: var(--mute); pointer-events: none; transition: transform .18s ease, font-size .18s ease, color .18s; transform-origin: left top; }
+.lg-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(8,117,226,.18); }
+.lg-field input:focus + label, .lg-field input:not(:placeholder-shown) + label { transform: translateY(-9px) scale(.74); color: var(--accent); }
+.lg-field .eyebtn { position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; border: 0; background: none; font-size: 1.15rem; cursor: pointer; border-radius: 10px; opacity: .7; }
+.lg-field .eyebtn:hover { background: var(--bg); opacity: 1; }
+.lg-field.pwf input { padding-right: 50px; }
+.lg-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 8px 0 2px; font-size: .9rem; color: var(--mute); }
+.lg-row label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.lg-row input[type=checkbox] { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.lg-card .errmsg { text-align: center; min-height: 1.5em; margin-top: 8px; font-weight: 600; }
+.lg-card .errmsg.shake { animation: vx-shake .42s ease; }
+.lg-go { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px; margin-top: 8px; border: 0; border-radius: 14px; font: inherit; font-size: 1.08rem; font-weight: 800; color: #fff; cursor: pointer; background: linear-gradient(135deg, #0875e2, #2f9bff); box-shadow: 0 6px 16px rgba(8,117,226,.4); overflow: hidden; transition: transform .12s, box-shadow .2s, filter .2s; }
+.lg-go:hover { filter: brightness(1.06); box-shadow: 0 8px 20px rgba(8,117,226,.5); } .lg-go:active { transform: scale(.97); }
+.lg-go:disabled { opacity: .8; cursor: progress; }
+.lg-go .spin { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: vx-spin .7s linear infinite; }
+.lg-go.done { background: linear-gradient(135deg, #1f9d55, #3ed17c); }
+.lg-foot { margin-top: 14px; text-align: center; font-size: .86rem; color: var(--mute); }
+.loginpage .sitefoot, .loginpage footer { position: relative; z-index: 1; color: rgba(255,255,255,.85); }
+.loginpage .sitefoot a { color: #fff; }
+.lg-card.leaving { animation: none; transform: scale(.94) translateY(-10px); opacity: 0; transition: transform .35s ease, opacity .35s ease; }
+
+/* ---------- 手機：底部分頁列、加大點擊範圍 ---------- */
+@media (max-width: 760px) {
+  .topbar { min-height: calc(48px + env(safe-area-inset-top)); }
+  .topbar .tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--top); padding: 0 max(4px, env(safe-area-inset-left)) env(safe-area-inset-bottom); box-shadow: 0 -2px 10px rgba(0,0,0,.2); }
+  .topbar .tabs .tab { flex: 1 0 64px; min-height: 52px; padding: 5px 4px; font-size: .68rem; }
+  .topbar .tabs .tab .ti { font-size: 1.3rem; }
+  .topbar .tab[href="#/me"], .topbar > .tab { padding: 2px 8px; }
+  .content, .wrap { padding-bottom: calc(86px + env(safe-area-inset-bottom)); }
+  .logo { padding-right: 4px; }
+  .hero { padding: 16px; } .hero .btn { width: 100%; }
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .skills { grid-template-columns: 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+  .quizhead { flex-wrap: wrap; } .qcard { padding: 14px; }
+  .opts .opt { min-height: 56px; font-size: 1.02rem; }
+  .numrow { flex-wrap: wrap; } .numrow .btn { flex: 1; }
+  .panel { padding: 14px; }
+  table.tbl { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .sitefoot { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
+@media (pointer: coarse) {
+  .btn, .opt, .tab, .chip-item, .bugline, select, summary { min-height: 44px; }
+  .btn.sm { min-height: 40px; padding: 7px 14px; }
+  input[type=checkbox], input[type=radio] { width: 22px; height: 22px; }
+}
+
+/* ---------- iPad 直式／橫式 ---------- */
+@media (min-width: 761px) and (max-width: 1100px) {
+  .wrap { max-width: 860px; } .layout { max-width: 100%; }
+  .tab { padding: 4px 10px; } .tiles { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 761px) and (max-width: 1100px) and (orientation: portrait) {
+  .rail { width: 72px; } .skills { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- 模擬器在小螢幕 ---------- */
+@media (max-width: 760px) {
+  .vxroot { min-height: calc(100dvh - 48px); }
+  .vxbar2 { flex-wrap: wrap; row-gap: 2px; }
+  .vxbody { flex-direction: column; }
+  .simcanvas { max-width: 100%; height: auto; }
+  .vxzooms { bottom: 10px; }
+  .vxscrub { min-width: 60px; }
+}
+
+/* ---------- 使用教學頁 ---------- */
+.gd-hero { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; background: linear-gradient(135deg, var(--top), #3da0f7); color: #fff; border-radius: 16px; padding: 20px; margin: 14px 0; }
+.gd-hero h2 { margin: 0 0 4px; } .gd-hero p { margin: 0; opacity: .95; } .gd-hero .em { font-size: 2.6rem; animation: vx-bob 3s ease-in-out infinite; }
+.gd-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; position: sticky; top: 56px; z-index: 5; background: var(--bg); padding: 8px 0; }
+.gd-tabs button { font: inherit; font-weight: 700; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; transition: all .2s; min-height: 40px; }
+.gd-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(8,117,226,.3); }
+.gd-sec { display: none; } .gd-sec.on { display: block; animation: vx-in .3s ease both; }
+.gd-feat { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.gd-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; transition: transform .18s, box-shadow .18s; }
+.gd-card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(20,40,80,.12); }
+.gd-card .gi { font-size: 1.8rem; } .gd-card h4 { margin: 4px 0; } .gd-card p { margin: 0 0 8px; color: var(--mute); font-size: .95rem; }
+.gd-steps { counter-reset: gd; list-style: none; padding: 0; margin: 10px 0; }
+.gd-steps li { counter-increment: gd; position: relative; padding: 8px 8px 8px 46px; margin: 8px 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+.gd-steps li::before { content: counter(gd); position: absolute; left: 10px; top: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; }
+.gd-tip { border-left: 5px solid var(--m-control-s); background: rgba(241,174,52,.14); padding: 10px 14px; border-radius: 0 10px 10px 0; margin: 10px 0; }
+.gd-faq details { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 4px 14px; margin: 8px 0; transition: box-shadow .2s; }
+.gd-faq details[open] { box-shadow: 0 4px 14px rgba(20,40,80,.1); } .gd-faq summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .page-in, .lg-card { opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- 新手導覽小卡 ---------- */
+.tourov { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); animation: vx-in .25s ease both; }
+.tourov.closing { opacity: 0; transition: opacity .25s; }
+.tourbox { animation: vx-pop .4s cubic-bezier(.2,.8,.2,1) both; text-align: center; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+.tourslide { min-height: 190px; animation: vx-in .3s ease both; }
+.tourem { font-size: 3.4rem; line-height: 1.2; animation: vx-bob 3s ease-in-out infinite; }
+.tourbox .row.gap { justify-content: space-between; }
+.tourdots { display: flex; justify-content: center; gap: 8px; margin: 6px 0 12px; }
+.tourdots button { width: 10px; height: 10px; padding: 0; border-radius: 50%; border: 0; background: var(--line); cursor: pointer; transition: width .25s, background .25s; min-height: 0; }
+.tourdots button.on { width: 26px; border-radius: 6px; background: var(--accent); }
+@media (pointer: coarse) { .tourdots button { min-height: 0; } }
+
+/* ---------- 手機：今天要做的事、卡片排版 ---------- */
+@media (max-width: 760px) {
+  .task { flex-wrap: wrap; align-items: flex-start; }
+  .task .tb { flex: 1 1 calc(100% - 50px); }
+  .task > div:last-child:not(.tb):not(.tn) { flex: 1 1 100%; padding-left: 46px; }
+  .task > div:last-child .btn { width: 100%; }
+  .todaycard h2 { font-size: 1.15rem; }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .badges { grid-template-columns: repeat(2, 1fr); }
+  .stagerow .row { flex-wrap: wrap; }
+  .pwbanner { flex-wrap: wrap; }
+  .subbar { padding: 8px 12px; }
+  .row.gap > .btn, .row.gap > a.btn { flex: 1 1 auto; }
+}
+
+/* ---------- 模擬器：各種螢幕 ---------- */
+.vxseg { display: none; }
+@media (min-width: 1001px) and (max-width: 1280px) {          /* iPad 橫放、小筆電 */
+  .vxbody { grid-template-columns: 300px minmax(240px, 1fr) 340px; }
+  .vxroot.rightoff .vxbody { grid-template-columns: 300px minmax(240px, 1fr) 0; }
+  .vxleft2 { grid-template-columns: 76px 1fr; }
+}
+@media (min-width: 761px) and (max-width: 1000px) {            /* iPad 直放：場地在上，積木庫＋工作區並排在下 */
+  .vxbody { display: grid; grid-template-columns: 340px minmax(0, 1fr); grid-template-rows: auto minmax(420px, 1fr); }
+  .vxright2 { grid-column: 1 / -1; grid-row: 1; order: 0; max-height: 44vh; }
+  .vxleft2 { grid-row: 2; grid-column: 1; order: 0; grid-template-columns: 74px 1fr; }
+  .vxwsbox2 { grid-row: 2; grid-column: 2; order: 0; min-height: 420px; }
+  .vxrail2 { flex-direction: column; overflow-x: hidden; overflow-y: auto; } .vxcat2 { flex-direction: column; padding: 8px 4px; white-space: normal; }
+  .vxfly2 { max-height: none; }
+  .vxright2 .simcanvas, .vxrbody .simcanvas { width: auto; max-width: 100%; max-height: 28vh; margin: 0 auto; display: block; }
+}
+@media (max-width: 760px) {                                    /* 手機：積木／場地分頁 */
+  .vxseg { display: flex; gap: 6px; padding: 6px 8px; background: #0a5cb2; position: sticky; top: calc(48px + env(safe-area-inset-top)); z-index: 12; }
+  .vxseg button { flex: 1; font: inherit; font-weight: 700; padding: 9px 6px; border-radius: 10px; border: 0; background: rgba(255,255,255,.14); color: #fff; min-height: 44px; transition: background .2s; }
+  .vxseg button.on { background: #fff; color: #0a5cb2; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+  .vxroot.seg-blocks .vxright2 { display: none; }
+  .vxroot.seg-field .vxleft2, .vxroot.seg-field .vxwsbox2 { display: none; }
+  .vxwsbox2 { min-height: 55vh; }
+  .vxfly2 { max-height: 200px; }
+  .vxgoal2 { font-size: .9rem; }
+}
+
+/* 手機：把模擬器頂端壓縮，讓工作區和場地看得到更多 */
+@media (max-width: 760px) {
+  .vxsub2 { flex-wrap: nowrap; gap: 6px; padding: 4px 8px; }
+  .vxcodetab, .vxlbl, .vxslot, .vxdiv { display: none; }
+  .vxfieldsel { min-width: 0; flex: 1 1 auto; }
+  .vxgoal2 { padding: 6px 10px; font-size: .85rem; line-height: 1.35; max-height: 4.6em; overflow: auto; }
+  .vxbar2 { padding: 2px 4px; gap: 2px; }
+  .vxproj { max-width: 52vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .simpage .pwbanner { display: none; }
+  .vxws2 { padding-right: 44px; }
+}
+
+.vxtb2.run { background: #1f9d55; box-shadow: 0 2px 6px rgba(0,0,0,.25); } .vxtb2.run:hover:not(.static) { background: #25b365; }
+.vxtb2:active { transform: scale(.94); }
+@media (max-width: 760px) {
+  .vxbar2 { row-gap: 4px; }
+  .vxtb2 { min-width: 52px; min-height: 46px; padding: 4px 6px; }
+  .vxbar2 .vxspacer { flex-basis: 100%; height: 0; }
+}
+
+/* =====================================================================
+   模擬器積木外觀：靠近 VEXcode IQ（Scratch／Blockly 風格）
+   - 積木緊貼堆疊（沒有間隙、沒有外露的箭頭與握把），上緣凹槽＋下緣凸榫
+   - C 型積木：左側「手臂」與下方「腳」跟標頭同色，裡面的積木往右縮
+   - 點一下積木選取（才出現 ↑ ↓ ⧉ ✕），整個積木都可以拖，拖的時候會連同下面的積木一起帶走
+   - 放開前，目標位置會長出一塊灰色的「預覽」空位
+   ===================================================================== */
+.vxscope .vxws-inner { zoom: 1; }
+.vxscope .vxws-inner .blist { position: relative; }
+.vxscope .vxws-inner .brow { display: flex; align-items: center; gap: 8px; margin: 0; position: relative; }
+.vxscope .vxws-inner .brow .blk { margin: 0; touch-action: none; cursor: grab; }
+.vxscope .vxws-inner .brow .blk:active { cursor: grabbing; }
+
+/* 積木本體：細深色邊、堆疊時接縫處不要圓角 */
+.vxscope .blk { border-width: 1px; border-radius: 6px; box-shadow: inset 0 1px 0 rgba(255,255,255,.18); }
+.vxscope .vxws-inner .blist > .brow ~ .brow .blk, .vxscope .vxws-inner .blist > .cinner + .brow .blk { border-top-left-radius: 0; border-top-right-radius: 0; }
+.vxscope .vxws-inner .blist > .brow:has(~ .brow) .blk:not(.hat) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.vxscope .vxws-inner .blk.hat { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+/* 上緣凹槽（前一個積木的凸榫會剛好卡進來）＋ 下緣凸榫 */
+.vxscope .blk:not(.hat)::before { content: ''; position: absolute; left: 15px; top: -1px; width: 22px; height: 6px; background: rgba(0,0,0,.26); clip-path: polygon(0 0, 100% 0, 84% 100%, 16% 100%); pointer-events: none; }
+.vxscope .blk::after { left: 16px; bottom: -6px; width: 20px; height: 6px; border: 1px solid; border-top: 0; border-color: inherit; border-radius: 0 0 5px 5px; clip-path: none; z-index: 2; }
+.vxscope .vxws-inner .brow:last-child > .blk::after { z-index: 2; }
+.vxscope .flyblk::before { display: block; }
+
+/* C 型積木：標頭＋左手臂＋腳 */
+.vxscope .vxws-inner .cinner { margin-left: 0; border-left-width: 20px; border-radius: 0; min-height: 26px; position: relative; padding-bottom: 0; }
+.vxscope .vxws-inner .cinner > .blist { padding-top: 0; min-height: 30px; }
+.vxscope .vxws-inner .cinner > .blist > .brow:first-of-type .blk, .vxscope .vxws-inner .cinner > .blist > .slot + .brow .blk { border-top-left-radius: 0; }
+.vxscope .vxws-inner .brow > .cend { margin-left: 0; width: 96px; height: 26px; border-radius: 0 0 8px 8px; font-size: 16px; position: relative; }
+.vxscope .vxws-inner .brow > .cend::after { content: ''; position: absolute; left: 16px; bottom: -6px; width: 20px; height: 6px; background: inherit; border: 1px solid; border-color: inherit; border-top: 0; border-radius: 0 0 5px 5px; }
+.vxscope .vxws-inner .brow > .blk.celse { border-radius: 0; }
+/* 標頭下方的凸榫要對準 C 裡面第一個積木的凹槽（手臂寬 20 + 15） */
+.vxscope .vxws-inner .brow:has(+ .cinner) > .blk::after { left: 36px; }
+.vxscope .vxws-inner .cinner > .blist > .slot:first-child { margin-top: 0; }
+
+/* 放置位置：平常不佔空間，拖曳時才有感應區；游標移到時長出灰色預覽空位 */
+.vxscope .slot { height: 0 !important; margin: 0 !important; background: none !important; overflow: visible; }
+.vxscope .slot::after { content: ""; position: absolute; left: 0; right: 0; top: -19px; height: 38px; pointer-events: none; }
+.simdragging .vxscope .slot::after { pointer-events: auto; }
+.simdragging .slot { height: 0 !important; margin: 0 !important; background: none !important; }
+.vxscope .slot.hot { height: 38px !important; margin: 0 !important; background: rgba(60,70,90,.22) !important; border: 2px dashed rgba(60,70,90,.4); border-radius: 6px; transition: height .12s ease; }
+.vxscope .slot > * { display: none; }
+
+/* 「＋」與目前的加入位置：縮小、淡化，不再用虛線外框框住整個區塊 */
+.vxscope .blist.target { outline: none; }
+.vxscope .addhere { display: inline-flex; align-items: center; justify-content: center; margin: 4px 0 4px 6px; min-width: 26px; height: 22px; padding: 0 8px; border-radius: 999px; font-size: .78rem; border: 1.5px dashed #c5cbd6; color: #98a1b2; background: none; opacity: .8; }
+.vxscope .addhere.on { color: #1873e0; border-color: #1873e0; background: rgba(24,115,224,.08); opacity: 1; }
+.vxscope .cinner > .blist > .addhere { margin-left: 8px; }
+.vxscope .vxws-inner .blist > .addhere:not(.on) { opacity: .45; } .vxscope .vxws-inner .blist > .addhere:not(.on):hover { opacity: 1; }
+
+/* 選取的積木＋小工具列 */
+.vxscope .blk.sel { outline: 3px solid #fff; box-shadow: 0 0 0 5px #2d8ff3, 0 6px 16px rgba(20,40,90,.35); z-index: 3; }
+.vxscope .bsel { display: inline-flex; gap: 2px; padding: 3px; background: #fff; border-radius: 10px; box-shadow: 0 4px 14px rgba(20,40,90,.28); position: relative; z-index: 4; animation: vx-pop .18s ease both; }
+.vxscope .bsel button { width: 30px; height: 30px; padding: 0; border: 0; border-radius: 8px; background: none; color: #46506a; font: 700 15px/1 "Helvetica Neue", Arial, sans-serif; cursor: pointer; min-height: 0; }
+.vxscope .bsel button:hover { background: #eaf3fe; } .vxscope .bsel button.del:hover { background: #fdeaea; color: #d33a3a; }
+@media (pointer: coarse) { .vxscope .bsel button { width: 38px; height: 38px; } }
+
+/* 拖曳中的殘影：整疊一起跟著走 */
+.dragghost.vxscope { opacity: .96; transform: rotate(-1.5deg); }
+.dragghost.vxscope > .blk { margin: 0 !important; }
+.dragghost .dragmore { display: inline-block; margin-top: 4px; padding: 1px 10px; border-radius: 999px; background: #1b2430; color: #fff; font: 700 12px Arial, sans-serif; }
+body.simdragging { user-select: none; -webkit-user-select: none; cursor: grabbing; }
+
+/* 工作區的點點底，放大時更像 VEXcode 的畫布 */
+.vxwsbox2 { background-color: #fbfbfc; background-image: radial-gradient(#d3d7de 1.2px, transparent 1.2px); background-size: 24px 24px; }
+.vxws2 { padding: 26px 22px 160px; }
+
+/* 「＋」只在需要時出現：目前的加入位置，或空的 C 型積木裡面（點 C 的彩色手臂也可以改變加入位置） */
+.vxscope .vxws-inner .blist > .addhere:not(.on) { display: none; }
+.vxscope .vxws-inner .blist.empty > .addhere { display: inline-flex; opacity: .7; }
+.vxscope .vxws-inner .cinner { cursor: pointer; }
+.vxscope .vxws-inner .cinner > .blist { cursor: default; }
+.vxscope .vxws-inner .cinner > .blist.empty { min-height: 38px; display: flex; align-items: center; }
