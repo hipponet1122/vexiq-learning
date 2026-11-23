@@ -27,6 +27,7 @@
 ## 提交前先自我檢查
 ```bash
 python3 tools/check.py     # 簡體字、不該入庫的檔案、疑似金鑰（CI 也會跑）
+node tests/run.js          # 題庫結構、挑戰解答、模擬引擎、.iqblocks 匯入（不需安裝套件）
 for f in web/*.js; do node --check "$f"; done
 ```
 

@@ -17,6 +17,8 @@ jobs:
         run: python -m py_compile server.py build_info.py make_seed.py tools/check.py
       - name: JavaScript 語法
         run: for f in web/*.js; do node --check "$f" || exit 1; done
+      - name: 自動測試（題庫、挑戰解答、模擬引擎、.iqblocks 匯入）
+        run: node tests/run.js
       - name: 內容與機密檢查（簡體字、不該入庫的檔案、疑似金鑰）
         run: python tools/check.py
       - name: 後端啟動測試

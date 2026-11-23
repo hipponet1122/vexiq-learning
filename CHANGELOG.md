@@ -9,6 +9,9 @@
 - 新增 `LICENSE`（MIT）、`LICENSE-CONTENT.md`（內容 CC BY-SA 4.0）、`NOTICE.md`（VEX 商標與非官方聲明）、`SECURITY.md`、`CODE_OF_CONDUCT.md`、`CONTRIBUTING.md`、Issue／PR 範本。
 - `README.md` 改寫為公開版（功能、本機執行、自架）；營運細節移到不進版控的私人紀錄。
 
+### 自動測試
+- 新增 `tests/`（`node tests/run.js`，不需安裝套件，49 項）：題庫結構、當季計分算術、13 個挑戰的參考解答、模擬引擎、程式碼轉換、`.iqblocks` 匯入；已加入 CI。
+
 ### 社群與治理
 - 新增 `ROADMAP.md`、`MAINTAINERS.md`、`.github/CODEOWNERS`；`tools/check.py` 與 GitHub Actions 自動檢查（語法、簡體字、不該入庫的檔案、疑似金鑰）。
 
