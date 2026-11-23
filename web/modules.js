@@ -224,6 +224,52 @@
   }
 
   /* ============ 組裝教學與實體組裝挑戰 ============ */
+  function labDiagramSvg(id) {
+    const beam = (x1, y1, x2, y2, n, col = '#94a3b8') => {
+      const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy) || 1;
+      const ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+      let holes = '';
+      for (let i = 0; i < n; i++) {
+        const px = n === 1 ? len / 2 : 9 + (i * (len - 18)) / (n - 1);
+        holes += `<circle cx="${px.toFixed(1)}" cy="0" r="3.2" fill="#fff" stroke="#475569" stroke-width="1"/>`;
+      }
+      return `<g transform="translate(${x1},${y1}) rotate(${ang.toFixed(1)})"><rect x="0" y="-8" width="${len.toFixed(1)}" height="16" rx="7" fill="${col}" stroke="#334155" stroke-width="1.5"/>${holes}</g>`;
+    };
+    const pin = (x, y, col = '#2563eb') => `<circle cx="${x}" cy="${y}" r="4.5" fill="${col}" stroke="#fff" stroke-width="1.5"/>`;
+    const gear = (cx, cy, r, t, col, lbl) => {
+      let s = '';
+      for (let i = 0; i < t; i++) {
+        const a = (i * 2 * Math.PI) / t;
+        const tx = cx + (r + 2.5) * Math.cos(a), ty = cy + (r + 2.5) * Math.sin(a);
+        s += `<rect x="${(tx - 2.2).toFixed(1)}" y="${(ty - 2.2).toFixed(1)}" width="4.4" height="4.4" fill="${col}" transform="rotate(${((a * 180) / Math.PI).toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)})"/>`;
+      }
+      return `${s}<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}" opacity=".85" stroke="#334155" stroke-width="1.4"/><rect x="${cx - 4}" y="${cy - 4}" width="8" height="8" rx="1" fill="#fff" stroke="#334155" stroke-width="1.2"/>${lbl ? `<text x="${cx}" y="${cy + r + 15}" text-anchor="middle" font-size="11" fill="#334155" font-weight="700">${lbl}</text>` : ''}`;
+    };
+    const box = (x, y, w, h2, col, lbl, tc = '#1e293b') => `<rect x="${x}" y="${y}" width="${w}" height="${h2}" rx="6" fill="${col}" stroke="#334155" stroke-width="1.5"/><text x="${x + w / 2}" y="${y + h2 / 2 + 4}" text-anchor="middle" font-size="11" font-weight="700" fill="${tc}">${lbl}</text>`;
+    const txt = (x, y, s, col = '#475569', sz = 11) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="${sz}" font-weight="700" fill="${col}">${s}</text>`;
+    const dim = (x1, y1, x2, y2, s, col = '#0284c7') => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="1.8" stroke-dasharray="4 3"/>${txt((x1 + x2) / 2, (y1 + y2) / 2 - 5, s, col, 11)}`;
+    const M = {
+      bl1: beam(45, 36, 175, 36, 7) + beam(45, 116, 175, 116, 7) + beam(45, 36, 45, 116, 5) + beam(175, 36, 175, 116, 5) + beam(45, 36, 175, 116, 8, '#f59e0b') + pin(45, 36) + pin(175, 36) + pin(45, 116) + pin(175, 116) + txt(265, 68, '對角斜撐梁', '#b45309', 12) + txt(265, 88, '切成兩個三角形', '#475569', 11) + txt(265, 108, '雙銷鎖固不變形', '#15803d', 11),
+      bl2: beam(30, 128, 30, 76, 3, '#64748b') + beam(310, 128, 310, 76, 3, '#64748b') + beam(24, 76, 316, 76, 14) + beam(30, 76, 105, 124, 5, '#f59e0b') + beam(105, 124, 170, 76, 5, '#f59e0b') + beam(170, 76, 235, 124, 5, '#f59e0b') + beam(235, 124, 310, 76, 5, '#f59e0b') + box(125, 32, 90, 34, '#60a5fa', 'Brain＋電池', '#fff') + dim(30, 146, 310, 146, '跨距 ≥ 20 cm · 下陷 ≤ 5 mm'),
+      bl3: box(32, 42, 110, 68, '#fecaca', '高重心：易翻', '#991b1b') + box(64, 24, 46, 22, '#ef4444', 'Brain', '#fff') + box(198, 72, 116, 56, '#bbf7d0', '低重心底盤', '#166534') + box(228, 86, 56, 26, '#22c55e', 'Brain+電', '#fff') + txt(256, 148, '側傾 > 25° 仍不翻倒', '#15803d', 11),
+      bl4: `<circle cx="72" cy="82" r="38" fill="none" stroke="#334155" stroke-width="10"/><circle cx="72" cy="82" r="14" fill="#60a5fa"/>` + pin(72, 44, '#ef4444') + `<line x1="120" y1="120" x2="320" y2="120" stroke="#16a34a" stroke-width="4"/>` + dim(120, 104, 320, 104, '轉 3 圈 ≈ 600 mm') + txt(72, 144, '輪胎貼記號', '#dc2626', 11),
+      bl5: box(36, 52, 76, 52, '#93c5fd', '雙馬達底盤') + `<line x1="120" y1="78" x2="316" y2="78" stroke="#0284c7" stroke-width="3" stroke-dasharray="6 4"/>` + `<line x1="316" y1="54" x2="316" y2="102" stroke="#22c55e" stroke-width="3"/>` + txt(215, 66, '直線前進 1000 mm', '#0284c7', 12) + txt(280, 124, '終點偏移 ≤ 50 mm', '#15803d', 11),
+      bl6: box(105, 38, 130, 84, '#e2e8f0', '底盤骨架') + box(88, 44, 18, 30, '#1e293b', '', '#fff') + box(234, 44, 18, 30, '#1e293b', '', '#fff') + box(88, 88, 18, 28, '#f59e0b', '', '#fff') + box(234, 88, 18, 28, '#f59e0b', '', '#fff') + txt(52, 62, '前驅動輪', '#1e293b', 11) + txt(52, 104, '後全向輪', '#b45309', 11) + txt(170, 146, '原地轉 360° 誤差 ≤ 15°', '#0284c7', 11),
+      bl7: beam(72, 34, 72, 126, 6, '#64748b') + beam(226, 34, 226, 126, 6, '#64748b') + `<line x1="56" y1="80" x2="246" y2="80" stroke="#0f172a" stroke-width="5"/>` + box(122, 48, 54, 64, '#334155', '驅動輪', '#fff') + pin(106, 80, '#f59e0b') + pin(192, 80, '#f59e0b') + txt(72, 146, '內側馬達梁', '#334155', 10) + txt(226, 146, '外側護梁雙支撐', '#15803d', 10),
+      bl8: beam(55, 76, 265, 76, 10, '#cbd5e1') + gear(108, 76, 18, 12, '#f97316', '12T 主動') + gear(184, 76, 44, 36, '#3b82f6', '36T 從動') + dim(108, 24, 184, 24, '孔距 2 格（空 1 孔）') + txt(288, 74, '3:1 減速', '#15803d', 12) + txt(288, 94, '轉向相反', '#dc2626', 11),
+      bl9: beam(28, 78, 312, 78, 13, '#cbd5e1') + gear(74, 78, 16, 12, '#f97316', '12T') + gear(144, 78, 28, 24, '#22c55e', '24T 惰輪') + gear(236, 78, 42, 36, '#3b82f6', '36T') + txt(170, 22, '頭尾同向轉動 · 仍是 3:1 減速', '#0284c7', 11),
+      bl10: gear(68, 76, 16, 12, '#f97316', '輸入 12T') + gear(148, 76, 42, 36, '#3b82f6', '同軸 36T+12T') + gear(148, 76, 16, 12, '#f59e0b', '') + gear(238, 76, 42, 36, '#8b5cf6', '輸出 36T') + txt(170, 20, '兩級 3×3 = 9:1 複合減速（輸入 9 圈 → 輸出 1 圈）', '#6d28d9', 11),
+      bl11: box(36, 86, 56, 44, '#60a5fa', '馬達+減速', '#fff') + beam(76, 106, 264, 52, 10, '#f59e0b') + pin(76, 106, '#ef4444') + box(246, 34, 44, 30, '#22c55e', '重物', '#fff') + txt(170, 146, '力臂適中＋減速齒輪＋馬達設 hold 撐 5 秒', '#15803d', 11),
+      bl12: gear(140, 106, 20, 16, '#3b82f6', '') + gear(184, 106, 20, 16, '#3b82f6', '') + beam(140, 106, 104, 42, 5, '#64748b') + beam(184, 106, 220, 42, 5, '#64748b') + box(142, 32, 40, 32, '#eab308', '沙包', '#fff') + txt(162, 148, '對齒同步開合＋內側加橡膠防滑', '#b45309', 11),
+      bl13: box(36, 94, 54, 40, '#64748b', '立柱', '#fff') + beam(70, 106, 256, 62, 10, '#94a3b8') + `<line x1="70" y1="42" x2="178" y2="80" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="5 3"/>` + pin(70, 42, '#ef4444') + pin(178, 80, '#ef4444') + txt(165, 34, '橡皮筋向上拉（重力補償）', '#dc2626', 11) + txt(170, 148, '降下儲能、升舉省力、斷電不猛墜', '#15803d', 11),
+      bl14: box(40, 44, 150, 74, '#cbd5e1', '機器人車頭') + box(168, 52, 32, 26, '#3b82f6', '距離', '#fff') + box(190, 84, 34, 24, '#ef4444', '碰撞', '#fff') + `<line x1="258" y1="24" x2="258" y2="136" stroke="#475569" stroke-width="6"/>` + txt(294, 80, '牆壁', '#475569', 12) + txt(150, 146, '碰撞開關最突出，距離感測器退縮受保護', '#dc2626', 11),
+      bl15: beam(48, 56, 292, 56, 12, '#94a3b8') + box(136, 64, 68, 32, '#8b5cf6', '顏色感測器', '#fff') + `<line x1="30" y1="128" x2="310" y2="128" stroke="#334155" stroke-width="4"/>` + `<rect x="130" y="124" width="80" height="8" fill="#ef4444"/>` + dim(222, 96, 222, 126, '離地 10~35 mm') + txt(170, 148, '紅／藍／白色塊讀值穩定不磨地', '#6d28d9', 11),
+      bl16: `<rect x="52" y="24" width="236" height="106" rx="8" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-dasharray="7 4"/>` + box(88, 48, 164, 68, '#bbf7d0', '起始姿態全車（馬達 ≤ 6）', '#166534') + txt(170, 18, '11" × 20" × 15"（27.9 × 50.8 × 38.1 cm）', '#0284c7', 11) + txt(170, 148, '全車放入檢錄框內 · 僅官方零件 · 線材整齊', '#15803d', 11),
+    };
+    const body = M[id];
+    return body ? `<svg class="svgfig" viewBox="0 0 340 160" xmlns="http://www.w3.org/2000/svg" role="img" style="width:100%;max-width:460px">${body}</svg>` : '';
+  }
+
   function compressPhoto(file) {
     return new Promise((resolve, reject) => {
       const url = URL.createObjectURL(file);
@@ -243,6 +289,25 @@
       img.src = url;
     });
   }
+
+  const LAB_SIM_PRESET = {
+    bl1: { simCh: 'ch1', cfg: { label: '強化框架車', wheel: 'std', gear: '1:1', arm: false, sensors: [] } },
+    bl2: { simCh: 'ch1', cfg: { label: '抗壓桁架車', wheel: 'std', gear: '1:1', arm: false, sensors: [] } },
+    bl3: { simCh: 'ch4', cfg: { label: '低重心穩定車', wheel: 'std', gear: '1:1', arm: false, sensors: [] } },
+    bl4: { simCh: 'ch1', cfg: { label: '200mm 輪測試車', wheel: 'std', gear: '1:1', arm: false, sensors: [] } },
+    bl5: { simCh: 'ch1', cfg: { label: '雙馬達直線底盤', wheel: 'std', gear: '1:1', arm: false, sensors: [] } },
+    bl6: { simCh: 'ch12', cfg: { label: '全向輪靈活底盤', wheel: 'omni', gear: '1:1', arm: false, sensors: [] } },
+    bl7: { simCh: 'ch4', cfg: { label: '雙側支撐比賽底盤', wheel: 'omni', gear: '1:1', arm: false, sensors: [] } },
+    bl8: { simCh: 'ch2', cfg: { label: '3:1 減速齒輪車', wheel: 'std', gear: '3:1', arm: false, sensors: [] } },
+    bl9: { simCh: 'ch2', cfg: { label: '3:1 惰輪同向車', wheel: 'std', gear: '3:1', arm: false, sensors: [] } },
+    bl10: { simCh: 'ch2', cfg: { label: '9:1 複合減速車', wheel: 'std', gear: '9:1', arm: false, sensors: [] } },
+    bl11: { simCh: 'lu2', cfg: { label: '舉重手臂車', wheel: 'std', gear: '1:1', arm: true, sensors: [] } },
+    bl12: { simCh: 'lu2', cfg: { label: '防滑夾爪得分車', wheel: 'omni', gear: '1:1', arm: true, sensors: [] } },
+    bl13: { simCh: 'lu2', cfg: { label: '橡皮筋升舉比賽車', wheel: 'omni', gear: '1:1', arm: true, sensors: [] } },
+    bl14: { simCh: 'ch10', cfg: { label: '防撞＋距離感測車', wheel: 'std', gear: '1:1', arm: false, sensors: ['bumper', 'dist'] } },
+    bl15: { simCh: 'ch9', cfg: { label: '顏色感測底盤車', wheel: 'std', gear: '1:1', arm: false, sensors: ['color'] } },
+    bl16: { simCh: 'lu3', cfg: { label: 'Level Up 全配比賽車', wheel: 'omni', gear: '1:1', arm: true, sensors: ['bumper', 'dist', 'color'] } },
+  };
 
   let buildCat = 'all', buildLv = 0;
   function viewBuild(a, b) {
@@ -422,7 +487,8 @@
           h('h1', { style: 'margin-top:6px' }, lab.title),
           h('p', null, h('b', null, '🎯 任務目標：'), lab.goal),
           h('div', { class: 'callout' }, h('b', null, '🔩 建議零件：'), lab.parts),
-          h('h3', null, '📐 設計與組裝要點'),
+          h('h3', null, '📐 機構示意圖與組裝要點'),
+          html(labDiagramSvg(lab.id)),
           h('ol', null, lab.steps.map((s) => h('li', null, s))),
           measuresBox,
           checksBox,
@@ -432,6 +498,13 @@
           noteTa,
           statusBox,
           h('div', { class: 'row gap', style: 'margin-top:12px' },
+            h('button', { type: 'button', class: 'btn green', onclick: () => {
+              const pr = LAB_SIM_PRESET[lab.id] || { simCh: '', cfg: { label: lab.title, wheel: 'std', gear: '1:1', arm: false, sensors: [] } };
+              st.robotCfg = Object.assign({}, pr.cfg, { fromLab: lab.id });
+              VX.saveState();
+              toast('已載入「' + pr.cfg.label + '」，帶你進模擬練習場試開！');
+              location.hash = pr.simCh ? '#/sim/' + pr.simCh : '#/sim';
+            } }, '🖥️ 丟到模擬練習場試開'),
             h('button', { type: 'button', class: 'btn primary', onclick: saveToNotebook }, '📓 一鍵存入工程筆記'),
             h('a', { class: 'btn', href: '#/practice/' + lab.skill }, '✏️ 相關觀念題：' + VX.SK[lab.skill].name)))), lab.title, '🔧');
     }
@@ -475,7 +548,9 @@
 
   /* ============ 比賽專區 ============ */
   async function viewCompete(a, b) {
-    const nav = h('div', { class: 'row gap', style: 'margin:10px 0' }, [['', '總覽'], ['season', '當季 Level Up'], ['plan', '得分規劃器'], ['skills', '技能賽練習'], ['vocab', '英中術語卡'], ['interview', '面談練習']].map(([k, n]) => h('a', { class: 'btn sm' + ((a || '') === k ? ' primary' : ''), href: '#/compete' + (k ? '/' + k : '') }, n)));
+    const nav = h('div', { class: 'row gap', style: 'margin:10px 0' }, [['', '總覽'], ['timer', '⏱️ 場地計時記分'], ['prep', '🎒 賽前準備與分工'], ['season', '當季 Level Up'], ['plan', '得分規劃器'], ['skills', '技能賽練習'], ['vocab', '英中術語卡'], ['interview', '面談練習']].map(([k, n]) => h('a', { class: 'btn sm' + ((a || '') === k ? ' primary' : ''), href: '#/compete' + (k ? '/' + k : '') }, n)));
+    if (a === 'timer') return matchTimer(nav);
+    if (a === 'prep') return prep(nav);
     if (a === 'season') return season(nav);
     if (a === 'plan') return planner(nav);
     if (a === 'vocab') return vocab(nav);
@@ -484,6 +559,8 @@
     paint(h('div', null, nav,
       h('div', { class: 'panel' }, h('h2', null, '🏆 比賽專區'), h('p', null, '長期目標是參加區域賽、國際賽。這裡幫你把「機器人能力」和「表達能力」一起練起來。'),
         h('div', { class: 'tiles' },
+          h('a', { class: 'tile', href: '#/compete/timer', style: 'background:#ef4444;border-color:#b91c1c;color:#fff' }, h('span', { class: 'ti' }, '🚨'), '場地計時與記分', h('small', { style: 'color:rgba(255,255,255,.9)' }, '60秒倒數＋官方音效')),
+          h('a', { class: 'tile', href: '#/compete/prep', style: 'background:#8b5cf6;border-color:#6d28d9;color:#fff' }, h('span', { class: 'ti' }, '🎒'), '賽前準備與分工', h('small', { style: 'color:rgba(255,255,255,.9)' }, '組隊、駕駛模式、清單')),
           h('a', { class: 'tile', href: '#/compete/season', style: 'background:#f1ae34;border-color:#b38136' }, h('span', { class: 'ti' }, '🎯'), '當季 Level Up', h('small', null, '規則、計分、策略')),
           h('a', { class: 'tile', href: '#/compete/skills', style: 'background:#77b2ff;border-color:#5a85bb' }, h('span', { class: 'ti' }, '⏱️'), '技能賽練習', h('small', null, '記錄分數、看進步')),
           h('a', { class: 'tile', href: '#/compete/vocab', style: 'background:#bf9dee;border-color:#8d76ae' }, h('span', { class: 'ti' }, '🔤'), '英中術語卡', h('small', null, '比賽英文單字')),
@@ -497,8 +574,367 @@
         h('div', { class: 'callout warn' }, '當季是 VEX IQ 2026–2027「Level Up」，規則整理在「當季 Level Up」頁。規則每年不同、手冊也會更新，一切以官方 Game Manual 為準。'))), '比賽專區', '🏆');
   }
 
+  /* ============ 官方比賽場地計時器與即時記分板（含場地音效）============ */
+  let tmInterval = 0, tmAudio = null;
+  function matchTimer(nav) {
+    clearInterval(tmInterval); tmInterval = 0;
+    let mode = 'teamwork', state = 'idle', preSec = 0, leftMs = 60000, endAt = 0, soundOn = true;
+    let firedSwitchStart = false, firedSwitchEnd = false, lastTickSec = 61;
+    const counts = SEASON.scoring.map(() => 0);
+
+    const tone = (freq, dur, type = 'square', vol = 0.16, delay = 0) => {
+      if (!soundOn) return;
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        tmAudio = tmAudio || new AC();
+        if (tmAudio.state === 'suspended') tmAudio.resume();
+        const t0 = tmAudio.currentTime + delay;
+        const osc = tmAudio.createOscillator(), g = tmAudio.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(vol, t0 + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        osc.connect(g); g.connect(tmAudio.destination);
+        osc.start(t0); osc.stop(t0 + dur + 0.03);
+      } catch (e) {}
+    };
+    const sfx = {
+      count: () => tone(880, 0.14, 'sine', 0.2),
+      start: () => { tone(523, 0.14, 'sawtooth', 0.16, 0); tone(659, 0.14, 'sawtooth', 0.16, 0.13); tone(784, 0.14, 'sawtooth', 0.16, 0.26); tone(1046, 0.45, 'sawtooth', 0.2, 0.39); },
+      switchStart: () => { tone(988, 0.18, 'triangle', 0.24, 0); tone(1318, 0.28, 'triangle', 0.24, 0.2); },
+      switchEnd: () => { tone(1318, 0.16, 'triangle', 0.22, 0); tone(988, 0.24, 'triangle', 0.22, 0.18); },
+      tick: () => tone(740, 0.08, 'square', 0.12),
+      end: () => { tone(196, 1.05, 'sawtooth', 0.22, 0); tone(247, 1.05, 'sawtooth', 0.18, 0); },
+      abort: () => { tone(440, 0.16, 'sawtooth', 0.16, 0); tone(294, 0.25, 'sawtooth', 0.16, 0.18); },
+    };
+
+    const screen = h('div', { class: 'tm-screen' });
+    const clockEl = h('div', { class: 'tm-clock' }, '01:00');
+    const phaseEl = h('div', { class: 'tm-phase' }, '準備就緒 — 按下「開始比賽」啟動 3-2-1 倒數與場地音效');
+    const barFill = h('div', { style: 'width:100%' });
+    screen.append(clockEl, phaseEl, h('div', { class: 'tm-bar' }, barFill));
+
+    const fmtClock = (ms) => {
+      const s = Math.max(0, Math.ceil(ms / 1000));
+      return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    };
+    const updateDisplay = () => {
+      if (!document.body.contains(screen)) { clearInterval(tmInterval); tmInterval = 0; return; }
+      if (state === 'pre') {
+        screen.className = 'tm-screen switch';
+        clockEl.textContent = '00:0' + preSec;
+        phaseEl.textContent = '準備出發… ' + preSec;
+        barFill.style.width = '100%'; barFill.style.background = '#f59e0b';
+        return;
+      }
+      const sec = Math.max(0, Math.ceil(leftMs / 1000));
+      clockEl.textContent = fmtClock(leftMs);
+      barFill.style.width = Math.max(0, Math.min(100, (leftMs / 60000) * 100)) + '%';
+      if (state === 'idle') {
+        screen.className = 'tm-screen';
+        phaseEl.textContent = '準備就緒 — 按下「開始比賽」啟動 3-2-1 倒數與場地音效';
+        barFill.style.background = '#22c55e';
+      } else if (state === 'done') {
+        screen.className = 'tm-screen warn';
+        phaseEl.textContent = '🏁 時間到！請立刻放下遙控器，開始計算本場得分';
+        barFill.style.background = '#ef4444';
+      } else if (sec <= 10) {
+        screen.className = 'tm-screen warn';
+        phaseEl.textContent = '🔥 最後 ' + sec + ' 秒衝刺！';
+        barFill.style.background = '#ef4444';
+      } else if (mode === 'teamwork' && sec <= 35 && sec >= 25) {
+        screen.className = 'tm-screen switch';
+        phaseEl.textContent = '🔄 換手時間（35 秒～25 秒）！請交接遙控器';
+        barFill.style.background = '#f59e0b';
+      } else {
+        screen.className = 'tm-screen run';
+        phaseEl.textContent = mode === 'teamwork' ? '🤝 團隊合作賽進行中！' : mode === 'driver' ? '🎮 手動駕駛技能賽進行中！' : '🤖 自動程式技能賽進行中（請勿碰遙控器）！';
+        barFill.style.background = '#22c55e';
+      }
+    };
+
+    const startMatch = () => {
+      clearInterval(tmInterval);
+      state = 'pre'; preSec = 3; leftMs = 60000;
+      firedSwitchStart = false; firedSwitchEnd = false; lastTickSec = 61;
+      sfx.count(); updateDisplay(); drawCtrl();
+      tmInterval = setInterval(() => {
+        if (!document.body.contains(screen)) { clearInterval(tmInterval); tmInterval = 0; return; }
+        if (state === 'pre') {
+          preSec--;
+          if (preSec > 0) { sfx.count(); updateDisplay(); }
+          else {
+            state = 'run'; endAt = Date.now() + 60000;
+            sfx.start(); updateDisplay(); drawCtrl();
+          }
+          return;
+        }
+        if (state === 'run') {
+          leftMs = Math.max(0, endAt - Date.now());
+          const sec = Math.ceil(leftMs / 1000);
+          if (mode === 'teamwork' && sec <= 35 && !firedSwitchStart) { firedSwitchStart = true; sfx.switchStart(); }
+          if (mode === 'teamwork' && sec <= 25 && !firedSwitchEnd) { firedSwitchEnd = true; sfx.switchEnd(); }
+          if (sec <= 10 && sec >= 1 && sec < lastTickSec) { lastTickSec = sec; sfx.tick(); }
+          if (leftMs <= 0) {
+            clearInterval(tmInterval); tmInterval = 0; state = 'done';
+            sfx.end(); updateDisplay(); drawCtrl();
+            if (window.VXFX) window.VXFX.confetti();
+            return;
+          }
+          updateDisplay();
+        }
+      }, 100);
+    };
+    const abortMatch = () => { clearInterval(tmInterval); tmInterval = 0; state = 'idle'; leftMs = 60000; sfx.abort(); updateDisplay(); drawCtrl(); };
+    const resetMatch = () => { clearInterval(tmInterval); tmInterval = 0; state = 'idle'; leftMs = 60000; updateDisplay(); drawCtrl(); };
+
+    const ctrlBox = h('div', { class: 'row gap', style: 'justify-content:center;margin:10px 0' });
+    const drawCtrl = () => {
+      ctrlBox.replaceChildren(
+        state === 'idle' || state === 'done'
+          ? h('button', { type: 'button', class: 'btn green', style: 'font-size:1.1rem;padding:10px 24px', onclick: startMatch }, '▶ 開始比賽（3-2-1 倒數）')
+          : h('button', { type: 'button', class: 'btn danger', style: 'font-size:1.05rem;padding:10px 22px', onclick: abortMatch }, '⏹ 緊急中止'),
+        h('button', { type: 'button', class: 'btn', onclick: resetMatch }, '↺ 重設 01:00'),
+        h('button', { type: 'button', class: 'btn sm', onclick: () => { soundOn = !soundOn; drawCtrl(); } }, soundOn ? '🔊 場地音效：開' : '🔇 場地音效：關'),
+        h('button', { type: 'button', class: 'btn ghost sm', onclick: () => { sfx.start(); toast('已播放開場喇叭聲！'); } }, '📣 測試音效'),
+        document.fullscreenEnabled ? h('button', { type: 'button', class: 'btn ghost sm', onclick: () => { if (document.fullscreenElement) document.exitFullscreen(); else screen.requestFullscreen && screen.requestFullscreen().catch(() => {}); } }, '🖥️ 全螢幕') : null);
+    };
+
+    const modeBox = h('div', { class: 'row gap', style: 'justify-content:center;margin-bottom:8px' });
+    const drawModes = () => {
+      modeBox.replaceChildren(
+        [['teamwork', '🤝 團隊合作賽（含 35s～25s 換手鈴）'], ['driver', '🎮 手動駕駛技能賽'], ['auto', '🤖 自動程式技能賽']].map(([k, lb]) =>
+          h('button', { type: 'button', class: 'btn sm' + (mode === k ? ' primary' : ''), disabled: state === 'run' || state === 'pre', onclick: () => { mode = k; drawModes(); updateDisplay(); } }, lb)));
+    };
+
+    // 即時 Level Up 比賽記分板
+    const scoreTotalEl = h('div', { style: 'font-size:2rem;font-weight:900;color:var(--accent)' }, '0 分');
+    const scoreGrid = h('div', { class: 'tm-score-grid' });
+    const totalScore = () => SEASON.scoring.reduce((a, r, i) => a + counts[i] * r.p, 0);
+    const drawScoreboard = () => {
+      scoreTotalEl.textContent = totalScore() + ' 分';
+      scoreGrid.replaceChildren(...SEASON.scoring.map((r, i) =>
+        h('div', { class: 'tm-scard' },
+          h('div', { style: 'font-weight:700;font-size:.92rem' }, r.n),
+          h('div', { class: 'sub' }, r.p + ' 分 / 個'),
+          h('div', { class: 'row', style: 'justify-content:center;align-items:center;gap:8px;margin-top:6px' },
+            h('button', { type: 'button', class: 'btn sm', onclick: () => { counts[i] = Math.max(0, counts[i] - 1); drawScoreboard(); } }, '－'),
+            h('span', { class: 'num' }, String(counts[i])),
+            h('button', { type: 'button', class: 'btn primary sm', onclick: () => { counts[i]++; drawScoreboard(); } }, '＋')),
+          h('div', { class: 'sub', style: 'margin-top:4px' }, '小計 ' + (counts[i] * r.p) + ' 分'))));
+    };
+
+    const saveMatchScore = async () => {
+      const sc = totalScore();
+      const tName = mode === 'auto' ? '自動程式' : mode === 'driver' ? '手動駕駛' : '團隊合作賽';
+      const detail = SEASON.scoring.map((r, i) => (counts[i] ? r.n + ' × ' + counts[i] + '（' + (counts[i] * r.p) + '分）' : '')).filter(Boolean).join('、') || '無得分明細';
+      try {
+        await api('/api/notes', {
+          kind: 'skills',
+          title: tName + ' ' + sc + ' 分',
+          data: { f: { type: tName, score: String(sc), note: '場地計時實戰：' + detail, date: VX.todayStr() }, c: [] },
+        });
+        if (VX.act) VX.act('note');
+        VX.saveState();
+        toast('已將本場 ' + sc + ' 分存進技能賽紀錄 ✔');
+      } catch (e) { toast(e.message || '儲存失敗'); }
+    };
+
+    drawModes(); drawCtrl(); drawScoreboard(); updateDisplay();
+    paint(h('div', null, nav,
+      h('div', { class: 'panel' },
+        h('h2', null, '🚨 VEX IQ 場地計時與記分裝置'),
+        h('p', { class: 'sub' }, '仿原廠筆電比賽計時器：內建 3-2-1 倒數、開場喇叭、團隊賽 35 秒／25 秒換手鈴、最後 10 秒倒數與結束蜂鳴器！'),
+        modeBox, screen, ctrlBox),
+      h('div', { class: 'panel' },
+        h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' },
+          h('h3', { style: 'margin:0' }, '🏆 Level Up 即時記分板'),
+          scoreTotalEl),
+        scoreGrid,
+        h('div', { class: 'row gap', style: 'margin-top:10px' },
+          h('button', { type: 'button', class: 'btn primary', onclick: saveMatchScore }, '💾 存入技能賽紀錄'),
+          h('button', { type: 'button', class: 'btn ghost', onclick: () => { counts.fill(0); drawScoreboard(); } }, '🧹 歸零分數'),
+          h('a', { class: 'btn', href: '#/compete/skills' }, '📊 查看歷史分數曲線')))), '場地計時記分', '🚨');
+  }
+
+  /* ============ 賽前準備包（補齊官方 7 堂課：組隊分工、駕駛模式、比賽日清單）============ */
+  function prep(nav) {
+    const st = VX.st;
+    const pr = st.prep || (st.prep = { roles: {}, driveMode: 'split', pack: [] });
+    pr.roles = pr.roles || {}; pr.pack = pr.pack || [];
+    const ROLES = [
+      ['builder', '🔧 機構組裝長', '負責底盤、手臂、齒輪補強與賽場即時維修'],
+      ['coder', '💻 程式工程師', '負責自動程式、感測器調校與遙控按鍵設定'],
+      ['driver1', '🎮 第一駕駛員（前 30 秒）', '負責開局搶分，並在 35s～25s 順暢交棒'],
+      ['driver2', '🎮 第二駕駛員（後 30 秒）', '負責後半段衝刺得分與最後 10 秒收尾'],
+      ['notebook', '📓 工程筆記長', '負責拍照、記測試數據與準備評審面談'],
+    ];
+    const DRIVE_MODES = [
+      ['tank', 'Tank（雙搖桿戰車模式）', '左搖桿控左輪、右搖桿控右輪。直覺好做原地旋轉，但需要雙手協調同步往前推。'],
+      ['arcade', 'Arcade（單搖桿街機模式）', '一隻搖桿同時控前後與左右轉彎，空出另一隻手專心按手臂與夾爪按鈕！'],
+      ['split', 'Split Arcade（分離雙搖桿，比賽最常用）', '左搖桿控前後進退、右搖桿控左右轉彎。直線最穩、不容易不小心轉歪，強隊最常用！'],
+    ];
+    const PACK = [
+      '機器人電池充飽 100%（含備用電池與充電器）',
+      '遙控器（Controller）充飽電並已與 Brain 配對成功',
+      'VEXcode 最新版程式已下載到 Brain 的正確 Slot（並貼標籤記住編號）',
+      '已用「實體組裝挑戰 bl16」量過 11" × 20" × 15" 尺寸與馬達 ≤ 6 顆',
+      '備用零件盒：常用連接銷、軸、軸套、橡皮筋、備用感測器線與拆銷器',
+      '安全護目鏡（每位上場隊員各一副）',
+      '工程筆記本（含照片、實測數據表、改良紀錄與隊伍編號）',
+    ];
+    const packProg = h('span', { class: 'sub' });
+    const updPack = () => {
+      const n = PACK.filter((_, i) => pr.pack[i]).length;
+      packProg.textContent = (n === PACK.length ? '🟢 全部準備就緒！' : '🟡 已完成 ') + n + ' / ' + PACK.length + ' 項';
+    };
+    updPack();
+
+    paint(h('div', null, nav,
+      h('div', { class: 'panel' },
+        h('h2', null, '🤝 第 1 堂補齊：組隊角色分工表'),
+        h('p', { class: 'sub' }, '官方課程建議每位隊員都要輪流體驗不同角色！填上目前負責的名字，隨時可調整：'),
+        h('table', { class: 'tbl' },
+          h('tr', null, h('th', null, '角色'), h('th', null, '負責內容'), h('th', null, '目前負責隊員')),
+          ...ROLES.map(([k, title, desc]) => {
+            const inp = h('input', { type: 'text', placeholder: '輸入名字', style: 'width:120px' });
+            inp.value = pr.roles[k] || '';
+            inp.addEventListener('input', () => { pr.roles[k] = inp.value; VX.saveState(); });
+            return h('tr', null, h('td', null, h('b', null, title)), h('td', null, desc), h('td', null, inp));
+          }))),
+      h('div', { class: 'panel' },
+        h('h2', null, '🎮 第 3 堂補齊：遙控駕駛模式比較與換手練習'),
+        h('p', { class: 'sub' }, '不知道遙控器要設哪一種？三種模式都開過 2 分鐘，選出最適合你們隊伍的手感：'),
+        DRIVE_MODES.map(([k, title, desc]) => {
+          const picked = pr.driveMode === k;
+          return h('div', { class: 'card' + (picked ? ' card-lit-ok' : ''), style: 'margin:8px 0;cursor:pointer', onclick: () => { pr.driveMode = k; VX.saveState(); prep(nav); } },
+            h('h3', null, h('span', { class: 'lamp ' + (picked ? 'ok' : 'idle') }), title, picked ? h('span', { class: 'tag done' }, ' ✓ 目前選用') : null),
+            h('p', { class: 'sub', style: 'margin:0' }, desc));
+        }),
+        h('div', { class: 'row gap', style: 'margin-top:10px' },
+          h('a', { class: 'btn primary sm', href: '#/compete/timer' }, '🚨 去練 35s～25s 團隊換手計時'),
+          h('a', { class: 'btn sm', href: '#/import' }, '📤 上傳遙控存檔產生按鍵對照表'))),
+      h('div', { class: 'panel' },
+        h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px' },
+          h('h2', { style: 'margin:0' }, '🎒 第 6 堂補齊：比賽日打包與現場檢核清單'),
+          packProg),
+        h('p', { class: 'sub' }, '出發去比賽前逐項打勾，確保不會少帶電池、線材或工程筆記！'),
+        PACK.map((txt, i) => {
+          const cb = h('input', { type: 'checkbox' }); cb.checked = !!pr.pack[i];
+          cb.addEventListener('change', () => { pr.pack[i] = cb.checked; VX.saveState(); updPack(); });
+          return h('label', { class: 'check' }, cb, h('span', null, txt));
+        }),
+        h('div', { class: 'row gap', style: 'margin-top:10px' },
+          h('a', { class: 'btn primary sm', href: '#/build/lab/bl16' }, '📏 去跑 Level Up 全車尺寸檢錄'),
+          h('a', { class: 'btn sm', href: '#/compete/interview' }, '🎤 練評審面談')))), '賽前準備與分工', '🎒');
+  }
+
   /* ============ 當季 Level Up ============ */
   const md = (t) => t.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  function scoringDrillPanel() {
+    const st = VX.st;
+    const rec = st.scoreDrill || (st.scoreDrill = { ok: 0, total: 0, streak: 0 });
+    const GOALS = [
+      { k: 'floor', name: '地板球門', pts: 1, col: 'blue', colZh: '藍', x: 18, y: 126, w: 72, h: 42 },
+      { k: 'l1', name: 'L1 球門', pts: 3, col: 'red', colZh: '紅', x: 102, y: 106, w: 72, h: 62 },
+      { k: 'l2', name: 'L2 球門', pts: 6, col: 'blue', colZh: '藍', x: 186, y: 84, w: 72, h: 84 },
+      { k: 'l3', name: 'L3 球門', pts: 12, col: 'red', colZh: '紅', x: 270, y: 60, w: 72, h: 108 },
+      { k: 'l4', name: 'L4 球門', pts: 16, col: 'yellow', colZh: '黃', x: 354, y: 34, w: 78, h: 134 },
+    ];
+    const COL_HEX = { blue: '#3b82f6', red: '#ef4444', yellow: '#eab308' };
+    const COL_BG = { blue: 'rgba(59,130,246,.14)', red: 'rgba(239,68,68,.14)', yellow: 'rgba(234,179,8,.18)' };
+    const COL_ZH = { blue: '藍', red: '紅', yellow: '黃' };
+    const rnd = (n) => Math.floor(Math.random() * n);
+    let diff = 'easy', cur = null, solved = false;
+
+    const gen = () => {
+      const bags = GOALS.map((g, idx) => {
+        if (diff === 'easy' && idx > 2) return [];
+        if (diff === 'med' && idx > 3) return [];
+        const cnt = diff === 'easy' ? rnd(3) + (idx === 0 ? 1 : 0) : rnd(3);
+        const arr = [];
+        for (let i = 0; i < cnt; i++) {
+          if (diff === 'easy') arr.push(g.col);
+          else if (diff === 'med') arr.push(rnd(5) === 0 ? (g.col === 'blue' ? 'red' : 'blue') : (rnd(3) === 0 ? 'yellow' : g.col));
+          else arr.push(rnd(4) === 0 ? (g.col === 'yellow' ? (rnd(2) ? 'red' : 'blue') : (g.col === 'blue' ? 'red' : 'blue')) : (rnd(3) === 0 ? 'yellow' : g.col));
+        }
+        return arr;
+      });
+      if (bags.every((a) => !a.length)) bags[0].push('blue', 'blue');
+      let ans = 0;
+      const lines = [];
+      GOALS.forEach((g, i) => {
+        const arr = bags[i];
+        if (!arr.length) return;
+        const valid = arr.filter((c) => (g.col === 'yellow' ? c === 'yellow' : (c === g.col || c === 'yellow')));
+        const invalid = arr.length - valid.length;
+        const sub = valid.length * g.pts;
+        ans += sub;
+        lines.push(g.name + '（' + g.colZh + '／' + g.pts + '分）：' + valid.length + ' 個有效 = ' + sub + ' 分' + (invalid ? '（另有 ' + invalid + ' 個錯色不計分）' : ''));
+      });
+      cur = { bags, ans, lines };
+      solved = false;
+      render();
+    };
+
+    const drawSvg = () => {
+      let inner = '<rect x="6" y="168" width="438" height="6" rx="3" fill="#cbd5e1"/>';
+      GOALS.forEach((g, i) => {
+        const stroke = COL_HEX[g.col], fill = COL_BG[g.col];
+        inner += `<rect x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="2.5"/>`;
+        inner += `<text x="${g.x + g.w / 2}" y="${g.y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="${stroke}">${g.name}(${g.colZh})</text>`;
+        inner += `<text x="${g.x + g.w / 2}" y="${g.y - 3}" text-anchor="middle" font-size="10" fill="#64748b">${g.pts} 分/個</text>`;
+        cur.bags[i].forEach((c, bi) => {
+          const cx = g.x + 18 + (bi % 2) * 34;
+          const cy = g.y + g.h - 16 - Math.floor(bi / 2) * 26;
+          inner += `<circle cx="${cx}" cy="${cy}" r="11" fill="${COL_HEX[c]}" stroke="#fff" stroke-width="2"/>`;
+          inner += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${COL_ZH[c]}</text>`;
+        });
+      });
+      return `<svg class="svgfig" viewBox="0 0 450 184" xmlns="http://www.w3.org/2000/svg" role="img" style="width:100%;max-width:560px">${inner}</svg>`;
+    };
+
+    const wrap = h('div', { class: 'panel' });
+    const render = () => {
+      const inp = h('input', { type: 'text', inputmode: 'numeric', placeholder: '輸入總分', style: 'width:120px;margin:0' });
+      const fb = h('div');
+      const check = () => {
+        if (solved) return;
+        const norm = inp.value.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/[^\d-]/g, '');
+        const v = parseInt(norm, 10);
+        if (isNaN(v)) { inp.focus(); return; }
+        solved = true;
+        const ok = v === cur.ans;
+        rec.total++;
+        if (ok) { rec.ok++; rec.streak++; if (window.VXFX && rec.streak % 3 === 0) window.VXFX.confetti(); }
+        else rec.streak = 0;
+        VX.saveState();
+        fb.replaceChildren(
+          h('div', { class: 'callout' + (ok ? '' : ' warn') },
+            h('b', null, ok ? '✅ 完全正確！總分是 ' + cur.ans + ' 分！' : '❌ 差一點，正確總分是 ' + cur.ans + ' 分（你填 ' + v + ' 分）'),
+            h('ul', { style: 'margin:6px 0 0 18px' }, cur.lines.map((ln) => h('li', null, ln)))),
+          h('button', { type: 'button', class: 'btn primary sm', onclick: gen }, '下一題 ▶'));
+        statEl.textContent = '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題';
+      };
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
+      const statEl = h('span', { class: 'sub' }, '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題');
+      wrap.replaceChildren(
+        h('h3', null, '🎮 互動視覺化 Level Up 計分練習'),
+        h('p', { class: 'sub' }, '看圖算出這個場地的總分！規則：同色或黃色沙包才算分，L4 只收黃色。'),
+        h('div', { class: 'row gap', style: 'margin-bottom:8px;align-items:center' },
+          [['easy', '簡單'], ['med', '中等（含錯色與黃色）'], ['hard', '困難（全 5 層＋陷阱）']].map(([k, lb]) =>
+            h('button', { type: 'button', class: 'btn sm' + (diff === k ? ' primary' : ''), onclick: () => { diff = k; gen(); } }, lb)),
+          h('button', { type: 'button', class: 'btn sm', onclick: gen }, '🔄 換一題')),
+        h('div', { style: 'margin:8px 0' }, html(drawSvg())),
+        h('div', { class: 'row gap', style: 'align-items:center' },
+          inp, h('button', { type: 'button', class: 'btn primary sm', onclick: check }, '批改'), statEl),
+        fb);
+    };
+    gen();
+    return wrap;
+  }
+
   function season(nav) {
     const S = SEASON;
     const inputs = S.scoring.map(() => h('input', { type: 'number', min: 0, value: 0, style: 'width:80px' }));
@@ -529,6 +965,7 @@
       h('div', { class: 'panel' }, h('h3', null, '💡 策略想法'), h('div', { class: 'callout warn' }, '這是我根據計分表推出來的想法，不是官方說法，也還沒實測過。真正的好策略要靠你們量時間、測試，再寫進工程筆記。'),
         h('ul', null, S.strategy.map((t) => h('li', null, t))),
         h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/notebook/new/brainstorm' }, '📓 把想法寫成「腦力激盪」'), h('a', { class: 'btn', href: '#/compete/skills' }, '⏱️ 去記錄技能賽練習'))),
+      scoringDrillPanel(),
       h('div', { class: 'panel' }, h('h3', null, '🧠 計分小測驗'), qbox)), '當季 Level Up', '🎯');
     calc();
     S.scoring.forEach((r, i) => inputs[i].addEventListener('input', () => { const c = document.getElementById('sub' + i); if (c) c.textContent = ((parseInt(inputs[i].value, 10) || 0) * r.p) + ' 分'; }));

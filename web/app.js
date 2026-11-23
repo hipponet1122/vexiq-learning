@@ -566,7 +566,7 @@
     const tabs = [];
     if (user && user.role === 'learner') TABS.forEach(([href, ic, name, key]) => tabs.push(h('a', { class: 'tab' + (key === cur || (key === '' && (cur === '' || cur === 'skill' || cur === 'result')) ? ' on' : ''), href }, h('span', { class: 'ti' }, ic), name)));
     if (user && user.role === 'coach') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👥'), '學員狀況'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
-    if (user && user.role === 'parent') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👪'), '家長頁'), h('a', { class: 'tab' + (cur === 'guide' ? ' on' : ''), href: '#/guide' }, h('span', { class: 'ti' }, '🧭'), '怎麼用'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
+    if (user && user.role === 'parent') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👪'), '家長頁'), h('a', { class: 'tab' + (cur === 'build' ? ' on' : ''), href: '#/build' }, h('span', { class: 'ti' }, '🔧'), '組裝'), h('a', { class: 'tab' + (cur === 'guide' ? ' on' : ''), href: '#/guide' }, h('span', { class: 'ti' }, '🧭'), '怎麼用'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
     const bar = h('header', { class: 'topbar' },
       h('a', { class: 'logo', href: '#/' }, h('b', null, 'IQ'), h('span', null, '自學')),
       h('div', { class: 'tabs' }, tabs),
@@ -702,7 +702,7 @@
       tile('#/sim', '🖥️', '模擬器', '不用機器人也能試跑程式', '#77b2ff', '#5a85bb'),
       tile('#/challenge', '🏁', '挑戰題庫', '把程式實際跑在機器人上', '#f1ae34', '#b38136'),
       tile('#/notebook', '📓', '工程筆記', '學會寫、也真的寫', '#f2cd16', '#b4982e'),
-      tile('#/build', '🔧', '組裝教學', '機構原理與零件圖鑑', '#f2a579', '#b37b5e'),
+      tile('#/build', '🔧', '實體組裝挑戰', '16 關動手實作＋拍照驗證', '#f2a579', '#b37b5e'),
       tile('#/compete', '🏆', '比賽專區', 'Robot Skills、英文術語、面談', '#5ecd98', '#4a9873'));
     const dailyPuzzle = () => {
       const today = todayStr();
@@ -821,8 +821,80 @@
     ]],
   ];
   const CHEAT_ZH = [['drive', '驅動'], ['turn', '旋轉（或「轉」）'], ['stop driving', '停止駕駛'], ['set drive velocity', '將驅動速度設定為'], ['wait', '等待'], ['repeat', '重複'], ['forever', '永遠'], ['repeat until', '重複直到'], ['while', '而'], ['if / else', '如果 ／ 別的'], ['break', '休息'], ['when started', '何時開始'], ['right', '正確的（⚠ 中文介面的翻譯，意思是「右」）'], ['left', '左邊']];
-  function viewCheat() {
-    $app.replaceChildren(shell(h('div', { class: 'vxscope' },
+  const PY_PAIRS = [
+    ['移動與轉彎（Drivetrain）', [
+      ['drive [forward] for (400) [mm]', 'drivetrain.drive_for(FORWARD, 400, MM)', '往前走 400 mm；倒退把 FORWARD 改成 REVERSE。'],
+      ['turn [right] for (90) [degrees]', 'drivetrain.turn_for(RIGHT, 90, DEGREES)', '原地右轉 90°；左轉把 RIGHT 改成 LEFT。'],
+      ['drive [forward]', 'drivetrain.drive(FORWARD)', '一直往前開，必須搭配 drivetrain.stop() 才會停。'],
+      ['stop driving', 'drivetrain.stop()', '讓底盤馬達立刻停下來。'],
+      ['set drive velocity to (50) [%]', 'drivetrain.set_drive_velocity(50, PERCENT)', '調整移動速度百分比（0～100）。'],
+    ]],
+    ['控制與迴圈（Control）', [
+      ['repeat (4)', 'for i in range(4):\n    ...', 'Python 用縮排（4 格空白）代表包在迴圈裡面的積木！'],
+      ['wait (1.5) seconds', 'wait(1.5, SECONDS)', '暫停 1.5 秒再繼續執行下一行。'],
+      ['while <Distance > 150 mm>', 'while distance.object_distance(MM) > 150:\n    ...', '條件成立就一直重複，記得冒號 : 與縮排。'],
+      ['repeat until <Bumper pressed?>', 'while not bumper.pressing():\n    wait(5, MSEC)', 'Python 沒有 repeat until，改寫成「while not 條件」！'],
+      ['if <sees red?> then', 'if optical.color() == Color.RED:\n    ...', 'Python 判斷「等於」要用兩個等號 ==（一個 = 是設定變數）。'],
+    ]],
+    ['變數與自訂積木（Variables / Functions）', [
+      ['set [len] to (200)', 'len = 200', '建立或重設變數的值。'],
+      ['change [len] by (200)', 'len = len + 200  # 或 len += 200', '在原本的數值上累加 200。'],
+      ['define square (size)', 'def square(size):\n    for i in range(4):\n        drivetrain.drive_for(FORWARD, size, MM)\n        drivetrain.turn_for(RIGHT, 90, DEGREES)', 'def 就是「建立我的積木（My Block）」，括號裡放參數名稱。'],
+    ]],
+  ];
+  const PY_QUIZ = [
+    { q: '積木「drive [reverse] for (300) [mm]」對應哪一行 Python？', opts: ['drivetrain.drive_for(REVERSE, 300, MM)', 'drivetrain.drive(REVERSE, 300)', 'drivetrain.turn_for(REVERSE, 300, MM)', 'drivetrain.stop(300)'], a: 0, why: '走指定距離用 drive_for(方向, 距離, 單位)，倒退方向是 REVERSE。' },
+    { q: '在 Python 裡，「重複 3 次」要怎麼寫？', opts: ['for i in range(3):', 'repeat(3)', 'while 3:', 'if range(3):'], a: 0, why: 'Python 用 for i in range(次數):，裡面要重複的程式都要往右縮排。' },
+    { q: 'Python 沒有 repeat until 積木。要寫「重複直到碰撞開關被按下」，應該用哪一句？', opts: ['while not bumper.pressing():', 'if bumper.pressing():', 'for i in bumper:', 'while bumper.pressing():'], a: 0, why: '「直到成立」＝「趁還沒成立的時候一直做」，也就是 while not 條件:。' },
+    { q: '在 Python 的 if 條件裡，判斷變數 score 是否「等於 10」，要用哪個符號？', opts: ['score == 10', 'score = 10', 'score += 10', 'score != 10'], a: 0, why: '兩個等號 == 是「比較是否相等」；一個等號 = 是「把變數設定為」。' },
+    { q: '「len += 200」跟哪一塊積木意思一樣？', opts: ['change [len] by (200)', 'set [len] to (200)', 'repeat (200)', 'wait (200) seconds'], a: 0, why: 'len += 200 就是 len = len + 200，對應「將 len 改為 200（累加）」。' },
+    { q: 'Python 裡「def polygon(sides, size):」對應 VEXcode 的什麼功能？', opts: ['My Blocks（自訂積木）', 'Drivetrain（傳動系統）', 'Sensing（感測器）', 'Sound（音效）'], a: 0, why: 'def 用來定義函式，就跟 VEXcode 裡建立帶參數的 My Block 一樣！' },
+  ];
+
+  function viewCheat(tab) {
+    const isPy = tab === 'py';
+    const nav = h('div', { class: 'row gap', style: 'margin:0 0 12px' },
+      h('a', { class: 'btn sm' + (!isPy ? ' primary' : ''), href: '#/cheat' }, '📋 積木速查表'),
+      h('a', { class: 'btn sm' + (isPy ? ' primary' : ''), href: '#/cheat/py' }, '🐍 積木 ↔ Python 對照教室'));
+    if (isPy) {
+      const done = (st && st.pyQuiz) || {};
+      const okN = PY_QUIZ.filter((_, i) => done[i]).length;
+      const quizBox = h('div', { class: 'panel' },
+        h('h3', null, '🧪 積木 → Python 過渡小測驗（已答對 ' + okN + ' / ' + PY_QUIZ.length + '）'),
+        h('p', { class: 'sub' }, '試著把熟悉的積木翻譯成 VEXcode Python，全部答對就亮滿綠燈！'),
+        PY_QUIZ.map((q, qi) => {
+          const fb = h('div', { class: 'sub', style: 'margin-top:6px' });
+          const lamp = h('span', { class: 'lamp ' + (done[qi] ? 'ok' : 'idle') });
+          return h('div', { class: 'wrongitem' },
+            h('div', { class: 'wq' }, lamp, (qi + 1) + '. ' + q.q),
+            h('div', { class: 'row gap', style: 'margin-top:6px' }, VX.shuffle(q.opts.map((o, oi) => [o, oi])).map(([o, oi]) =>
+              h('button', { type: 'button', class: 'btn sm', style: 'font-family:ui-monospace,monospace', onclick: (e) => {
+                const ok = oi === q.a;
+                e.target.style.borderColor = ok ? 'var(--ok)' : 'var(--bad)';
+                fb.textContent = (ok ? '✅ 答對！' : '❌ 正解是 ' + q.opts[q.a] + '。') + q.why;
+                if (ok && st) {
+                  st.pyQuiz = st.pyQuiz || {};
+                  const was = !!st.pyQuiz[qi];
+                  st.pyQuiz[qi] = true;
+                  lamp.className = 'lamp ok';
+                  saveState();
+                  if (!was && PY_QUIZ.every((_, k) => st.pyQuiz[k]) && window.VXFX) window.VXFX.confetti();
+                }
+              } }, o))),
+            fb);
+        }));
+      $app.replaceChildren(shell(h('div', { class: 'vxscope' }, nav,
+        h('p', { class: 'sub' }, '左邊是熟悉的 VEXcode 積木，右邊是等價的 VEXcode Python 寫法。在模擬器點右上角「Code」也能即時看到自己積木轉成的 Python！'),
+        PY_PAIRS.map(([t, rows]) => h('div', { class: 'panel' }, h('h3', null, t),
+          rows.map(([b, py, d]) => h('div', { class: 'crow', style: 'align-items:flex-start' },
+            blocksEl([b]),
+            h('div', { class: 'cd', style: 'flex:1' },
+              h('pre', { style: 'margin:0 0 4px;padding:6px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font-size:.86rem;overflow-x:auto', 'data-notrans': '1' }, py),
+              h('div', { class: 'sub' }, d)))))),
+        quizBox), { title: '積木 ↔ Python 對照教室', icon: '🐍' }));
+      return;
+    }
+    $app.replaceChildren(shell(h('div', { class: 'vxscope' }, nav,
       h('p', { class: 'sub' }, '積木用 VEXcode 的英文原版字樣，說明用中文。方括號 [ ] 是下拉選單，圓括號 ( ) 是可以填數字的格子，< > 是條件。'),
       CHEAT.map(([t, rows]) => h('div', { class: 'panel' }, h('h3', null, t), rows.map(([b, d]) => h('div', { class: 'crow' }, blocksEl([b]), h('div', { class: 'cd' }, d))))),
       h('div', { class: 'panel' }, h('h3', null, '如果你的 VEXcode 是「中文介面」：英文 ↔ 中文對照'), h('table', { class: 'tbl' }, h('tr', null, h('th', null, 'English'), h('th', null, '中文介面的字樣')), ...CHEAT_ZH.map((r) => h('tr', null, h('td', null, r[0]), h('td', null, r[1])))),
@@ -978,7 +1050,7 @@
     }
     if (VX.routes[a]) return VX.routes[a](...hash.split('/').slice(2));
     if (a === 'skill') return viewSkill(b);
-    if (a === 'cheat') return viewCheat();
+    if (a === 'cheat') return viewCheat(b);
     if (a === 'result') return viewResult();
     if (a === 'me') return viewMe();
     return viewHome();

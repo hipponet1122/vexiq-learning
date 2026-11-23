@@ -334,3 +334,181 @@ cd91fe	Testing
 cc26b4	All levels
 0dcdf4	No challenges match this filter—try another category or level!
 5cee18	Hands-On Build Challenges
+
+d11e1b	Diagonal brace
+251322	Splits into 2 triangles
+e5e044	Double-pinned, rigid
+63296f	Brain + Battery
+3f21c3	Span ≥ 20 cm · Sag ≤ 5 mm
+47f500	High CoG: tips easily
+fdd61d	Low CoG chassis
+33ecb1	Brain+Bat
+32276c	Stable past 25° tilt
+14757b	3 turns ≈ 600 mm
+08aaff	Mark on tire
+f4b567	2-Motor Chassis
+32d33c	Drive straight 1000 mm
+288e01	Drift ≤ 50 mm
+bd1a48	Chassis Frame
+25a12f	Front drive
+d4c818	Rear omni
+31c6e7	360° turn error ≤ 15°
+82434f	Drive Wheel
+b5e182	Inner motor beam
+6f07e1	Outer support beam
+32f6ac	12T Driver
+8d0244	36T Driven
+a5a55e	2-pitch spacing (1 empty hole)
+c34fde	3:1 Reduction
+388b28	Opposite spin
+d608a0	24T Idler
+3236d2	Same spin direction · still 3:1 reduction
+9c2295	Input 12T
+82814a	Shared axle 36T+12T
+c3f4f4	Output 36T
+db846e	2-stage 3×3 = 9:1 compound reduction (9 in → 1 out)
+ee017b	Motor+Gears
+e6e557	Load
+1917e3	Short lever + gear reduction + hold mode for 5 s
+04a4fe	Bag
+c6e882	Meshed claw + rubber grip
+534937	Tower
+cd9d17	Rubber bands pull up (gravity assist)
+2467e6	Stores energy down, assists lifting, no slam
+71c2a2	Robot Front
+054394	Bumper
+b89166	Wall
+4c2b61	Bumper protrudes farthest; Distance sits safely recessed
+dfa65b	10–35 mm off floor
+ad9302	Stable red/blue/white readings without scraping
+188d29	Starting config (Motors ≤ 6)
+4ef6b1	Fits sizing box · VEX IQ parts only · neat wiring
+3957fd	📐 Mechanism Diagram & Build Tips
+3d94b6	Floor Goal
+975039	B
+f233de	R
+4d61c2	Y
+023652	 pts): 
+6f6d22	 valid = 
+dae7a5	 (plus 
+936cf5	 wrong-color = 0 pts)
+b2e5c7	 pts/ea</text>
+e5c1e2	Total score
+37a9d5	✅ Spot on! Total score is 
+205e80	 pts!
+76ce77	❌ Close! Correct score is 
+638879	 pts (you entered 
+df5927	 pts)
+78e802	Next ▶
+ac974d	Solved 
+5ae05a	  · Streak 
+022d76	🎮 Visual Level Up Scoring Drill
+7ae8be	Count the total score from the field! Matching color or yellow bags count; L4 accepts yellow only.
+102a3f	Easy
+8865f5	Medium (yellow + wrong colors)
+5474b3	Hard (all 5 tiers + traps)
+7f1e7e	🔄 New Field
+45104a	Check
+
+532310	Braced Frame Bot
+542e7f	Truss Bridge Bot
+b76b83	Low-CoG Bot
+f947c2	200mm Wheel Test Bot
+0458e2	2-Motor Straight Chassis
+93ffd6	Omni-Wheel Agile Chassis
+c5fb13	Double-Supported Chassis
+200bec	3:1 Geared Bot
+0fae12	3:1 Idler-Gear Bot
+55f38c	9:1 Compound Geared Bot
+fad141	Lifting Arm Bot
+ba5b00	Gripper Claw Bot
+0c3d2b	Rubber-Band Lift Bot
+010b74	Bumper + Distance Bot
+ff365a	Color Sensor Bot
+5d3e4f	Level Up Full Competition Bot
+cb7fc8	Loaded "
+50c3ec	" — opening the simulator practice field!
+8b255e	🖥️ Send to Simulator Practice Field
+
+fecb42	⏱️ Match Timer & Scoreboard
+43c3a7	🎒 Match Prep & Roles
+c2e88b	Match Timer & Scoreboard
+833099	60s countdown + official sounds
+6aff3e	Match Prep & Roles
+6bb58b	Team roles, drive modes, checklist
+b42214	Ready — press "Start Match" for 3-2-1 countdown and field sounds
+9725af	Get ready… 
+f5aba9	🏁 Time's up! Put controllers down and tally the score
+0785a4	🔥 Final 
+b19f75	 seconds!
+f61bd1	🔄 Driver Switch (35s–25s)! Pass the controller
+266125	🤝 Teamwork Match in progress!
+b4c8d4	🎮 Driving Skills Match in progress!
+43690d	🤖 Autonomous Skills Match in progress (hands off controller)!
+d57e99	▶ Start Match (3-2-1)
+3b3c35	⏹ Abort Match
+54f383	↺ Reset 01:00
+eb8b8c	🔊 Field Sound: ON
+09b322	🔇 Field Sound: OFF
+39f698	Played match start horn!
+39f902	📣 Test Sound
+344a25	🖥️ Fullscreen
+846ba4	🤝 Teamwork (with 35s–25s switch bells)
+1f39fe	🎮 Driving Skills
+241095	🤖 Autonomous Skills
+6b73d2	 pts/ea
+1db7d1	Subtotal 
+e115e5	Teamwork
+447913	 pts)
+ed78c2	No scoring items
+22919e	Match timer run: 
+97743e	Saved 
+aedc9f	 pts to Skills log ✔
+24510f	Save failed
+f39075	🚨 VEX IQ Field Match Timer & Scoreboard
+df2bb1	Official-style laptop/iPad match timer: 3-2-1 countdown, start horn, Teamwork 35s/25s switch bells, 10s ticks, and end buzzer!
+11d15e	🏆 Level Up Live Scoreboard
+9f1efc	💾 Save to Skills Log
+8c90cf	🧹 Clear Score
+7e644a	📊 View Score History
+b09abe	Match Timer & Scoreboard
+e7a29a	🔧 Lead Builder
+f162ed	Chassis, arm, gear reinforcement, and quick pit repairs
+f3f7a3	💻 Lead Coder
+cc95c0	Autonomous code, sensor tuning, and controller mapping
+6e9121	🎮 Driver 1 (first 30s)
+3e5991	Opening scoring run and smooth controller handoff at 35s–25s
+2858fb	🎮 Driver 2 (final 30s)
+01dd66	Second-half scoring push and final 10-second finish
+fcb799	📓 Notebook Lead
+f45cc6	Photos, test data logs, and Judges interview prep
+fc28c4	Tank Drive (Dual-Stick)
+4108f9	Left stick controls left wheel, right stick controls right wheel. Intuitive for point turns, requires two-hand sync for straight driving.
+0dbf81	Arcade Drive (Single-Stick)
+25132e	One stick controls both forward/back and turning, freeing the other hand for arm and claw buttons!
+0f1cab	Split Arcade (Most Popular in Competition)
+7a9791	Left stick controls forward/reverse, right stick controls left/right turn. Straightest driving and easiest to avoid accidental drift!
+79b205	Robot batteries charged to 100% (including spares and charger)
+16b25c	Controller fully charged and paired with the Brain
+db167b	Latest VEXcode program downloaded to the right Brain slot (labeled clearly)
+11ca0e	Verified 11" × 20" × 15" sizing and ≤ 6 motors using Build Lab bl16
+77acc0	Spare parts kit: pins, shafts, collars, rubber bands, spare cables, and pin tool
+9c8708	Safety glasses (one pair per team member on the field)
+4f499c	Engineering Notebook (with photos, test tables, iterations, and team number)
+341b50	🟢 All set for match day!
+4cd782	🟡 Completed 
+418fdc	🤝 Lesson 1 Add-On: Team Role Roster
+1706bd	Official STEM Lab recommends rotating roles so everyone tries every job! Enter names below anytime:
+464f3d	Role
+9de748	Responsibilities
+e18c37	Assigned Member
+acafc7	Enter name
+c479b8	🎮 Lesson 3 Add-On: Drive Modes & Driver Switch Practice
+31d58e	Not sure which controller layout to pick? Try each for 2 minutes and choose what feels best:
+ae4154	 ✓ Selected
+6ec869	🚨 Practice 35s–25s Driver Switch Timer
+ccb062	📤 Upload Controller File for Button Map
+5640f1	🎒 Lesson 6 Add-On: Match Day Packing & Pit Checklist
+c8f35e	Check off every item before leaving for the tournament so nothing gets left behind!
+9dbfcb	📏 Run Level Up Full-Bot Inspection (bl16)
+e4ce95	🎤 Practice Judges Interview

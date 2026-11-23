@@ -272,3 +272,46 @@ c5286d	Practiced before
 5efffe	Practiced
 e7a786	Not started
 53e126	Practiced 
+
+6c8f0b	16 hands-on labs + photo verification
+e33338	Drivetrain (Move & Turn)
+618aea	Drive forward 400 mm; change FORWARD to REVERSE to back up.
+99e4b0	Turn right 90° in place; change RIGHT to LEFT to turn left.
+194337	Drives continuously forward—must call drivetrain.stop() to stop.
+855586	Stops the drivetrain motors immediately.
+aeae61	Sets drive velocity percentage (0–100).
+e03bd4	Control & Loops
+0daefd	Python uses indentation (4 spaces) to group lines inside a loop!
+53de30	Pauses for 1.5 seconds before running the next line.
+a757a4	Repeats while the condition is true—don't forget the colon : and indentation.
+b6ad00	Python has no repeat until block—write "while not condition" instead!
+63ce94	Python checks equality with double equals == (single = assigns a variable).
+db2a27	Variables & My Blocks (Functions)
+4805f5	Creates or resets a variable's value.
+0cae63	len = len + 200  # or len += 200
+cc10a0	Adds 200 to the existing value.
+4b15db	def creates a My Block (function), with parameter names inside parentheses.
+46c09a	Which Python line matches the block "drive [reverse] for (300) [mm]"?
+90cc02	Use drive_for(direction, distance, units) for a set distance, with REVERSE to back up.
+31d9e7	How do you write "repeat 3 times" in Python?
+3d5476	Python uses for i in range(count): and indents the repeated lines underneath.
+6911b1	Python has no repeat until block. Which line means "repeat until Bumper pressed?"
+53061e	"Until true" means "keep going while it is NOT true yet": while not condition:.
+29a85e	In a Python if statement, how do you check whether variable score equals 10?
+a032bf	Double equals == compares equality; single equals = assigns a value.
+825bfb	Which block has the same meaning as "len += 200"?
+62657b	len += 200 is shorthand for len = len + 200, matching "change [len] by (200)".
+8f5b65	In Python, what VEXcode feature does "def polygon(sides, size):" correspond to?
+d049ea	My Blocks
+30c640	Drivetrain
+dd4b7b	Sensing
+43ed4d	Sound
+e539a9	def defines a reusable function with parameters—just like a My Block!
+978c2c	📋 Block Cheat Sheet
+19ca8b	🐍 Blocks ↔ Python Studio
+2ae463	🧪 Blocks → Python Transition Quiz (Passed 
+bea4db	Translate familiar blocks into VEXcode Python—get all right to light up every green lamp!
+e73667	✅ Correct! 
+2f11d1	❌ Correct answer: 
+d0e2cd	Familiar VEXcode blocks on the left, equivalent VEXcode Python on the right. You can also click "Code" in the simulator to see live Python for your own blocks!
+f9676f	Blocks ↔ Python Studio

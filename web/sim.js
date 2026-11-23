@@ -25,10 +25,13 @@
     };
   }
 
-  function simulate(program, world) {
+  function simulate(program, world, cfg) {
     const prog = Array.isArray(program) ? program : (program.main || []);
     const defs = Array.isArray(program) ? [] : (program.defs || []);
     const W = world.cols * CELL, H = world.rows * CELL;
+    const gearMul = cfg && cfg.gear === '3:1' ? 1 / 3 : cfg && cfg.gear === '9:1' ? 1 / 6 : 1;
+    const turnMul = cfg && cfg.wheel === 'omni' ? 1.25 : 1;
+    const eSPD = SPD * gearMul, eTSPD = TSPD * turnMul;
     const C = { x: world.start.x, y: world.start.y, th: world.start.th, dv: 50, tv: 50, cv: 0, vars: {}, hits: 0, touching: false, bump: false, time: 0, dist: 0, timeout: false, scope: null, depth: 0, screen: { rows: [], cr: 1, cc: 1 }, screenLog: [], sounds: [], rot: 0, rotOff: 0, hOff: world.start.th, cturn: 0, timerOff: 0 };
     const collide = (x, y) => {
       if (x - R < 0 || x + R > W || y - R < 0 || y + R > H) return true;
@@ -107,7 +110,7 @@
       try {
         switch (b.t) {
           case 'drive': {
-            const raw = val(b.v), target = Math.abs(raw), dir = ((b.dir === '反向' || b.dir === 'reverse') ? -1 : 1) * (raw < 0 ? -1 : 1), spd = (C.dv / 100) * SPD;
+            const raw = val(b.v), target = Math.abs(raw), dir = ((b.dir === '反向' || b.dir === 'reverse') ? -1 : 1) * (raw < 0 ? -1 : 1), spd = (C.dv / 100) * eSPD;
             let moved = 0;
             if (spd <= 0) return;
             while (moved < target - 1e-9) {
@@ -118,15 +121,15 @@
             }
             return;
           }
-          case 'drivec': C.cv = ((b.dir === '反向' || b.dir === 'reverse') ? -1 : 1) * (C.dv / 100) * SPD; return;
+          case 'drivec': C.cv = ((b.dir === '反向' || b.dir === 'reverse') ? -1 : 1) * (C.dv / 100) * eSPD; return;
           case 'stop': C.cv = 0; C.cturn = 0; return;
-          case 'turnc': C.cturn = ((b.dir === '左邊' || b.dir === 'left') ? -1 : 1) * (C.tv / 100) * TSPD; return;
+          case 'turnc': C.cturn = ((b.dir === '左邊' || b.dir === 'left') ? -1 : 1) * (C.tv / 100) * eTSPD; return;
           case 'calibrate': C.hOff = C.th; C.rotOff = C.rot; for (let i = 0; i < 100; i++) yield; return;
           case 'resettimer': C.timerOff = (C.ticks * DT) / 1000; return;
           case 'vel': C.dv = Math.max(0, Math.min(100, val(b.v))); return;
           case 'tvel': C.tv = Math.max(0, Math.min(100, val(b.v))); return;
           case 'turn': {
-            const raw = val(b.v), ang = Math.abs(raw), sgn = ((b.dir === '正確的' || b.dir === 'right') ? 1 : -1) * (raw < 0 ? -1 : 1), rate = (C.tv / 100) * TSPD;
+            const raw = val(b.v), ang = Math.abs(raw), sgn = ((b.dir === '正確的' || b.dir === 'right') ? 1 : -1) * (raw < 0 ? -1 : 1), rate = (C.tv / 100) * eTSPD;
             let t = 0;
             if (rate <= 0) return;
             while (t < ang - 1e-9) { const s = Math.min((rate * DT) / 1000, ang - t); C.th = (C.th + sgn * s + 360) % 360; C.rot += sgn * s; t += s; yield; }
@@ -843,20 +846,39 @@
       c.fillStyle = '#8a94a6'; world.walls.forEach(([x, y, w, hh]) => c.fillRect(x * k, y * k, w * k, hh * k));
       if (showRef && ch && ch.path && ch.path.length) { c.strokeStyle = 'rgba(31,157,85,.55)'; c.lineWidth = 3; c.setLineDash([8, 6]); c.beginPath(); ch.path.forEach(([cc, rr], i) => { const X = cc * CELL * k, Y = rr * CELL * k; if (i) c.lineTo(X, Y); else c.moveTo(X, Y); }); c.stroke(); c.setLineDash([]); }
       if (world.goal) { c.font = Math.round(CELL * k * 0.55) + 'px sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('🚩', world.goal.x * k, world.goal.y * k); c.strokeStyle = '#1f9d55'; c.setLineDash([4, 4]); c.beginPath(); c.arc(world.goal.x * k, world.goal.y * k, 100 * k, 0, 7); c.stroke(); c.setLineDash([]); }
-      const frames = result ? result.frames : [[world.start.x, world.start.y, world.start.th, '']];
-      const idx = Math.max(0, Math.min(fi == null ? 0 : fi, frames.length - 1));
+      const frames = manualOn ? manualTrail : (result ? result.frames : [[world.start.x, world.start.y, world.start.th, '']]);
+      const idx = manualOn ? frames.length - 1 : Math.max(0, Math.min(fi == null ? 0 : fi, frames.length - 1));
       c.strokeStyle = '#0875e2'; c.lineWidth = 2.5; c.beginPath();
-      for (let i = 0; i <= idx; i += 2) { const f = frames[i]; if (i === 0) c.moveTo(f[0] * k, f[1] * k); else c.lineTo(f[0] * k, f[1] * k); }
+      for (let i = 0; i <= idx; i += (manualOn ? 1 : 2)) { const f = frames[i]; if (i === 0) c.moveTo(f[0] * k, f[1] * k); else c.lineTo(f[0] * k, f[1] * k); }
       c.stroke();
       const f = frames[idx];
+      const rcfg = (st && st.robotCfg) || null;
       c.save(); c.translate(f[0] * k, f[1] * k); c.rotate((f[2] * Math.PI) / 180);
+      // 畫輪子（全向輪改畫金色）
+      c.fillStyle = '#334155';
+      c.fillRect(10 * k, -92 * k, 58 * k, 16 * k); c.fillRect(10 * k, 76 * k, 58 * k, 16 * k);
+      c.fillStyle = rcfg && rcfg.wheel === 'omni' ? '#f59e0b' : '#334155';
+      c.fillRect(-72 * k, -92 * k, 54 * k, 16 * k); c.fillRect(-72 * k, 76 * k, 54 * k, 16 * k);
+      // 車身
       c.fillStyle = '#77b2ff'; c.strokeStyle = '#3a63a0'; c.lineWidth = 2;
       c.beginPath(); c.roundRect(-R * k, -78 * k, 2 * R * k, 156 * k, 8 * k); c.fill(); c.stroke();
       c.fillStyle = '#f1ae34'; c.beginPath(); c.moveTo(R * k, 0); c.lineTo((R - 40) * k, -28 * k); c.lineTo((R - 40) * k, 28 * k); c.closePath(); c.fill();
+      // 額外組裝零件（手臂／感測器）
+      if (rcfg && rcfg.arm) {
+        c.strokeStyle = '#f97316'; c.lineWidth = Math.max(2, 10 * k); c.lineCap = 'round';
+        c.beginPath(); c.moveTo((R - 12) * k, -42 * k); c.lineTo((R + 34) * k, -24 * k); c.moveTo((R - 12) * k, 42 * k); c.lineTo((R + 34) * k, 24 * k); c.stroke();
+      }
+      if (rcfg && Array.isArray(rcfg.sensors)) {
+        if (rcfg.sensors.includes('dist')) { c.fillStyle = '#2563eb'; c.fillRect((R - 18) * k, -22 * k, 16 * k, 44 * k); }
+        if (rcfg.sensors.includes('bumper')) { c.fillStyle = '#ef4444'; c.fillRect((R - 2) * k, -32 * k, 12 * k, 64 * k); }
+        if (rcfg.sensors.includes('color')) { c.fillStyle = '#9333ea'; c.beginPath(); c.arc(36 * k, 0, 14 * k, 0, 7); c.fill(); }
+      }
       c.restore();
-      timeEl.textContent = ((idx * DT) / 1000).toFixed(1) + ' 秒';
-      if (typeof scrubEl !== 'undefined' && result) scrubEl.value = String(idx);
-      highlightBid(result ? f[3] : '');
+      if (!manualOn) {
+        timeEl.textContent = ((idx * DT) / 1000).toFixed(1) + ' 秒';
+        if (typeof scrubEl !== 'undefined' && result) scrubEl.value = String(idx);
+        highlightBid(result ? f[3] : '');
+      }
     }
     /* ---- Brain 螢幕 ---- */
     function drawBrain(idx) {
@@ -892,8 +914,9 @@
       cancelAnimationFrame(raf); playing = false; if (rightTab === 'code') setRightTab('field');
       try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { actx = actx || new AC(); actx.resume(); } } catch (e) { /* ignore */ }
       if (typeof seg !== 'undefined' && seg._focusField) seg._focusField();
+      manualOn = false; manualStop();
       tagBids(prog, defs);
-      result = simulate({ main: prog, defs }, world); result.j = judge(result);
+      result = simulate({ main: prog, defs }, world, (st && st.robotCfg) || null); result.j = judge(result);
       improvedBy = 0;
       if (ch) {
         const rec = st.ch[ch.id] || (st.ch[ch.id] = { done: false, hints: 0 });
@@ -910,7 +933,7 @@
       scrubEl.max = String(Math.max(0, result.frames.length - 1)); scrubEl.value = '0'; scrubEl.disabled = false; playPauseBtn.disabled = false;
       if (VX.act) VX.act('sim'); persist(); syncChSel(); play();
     }
-    function stop() { cancelAnimationFrame(raf); playing = false; result = null; curIdx = 0; scrubEl.max = '0'; scrubEl.value = '0'; scrubEl.disabled = true; playPauseBtn.disabled = true; playPauseBtn.textContent = '▶'; highlightBid(''); resBox.replaceChildren(); drawWorld(0); drawBrain(null); }
+    function stop() { manualOn = false; manualStop(); cancelAnimationFrame(raf); playing = false; result = null; curIdx = 0; scrubEl.max = '0'; scrubEl.value = '0'; scrubEl.disabled = true; playPauseBtn.disabled = true; playPauseBtn.textContent = '▶'; highlightBid(''); resBox.replaceChildren(); drawWorld(0); drawBrain(null); }
     function showResult() {
       const j = result.j, C = result.C;
       const tips = !j.ok && ch ? diagnoseFail(result, ch) : [];
@@ -1319,13 +1342,112 @@
         )
       );
     }
+    /* ---- 虛擬組裝配置 ＋ 手動遙控試開 ---- */
+    let manualOn = false, manualPos = null, manualTrail = [], manualDir = 0, manualTurn = 0, manualRaf = 0, manualBump = false;
+    const manualStop = () => { manualDir = 0; manualTurn = 0; cancelAnimationFrame(manualRaf); manualRaf = 0; };
+    const manualReset = () => {
+      manualPos = { x: world.start.x, y: world.start.y, th: world.start.th };
+      manualTrail = [[manualPos.x, manualPos.y, manualPos.th, '']];
+      manualBump = false;
+      updateManualTel();
+      drawWorld(0);
+    };
+    const manualCollide = (x, y) => {
+      if (x - R < 0 || x + R > W || y - R < 0 || y + R > H) return true;
+      for (const [rx, ry, rw, rh] of world.walls) {
+        const nx = Math.max(rx, Math.min(x, rx + rw)), ny = Math.max(ry, Math.min(y, ry + rh));
+        if ((x - nx) ** 2 + (y - ny) ** 2 < R * R) return true;
+      }
+      return false;
+    };
+    const manualSensorDist = () => {
+      const rad = (manualPos.th * Math.PI) / 180, fx = manualPos.x + Math.cos(rad) * R, fy = manualPos.y + Math.sin(rad) * R;
+      for (let d = 0; d <= 2000; d += 4) {
+        const px = fx + Math.cos(rad) * d, py = fy + Math.sin(rad) * d;
+        if (px < 0 || px > W || py < 0 || py > H) return d;
+        for (const [rx, ry, rw, rh] of world.walls) if (px >= rx && px <= rx + rw && py >= ry && py <= ry + rh) return d;
+      }
+      return 2000;
+    };
+    const manualColor = () => {
+      const c = Math.floor(manualPos.x / CELL), r = Math.floor(manualPos.y / CELL);
+      const k2 = (world.colors || []).find((z) => Math.floor(z.x / CELL) === c && Math.floor(z.y / CELL) === r);
+      return k2 ? k2.color : 'none';
+    };
+    const manualTelEl = h('div', { class: 'sub', style: 'margin-top:6px' });
+    const updateManualTel = () => {
+      if (!manualPos) return;
+      const colMap = { red: '紅色', green: '綠色', blue: '藍色', yellow: '黃色', none: '白色地板' };
+      manualTelEl.textContent = '位置 (' + Math.round(manualPos.x) + ', ' + Math.round(manualPos.y) + ') mm · 前方距離 ' + manualSensorDist() + ' mm · 碰撞：' + (manualBump ? '已撞牆' : '無') + ' · 地面：' + (colMap[manualColor()] || '白色地板');
+    };
+    const manualStep = () => {
+      if (!manualOn || (!manualDir && !manualTurn)) { manualRaf = 0; return; }
+      const rcfg = (st && st.robotCfg) || null;
+      const gearMul = rcfg && rcfg.gear === '3:1' ? 1 / 3 : rcfg && rcfg.gear === '9:1' ? 1 / 6 : 1;
+      const turnMul = rcfg && rcfg.wheel === 'omni' ? 1.25 : 1;
+      if (manualTurn) manualPos.th = (manualPos.th + manualTurn * 2.4 * turnMul + 360) % 360;
+      if (manualDir) {
+        const rad = (manualPos.th * Math.PI) / 180;
+        const step = 4.5 * gearMul * manualDir;
+        const nx = manualPos.x + Math.cos(rad) * step, ny = manualPos.y + Math.sin(rad) * step;
+        if (!manualCollide(nx, ny)) { manualPos.x = nx; manualPos.y = ny; manualBump = false; } else manualBump = true;
+      }
+      if (manualTrail.length > 600) manualTrail.shift();
+      manualTrail.push([manualPos.x, manualPos.y, manualPos.th, '']);
+      updateManualTel();
+      drawWorld(0);
+      manualRaf = requestAnimationFrame(manualStep);
+    };
+    const holdBtn = (label, onDown) => {
+      const b = h('button', { type: 'button', class: 'btn sm', style: 'min-width:68px;user-select:none;-webkit-user-select:none' }, label);
+      const go = (e) => { e.preventDefault(); onDown(); if (!manualRaf) manualRaf = requestAnimationFrame(manualStep); };
+      const up = () => { manualDir = 0; manualTurn = 0; };
+      b.addEventListener('pointerdown', go);
+      b.addEventListener('pointerup', up); b.addEventListener('pointerleave', up); b.addEventListener('pointercancel', up);
+      return b;
+    };
+    const robotBox = h('div', { style: 'margin:8px 0;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)' });
+    const drawRobotBox = () => {
+      const rcfg = (st && st.robotCfg) || null;
+      const name = rcfg ? rcfg.label : '標準底盤車';
+      const gear = (rcfg && rcfg.gear) || '1:1';
+      const setGear = (g) => {
+        st.robotCfg = Object.assign({ label: name, wheel: 'std', gear: g, arm: false, sensors: [] }, rcfg || {}, { gear: g });
+        VX.saveState(); drawRobotBox(); drawWorld(curIdx);
+      };
+      robotBox.replaceChildren(
+        h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap' },
+          h('span', { style: 'font-size:.88rem;font-weight:700' }, '🤖 ', name, rcfg && rcfg.wheel === 'omni' ? '（全向輪）' : ''),
+          h('div', { class: 'row gap', style: 'gap:4px' },
+            ['1:1', '3:1', '9:1'].map((g) => h('button', { type: 'button', class: 'btn sm' + (gear === g ? ' primary' : ''), style: 'padding:2px 7px;font-size:.75rem', onclick: () => setGear(g) }, g)),
+            rcfg ? h('button', { type: 'button', class: 'btn ghost sm', style: 'padding:2px 7px;font-size:.75rem', onclick: () => { delete st.robotCfg; VX.saveState(); drawRobotBox(); drawWorld(curIdx); } }, '重設標準車') : null)),
+        h('div', { class: 'row gap', style: 'margin-top:6px;align-items:center' },
+          h('button', { type: 'button', class: 'btn sm' + (manualOn ? ' primary' : ''), onclick: () => {
+            manualOn = !manualOn;
+            if (manualOn) { cancelAnimationFrame(raf); playing = false; manualReset(); } else { manualStop(); drawWorld(curIdx); }
+            drawRobotBox();
+          } }, manualOn ? '🎮 關閉遙控試開' : '🎮 遙控試開這台車'),
+          rcfg && rcfg.fromLab ? h('a', { class: 'btn ghost sm', href: '#/build/lab/' + rcfg.fromLab }, '‹ 回組裝關卡') : null),
+        manualOn ? h('div', { style: 'margin-top:8px' },
+          h('div', { class: 'row gap', style: 'justify-content:center;gap:6px' },
+            holdBtn('◀ 左轉', () => { manualTurn = -1; manualDir = 0; }),
+            holdBtn('▲ 前進', () => { manualDir = 1; manualTurn = 0; }),
+            holdBtn('▼ 後退', () => { manualDir = -1; manualTurn = 0; }),
+            holdBtn('▶ 右轉', () => { manualTurn = 1; manualDir = 0; }),
+            h('button', { type: 'button', class: 'btn ghost sm', onclick: manualReset }, '↺ 回起點')),
+          manualTelEl) : null
+      );
+    };
+
     function setRightTab(t) {
       rightTab = t; Object.entries(rbtn).forEach(([id, b]) => b.classList.toggle('on', id === t));
       rtitle.textContent = t === 'field' ? 'Field' : t === 'brain' ? 'Brain' : 'Code Viewer';
       if (t === 'field') {
         drawEditBox();
+        drawRobotBox();
         rcKids(rightBody, canvas,
           h('div', { class: 'vxbar' }, playPauseBtn, scrubEl, timeEl, h('span', { class: 'sub' }, '速度'), speedSel),
+          robotBox,
           !ch ? editBox : null,
           ch && ch.path && ch.path.length ? h('label', { class: 'vxcheck' }, h('input', { type: 'checkbox', checked: showRef, onchange: (e) => { showRef = e.target.checked; drawWorld(curIdx); } }), '顯示參考路線（提示）') : null,
           resBox);
