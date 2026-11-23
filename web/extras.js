@@ -90,7 +90,7 @@
     VX.app.replaceChildren(shell(h('div', { class: 'portfolio' },
       h('div', { class: 'row gap noprint' }, h('button', { class: 'btn primary', onclick: () => window.print() }, '🖨 列印／存成 PDF'), h('a', { class: 'btn', href: '#/notebook' }, '回筆記')),
       h('p', { class: 'sub noprint' }, '這份作品集會把你寫過的工程筆記整理在一起。按「列印」後，在列印視窗選「存成 PDF」就可以存檔。'),
-      h('div', { class: 'panel pfhead' }, h('h1', { style: 'margin-top:0' }, (user.display || user.name) + '的 VEX IQ 作品集'), h('div', { class: 'sub' }, '整理日期：' + fmtDate(Date.now())),
+      h('div', { class: 'panel pfhead' }, h('h1', { style: 'margin-top:0' }, h('span', { 'data-notrans': '1' }, user.display || user.name), '的 VEX IQ 作品集'), h('div', { class: 'sub' }, '整理日期：' + fmtDate(Date.now())),
         h('div', { class: 'stats' }, h('div', null, h('b', null, mastered.length + ' / ' + SKILLS.length), h('small', null, '精通的技能')), h('div', null, h('b', null, chDone.length), h('small', null, '完成的挑戰')), h('div', null, h('b', null, days), h('small', null, '練習天數')), h('div', null, h('b', null, notes.length), h('small', null, '筆記頁數'))),
         (VX.badges && st.badges && Object.keys(st.badges).length) ? h('p', null, h('b', null, '成就徽章：'), VX.badges.list.filter((b) => st.badges[b.id]).map((b) => b.icon + ' ' + b.name).join('　')) : null,
         mastered.length ? h('p', null, h('b', null, '已精通：'), mastered.map((s) => s.name).join('、')) : null,

@@ -835,7 +835,7 @@
     const nw = h('input', { type: 'password', placeholder: '新密碼（自己習慣的都可以）', autocomplete: 'new-password' });
     const msg = h('div', { class: 'errmsg' });
     $app.replaceChildren(shell(h('div', { class: 'panel' },
-      h('h2', null, (user.display || user.name) + '（' + (user.role === 'parent' ? '家長' : user.role === 'coach' ? '教練（唯讀）' : '學員') + '）'),
+      h('h2', null, h('span', { 'data-notrans': '1' }, user.display || user.name), '（' + (user.role === 'parent' ? '家長' : user.role === 'coach' ? '教練（唯讀）' : '學員') + '）'),
       h('h3', null, '修改密碼'), old, nw, msg,
       h('div', { class: 'row gap' },
         h('button', { class: 'btn primary', onclick: async () => { msg.className = 'errmsg'; try { await api('/api/password', { old: old.value, new: nw.value }); msg.className = 'okmsg'; msg.textContent = '密碼已更新，下次請用新密碼登入'; user.pw_initial = false; old.value = nw.value = ''; } catch (e) { msg.textContent = e.message; } } }, '更新密碼'),
@@ -859,7 +859,7 @@
         learners.length ? learners.map((l) => {
           const acc = l.total ? Math.round((l.correct / l.total) * 100) : 0;
           return h('a', { class: 'panel lcard', href: '#/parent/' + l.id },
-            h('div', null, h('h2', null, l.display), h('p', { class: 'sub' }, '最近練習：' + fmtDate(l.last)),
+            h('div', null, h('h2', { 'data-notrans': '1' }, l.display), h('p', { class: 'sub' }, '最近練習：' + fmtDate(l.last)),
               h('div', { class: 'stats' }, h('div', null, h('b', null, l.week_min), ' 分鐘', h('small', null, '本週')), h('div', null, h('b', null, l.week_n), ' 題', h('small', null, '本週')), h('div', null, h('b', null, acc + '%'), h('small', null, '累計正確率（' + l.total + ' 題）')))),
             l.state && l.state.done ? radarSvg(domainAvg(l.state), DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke)) : h('p', { class: 'sub' }, '還沒做定位測驗'));
         }) : h('p', null, user.role === 'coach' ? '還沒有指派學員給你，請聯絡家長。' : '還沒有學員'),
@@ -875,14 +875,14 @@
     if (!box) return;
     let coaches = [];
     try { coaches = (await api('/api/parent/coaches')).coaches; } catch (e) { box.textContent = e.message; return; }
-    const checks = (sel) => learners.map((l) => { const cb = h('input', { type: 'checkbox', value: l.id }); cb.checked = sel.includes(l.id); return h('label', { class: 'check' }, cb, l.display); });
+    const checks = (sel) => learners.map((l) => { const cb = h('input', { type: 'checkbox', value: l.id }); cb.checked = sel.includes(l.id); return h('label', { class: 'check' }, cb, h('span', { 'data-notrans': '1' }, l.display)); });
     const picked = (boxes) => boxes.map((lb) => lb.querySelector('input')).filter((i) => i.checked).map((i) => parseInt(i.value, 10));
     const nm = h('input', { type: 'text', placeholder: '教練的登入名字' }), dp = h('input', { type: 'text', placeholder: '顯示名稱（選填）' }), pw = h('input', { type: 'text', placeholder: '密碼（至少 4 個字）' });
     const newChecks = checks([]); const msg = h('div', { class: 'errmsg' });
     box.replaceChildren(h('div', { class: 'panel' }, h('h3', { style: 'margin-top:0' }, '🧑‍🏫 教練帳號（唯讀）'),
       h('p', { class: 'sub' }, '教練可以登入看被指派學員的練習狀況、筆記、題庫，但不能修改任何資料。'),
       coaches.length ? coaches.map((c) => { const cks = checks(c.learner_ids); const m2 = h('div', { class: 'okmsg' }); const pwi = h('input', { type: 'text', placeholder: '新密碼' });
-        return h('details', { class: 'lessonbox' }, h('summary', null, c.display + '　', h('small', null, '登入名字：' + c.name + '　· 可看 ' + c.learner_ids.length + ' 位學員')),
+        return h('details', { class: 'lessonbox' }, h('summary', null, h('span', { 'data-notrans': '1' }, c.display), '　', h('small', null, '登入名字：', h('span', { 'data-notrans': '1' }, c.name), '　· 可看 ' + c.learner_ids.length + ' 位學員')),
           h('div', { class: 'body' }, h('b', null, '可以看哪些學員：'), cks,
             h('div', { class: 'row gap' }, h('button', { class: 'btn sm primary', onclick: async () => { try { await api('/api/parent/coach/' + c.id + '/links', { learner_ids: picked(cks) }); m2.className = 'okmsg'; m2.textContent = '已更新'; } catch (e) { m2.className = 'errmsg'; m2.textContent = e.message; } } }, '儲存指派')),
             pwi, h('div', { class: 'row gap' }, h('button', { class: 'btn sm', onclick: async () => { try { await api('/api/parent/coach/' + c.id + '/reset', { pw: pwi.value }); m2.className = 'okmsg'; m2.textContent = '密碼已重設'; pwi.value = ''; } catch (e) { m2.className = 'errmsg'; m2.textContent = e.message; } } }, '重設密碼'),
@@ -906,7 +906,7 @@
     $app.replaceChildren(shell(h('div', null,
       h('a', { class: 'back', href: '#/parent' }, user.role === 'coach' ? '‹ 學員狀況' : '‹ 家長頁'),
       user.role === 'coach' ? h('div', { class: 'callout' }, '👀 教練檢視（唯讀）：你可以看到他的練習狀況，不能修改任何資料。') : null,
-      h('h1', null, d.display, h('small', null, '　登入名字：' + d.name)),
+      h('h1', null, h('span', { 'data-notrans': '1' }, d.display), h('small', null, '　登入名字：', h('span', { 'data-notrans': '1' }, d.name))),
       h('div', { class: 'panel' }, h('div', { class: 'stats' }, h('div', null, h('b', null, d.week_min), ' 分鐘', h('small', null, '本週練習')), h('div', null, h('b', null, d.week_n), ' 題', h('small', null, '本週')), h('div', null, h('b', null, d.total ? Math.round((d.correct / d.total) * 100) + '%' : '-'), h('small', null, '累計正確率')), h('div', null, h('b', null, fmtDate(d.last)), h('small', null, '最近練習'))),
         ps.done ? radarSvg(domainAvg(ps), DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke)) : h('p', { class: 'sub' }, '還沒做定位測驗')),
       h('div', { class: 'panel' }, h('h3', null, '最近 14 天練習時間'),

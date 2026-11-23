@@ -87,10 +87,12 @@
 
   // 不用 document.write（慢速網路會被 Chrome 攔截）；動態載入字典並等 DOM 就緒再啟動
   let dictReady = !!window.VX_EN, domReady = document.readyState !== 'loading', started = false;
-  const maybeStart = () => { if (!started && dictReady && domReady) { started = true; start(); } };
+  const maybeStart = () => { if (!started && dictReady && domReady) { started = true; try { start(); } finally { resolveReady(); } } };
   if (!dictReady && typeof document.createElement === 'function') {
     const sc = document.createElement('script');
-    sc.src = 'i18n-en.js';
+    const curSrc = (document.currentScript && document.currentScript.src) || '';
+    const qv = (curSrc.match(/\?[^#]+/) || [''])[0];
+    sc.src = 'i18n-en.js' + qv;
     sc.onload = sc.onerror = () => { dictReady = true; maybeStart(); };
     setTimeout(() => { if (!started) { dictReady = true; maybeStart(); } }, 4000); // 字典太久沒載到就先用空字典，網站照常可用
     (document.head || document.documentElement).appendChild(sc);
@@ -156,10 +158,10 @@
     const tm = document.querySelector('head > title'); if (tm) new MutationObserver(fixTitle).observe(tm, { childList: true, characterData: true, subtree: true });
     const meta = document.querySelector('meta[name=description]'); if (meta) { const r = tr(meta.content); if (r !== meta.content) meta.content = r; }
     // 瀏覽器內建對話框（保留原始 prompt 供含使用者帳號的確認框使用）
-    resolveReady();
     const origPrompt = window.prompt;
     api.rawPrompt = (m, d) => origPrompt.call(window, m, d);
     const wrap = (name) => { const f = window[name]; if (typeof f === 'function') window[name] = (m, ...r) => f.call(window, tr(String(m)), ...r); };
     ['alert', 'confirm', 'prompt'].forEach(wrap);
+    resolveReady();
   }
 })();
