@@ -552,7 +552,7 @@
   }
 
   /* ---------- 畫面骨架 ---------- */
-  const TABS = [['#/', '🏠', '首頁', ''], ['#/practice', '✏️', '練習', 'practice'], ['#/challenge', '🏁', '挑戰', 'challenge'], ['#/sim', '🖥️', '模擬器', 'sim'], ['#/import', '📤', '上傳存檔', 'import'], ['#/notebook', '📓', '筆記', 'notebook'], ['#/build', '🔧', '組裝', 'build'], ['#/compete', '🏆', '比賽', 'compete'], ['#/cheat', '📋', '速查表', 'cheat'], ['#/resources', '🔗', '資源', 'resources'], ['#/guide', '🧭', '怎麼用', 'guide']];
+  const TABS = [['#/', '🏠', '首頁', ''], ['#/practice', '✏️', '練習', 'practice'], ['#/challenge', '🏁', '挑戰', 'challenge'], ['#/sim', '🖥️', '模擬器', 'sim'], ['#/arena3d', '🏟️', '3D 場地', 'arena3d'], ['#/import', '📤', '上傳存檔', 'import'], ['#/notebook', '📓', '筆記', 'notebook'], ['#/build', '🔧', '組裝', 'build'], ['#/compete', '🏆', '比賽', 'compete'], ['#/cheat', '📋', '速查表', 'cheat'], ['#/resources', '🔗', '資源', 'resources'], ['#/guide', '🧭', '怎麼用', 'guide']];
   /* 語言切換（中／EN）；選擇存在這台裝置的 localStorage，重新載入後生效 */
   function langBtn(cls) {
     const cur = window.VXI18N ? window.VXI18N.lang : 'zh';
@@ -700,6 +700,7 @@
     const tile = (href, ic, name, desc, c, sc) => h('a', { class: 'tile', href, style: 'background:' + c + ';border-color:' + sc }, h('span', { class: 'ti' }, ic), name, h('small', null, desc));
     const tiles = h('div', { class: 'tiles' },
       tile('#/sim', '🖥️', '模擬器', '不用機器人也能試跑程式', '#77b2ff', '#5a85bb'),
+      tile('#/arena3d', '🏟️', '3D 練習場', '3D 撿沙包投球＋計分音效', '#0ea5e9', '#0369a1'),
       tile('#/challenge', '🏁', '挑戰題庫', '把程式實際跑在機器人上', '#f1ae34', '#b38136'),
       tile('#/notebook', '📓', '工程筆記', '學會寫、也真的寫', '#f2cd16', '#b4982e'),
       tile('#/build', '🔧', '實體組裝挑戰', '16 關動手實作＋拍照驗證', '#f2a579', '#b37b5e'),
