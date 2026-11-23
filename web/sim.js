@@ -204,6 +204,45 @@
     return out;
   }
 
+  /* 模擬失敗時的教練診斷提示（純函式，方便測試） */
+  function diagnoseFail(res, ch) {
+    if (!res || !ch) return [];
+    const { frames, C, world } = res, j = res.j || judge(res);
+    if (j.ok) return [];
+    const tips = [];
+    if (j.dist === 0 && !C.timeout && parseFloat(j.secs) === 0) {
+      tips.push('工作區裡還沒有讓車子動的積木，先從左邊拉一個 drive 積木試試看。');
+      return tips;
+    }
+    if (C.timeout) tips.push('程式停不下來了：檢查看看 forever 或重複條件是不是永遠不會結束。');
+    if (C.hits && !ch.allowHit) tips.push('撞到障礙或邊界了：試著縮短直走距離，或早一點轉彎繞開。');
+    const isLoop = ch.mode === 'waypoints' || (ch.goal.c === ch.start.c && ch.goal.r === ch.start.r);
+    if (isLoop) {
+      if (j.dist < 100) tips.push('車子幾乎還沒移動，先確認有放 drive 積木並填上距離（每格 200 mm）。');
+      else tips.push('試著勾選「顯示參考路線」，對照看看車子是在哪一個轉彎偏掉（角度或邊長）。');
+    } else if (world.goal && frames.length) {
+      const last = frames[frames.length - 1];
+      const d0 = Math.hypot(world.start.x - world.goal.x, world.start.y - world.goal.y);
+      const d = Math.hypot(last[0] - world.goal.x, last[1] - world.goal.y);
+      if (d > d0 + 50) tips.push('車子離旗子反而變遠了！檢查看看轉彎方向（left／right）或前進／後退有沒有相反。');
+      else if (d > 100 && j.dist > 0) tips.push('方向有接近旗子了！再微調一下距離（每格是 200 mm）或轉彎角度。');
+    }
+    return tips;
+  }
+
+  /* 過關後找下一個相關的類似挑戰（優先同技能且還沒過關） */
+  function pickNextChallenge(ch, stCh) {
+    if (!ch || typeof CHALLENGES === 'undefined') return null;
+    const done = (id) => !!(stCh && stCh[id] && (stCh[id].sim || stCh[id].done));
+    const idx = CHALLENGES.findIndex((c) => c.id === ch.id);
+    const skills = new Set(ch.skills || []);
+    const others = CHALLENGES.filter((c) => c.id !== ch.id);
+    const sameUndone = others.find((c) => !done(c.id) && (c.skills || []).some((s) => skills.has(s)));
+    if (sameUndone) return sameUndone;
+    if (idx >= 0 && idx + 1 < CHALLENGES.length) return CHALLENGES[idx + 1];
+    return others.find((c) => !done(c.id)) || null;
+  }
+
   /* DSL → 積木資料（載入參考解答用；也拿來自動驗證）。回傳 { main, defs }；遇到不支援的積木回傳 null。 */
   function parseBlocks(lines, defNames) {
     const items = lines.map((ln) => ({ ind: (ln.match(/^ */)[0].length / 2) | 0, t: ln.trim() })).filter((x) => x.t && !/^何時開始/.test(x.t));
@@ -569,6 +608,7 @@
     let lang = st.simLang === 'zh' ? 'zh' : 'en';
     let codeLang = st.simCode === 'cpp' ? 'cpp' : 'py';
     let target = prog, result = null, cat = 'drive', zoom = 0.95, rightTab = 'field', showRef = false, isSaved = true;
+    let failStreak = 0, everFailed = false;
     const inTree = (arr, list) => list === arr || list.some((b) => (b.kids && inTree(arr, b.kids)) || (b.elseKids && inTree(arr, b.elseKids)));
     const targetValid = () => inTree(target, prog) || defs.some((d) => inTree(target, d.kids));
     const undoS = [], redoS = [];
@@ -654,22 +694,61 @@
     function run() {
       cancelAnimationFrame(raf); playing = false; if (rightTab === 'code') setRightTab('field');
       try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { actx = actx || new AC(); actx.resume(); } } catch (e) { /* ignore */ }
-      result = simulate({ main: prog, defs }, world); result.j = judge(result); curIdx = 0; if (VX.act) VX.act('sim'); persist(); play();
+      result = simulate({ main: prog, defs }, world); result.j = judge(result); if (ch && !result.j.ok) { failStreak++; everFailed = true; } curIdx = 0; if (VX.act) VX.act('sim'); persist(); play();
     }
     function stop() { cancelAnimationFrame(raf); playing = false; result = null; curIdx = 0; resBox.replaceChildren(); drawWorld(0); drawBrain(null); }
     function showResult() {
       const j = result.j, C = result.C;
+      const tips = !j.ok && ch ? diagnoseFail(result, ch) : [];
       resBox.replaceChildren(h('div', { class: 'callout ' + (j.ok ? '' : 'warn') },
         h('b', null, j.free ? '🏁 執行完畢' : j.ok ? '✅ 模擬成功！' : '❌ 這次還沒成功'),
         h('div', null, '模擬時間 ' + j.secs + ' 秒　·　走了約 ' + j.dist + ' mm　·　最後位置 (' + Math.round(C.x) + ', ' + Math.round(C.y) + ') mm，朝向 ' + Math.round(C.th) + '°'),
         j.msgs.map((m) => h('div', null, m)),
+        tips.length ? h('div', { class: 'vxtip' }, tips.map((t) => h('div', null, '💡 ' + t))) : null,
         Object.keys(C.vars).length ? h('div', null, '變數：' + Object.entries(C.vars).map(([n, v]) => n + ' = ' + Math.round(v * 100) / 100).join('、')) : null,
         h('div', { class: 'sub' }, '⚠ 模擬是理想化的（速度與轉速是假設值）。真的機器人會有誤差，一定要在實機上再測。')));
+
       if (j.ok && ch) {
         const rec = st.ch[ch.id] || (st.ch[ch.id] = { done: false, hints: 0 });
+        const struggled = everFailed || rec.hints > 0;
+        failStreak = 0;
         if (!rec.sim) { rec.sim = true; if (VX.act) VX.act('simok'); VX.saveState(); toast('模擬通過！接著去機器人上實測吧'); }
-        resBox.append(h('div', { class: 'row gap' }, h('button', { class: 'btn primary sm', onclick: saveNote }, '📓 存成「程式說明」筆記'), h('a', { class: 'btn sm', href: '#/challenge/' + ch.id }, '回挑戰頁')));
-      } else resBox.append(h('div', { class: 'row gap' }, h('button', { class: 'btn sm', onclick: saveNote }, '📓 存成「程式說明」筆記')));
+        const coreSkill = (ch.skills || []).filter((id) => VX.SK && VX.SK[id]).sort((a, b) => VX.pOf(a) - VX.pOf(b))[0] || null; // 該關技能中目前最弱的一個
+        const skObj = coreSkill && VX.SK && VX.SK[coreSkill];
+        const nextCh = pickNextChallenge(ch, st.ch);
+        if (skObj || nextCh) {
+          resBox.append(h('div', { class: 'vxcoach ok' },
+            h('b', null, struggled ? '🎯 克服卡關成功過關！趁剛想通，鞏固一下：' : '🎯 模擬通過！趁熱打鐵：'),
+            h('div', { class: 'row gap', style: 'margin-top:8px' },
+              skObj ? h('a', { class: 'btn primary sm', href: '#/practice/' + skObj.id + '/2' }, '✏️ 做 2 題「' + skObj.name + '」觀念小考') : null,
+              nextCh ? h('a', { class: 'btn sm', href: '#/sim/' + nextCh.id }, '🚀 再挑戰類似題：' + nextCh.title) : null
+            )));
+        }
+        resBox.append(h('div', { class: 'row gap', style: 'margin-top:8px' }, h('button', { class: 'btn sm', onclick: saveNote }, '📓 存成「程式說明」筆記'), h('a', { class: 'btn sm', href: '#/challenge/' + ch.id }, '回挑戰頁')));
+      } else if (!j.ok && ch) {
+        const rec = st.ch[ch.id] || (st.ch[ch.id] = { done: false, hints: 0 });
+        if (failStreak >= 2 && ch.hints && ch.hints.length) {
+          const coachBox = h('div', { class: 'vxcoach' });
+          const drawCoach = () => {
+            const shown = ch.hints.slice(0, rec.hints);
+            coachBox.replaceChildren(
+              h('b', null, '🧭 教練小幫手（連續第 ' + failStreak + ' 次未通過）'),
+              h('div', { class: 'sub', style: 'margin:2px 0 6px' }, '卡關很正常！不用急，可以一步一步看提示或對照參考路線：'),
+              ...shown.map((t, i) => h('div', { class: 'vxhint-item' }, h('b', null, '提示 ' + (i + 1) + '：'), t)),
+              h('div', { class: 'row gap', style: 'margin-top:8px' },
+                rec.hints < ch.hints.length ? h('button', { class: 'btn primary sm', onclick: () => { rec.hints++; VX.saveState(); drawCoach(); } }, '💡 給我提示（' + rec.hints + '/' + ch.hints.length + '）') : null,
+                failStreak >= 3 && !showRef ? h('button', { class: 'btn sm', onclick: () => { showRef = true; const cb = rightBody.querySelector('.vxcheck input'); if (cb) cb.checked = true; drawWorld(curIdx); drawCoach(); } }, '🗺️ 顯示參考路線') : null,
+                failStreak >= 4 ? h('button', { class: 'btn ghost sm', onclick: loadRef }, '📖 載入參考解答看看') : null
+              )
+            );
+          };
+          drawCoach();
+          resBox.append(coachBox);
+        }
+        resBox.append(h('div', { class: 'row gap', style: 'margin-top:8px' }, h('button', { class: 'btn sm', onclick: saveNote }, '📓 存成「程式說明」筆記')));
+      } else {
+        resBox.append(h('div', { class: 'row gap', style: 'margin-top:8px' }, h('button', { class: 'btn sm', onclick: saveNote }, '📓 存成「程式說明」筆記')));
+      }
     }
     async function saveNote() {
       const j = result && result.j;
@@ -984,5 +1063,5 @@
   }
 
   VX.routes.sim = (id) => viewSim(id);
-  VX.sim = { simulate, judge, parseDsl, makeWorld, toText, toPython, toCpp, programText, staticList, staticBlock, normDirs, CELL, DT };
+  VX.sim = { simulate, judge, diagnoseFail, pickNextChallenge, parseDsl, makeWorld, toText, toPython, toCpp, programText, staticList, staticBlock, normDirs, CELL, DT };
 })();

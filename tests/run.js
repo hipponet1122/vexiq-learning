@@ -154,5 +154,43 @@ t('缺 MOTOR 欄位的積木不會把 null 當成馬達名稱', () => {
   assert(!a.facts.motors.includes('null') && !a.facts.motors.includes(null));
 });
 
+group('教練介入與類似題推薦');
+t('空程式失敗診斷：提醒從左邊拉 drive 積木', () => {
+  const ch = content.CHALLENGES[0];
+  const { r } = run(['何時開始'], ch);
+  const tips = S.diagnoseFail(r, ch);
+  assert(tips.length >= 1 && tips[0].includes('drive'), tips.join(' | '));
+});
+t('方向走反失敗診斷：提醒檢查方向', () => {
+  const ch = content.CHALLENGES[0]; // 起點在左、旗子在右，改用反向走遠
+  const { r } = run(['何時開始', '驅動 [反向] 為 (300) [毫米]'], ch);
+  const tips = S.diagnoseFail(r, ch);
+  assert(tips.some((x) => x.includes('方向')), tips.join(' | '));
+});
+t('撞牆失敗診斷：提醒縮短距離或提早轉彎', () => {
+  const ch = content.CHALLENGES[2]; // ch3 有障礙牆
+  const { r } = run(['何時開始', '驅動 [向前] 為 (800) [毫米]'], ch);
+  const tips = S.diagnoseFail(r, ch);
+  assert(tips.some((x) => x.includes('障礙') || x.includes('撞')), tips.join(' | '));
+});
+t('模擬通過時不產生失敗診斷', () => {
+  const ch = content.CHALLENGES[0];
+  const { r } = run(ch.code, ch);
+  assert.strictEqual(S.diagnoseFail(r, ch).length, 0);
+});
+t('過關後推薦類似挑戰：不會推同一關，且優先同技能未完成', () => {
+  const ch1 = content.CHALLENGES[0]; // skills: ['C1', 'B2']
+  const nxt = S.pickNextChallenge(ch1, { ch1: { sim: true } });
+  assert(nxt && nxt.id !== ch1.id, '應推薦其他關卡');
+  assert((nxt.skills || []).some((s) => ch1.skills.includes(s)), '應優先同技能關卡：' + nxt.id);
+});
+t('所有挑戰都有對應有效技能（過關小考不落空）', () => {
+  const skIds = new Set(SKILLS.map((s) => s.id));
+  content.CHALLENGES.forEach((c) => {
+    assert(Array.isArray(c.skills) && c.skills.length >= 1, c.id + ' 缺 skills');
+    c.skills.forEach((s) => assert(skIds.has(s), c.id + ' 無效技能 ' + s));
+  });
+});
+
 console.log(`\n${pass} 通過、${fail} 失敗`);
 process.exit(fail ? 1 : 0);

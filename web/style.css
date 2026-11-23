@@ -141,6 +141,18 @@ input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); bo
 .bugline .blocks { margin: 0; } .bugline .blk { margin: 0; }
 .feedback { margin-top: 16px; padding: 14px 16px; border-radius: 10px; } .feedback.ok { background: var(--okbg); } .feedback.bad { background: var(--badbg); }
 .fb-title { font-weight: 800; font-size: 1.1rem; } .fb-ans { font-weight: 700; margin: 4px 0; } .fb-why { margin: 6px 0 12px; }
+.qbanner { background: rgba(8,117,226,.09); border-left: 4px solid var(--accent); color: var(--deep); padding: 8px 12px; border-radius: 0 8px 8px 0; font-weight: 600; font-size: .92rem; margin-bottom: 12px; }
+.qactions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+.qactions .skip { margin-top: 0; }
+.qhint { margin-top: 12px; padding: 12px 14px; border-radius: 10px; border-left: 5px solid var(--m-control-s); background: rgba(241,174,52,.14); color: var(--ink); }
+.qhint-title { font-weight: 700; margin-bottom: 4px; }
+.qhint-body { font-size: .94rem; line-height: 1.55; }
+.opt.elim { opacity: .45; text-decoration: line-through; background: var(--bg); }
+.coachcard { border-left: 5px solid var(--accent); }
+.vxtip { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(0,0,0,.15); font-weight: 600; color: var(--deep); }
+.vxcoach { margin-top: 10px; padding: 12px 14px; border-radius: 10px; border-left: 5px solid var(--accent); background: rgba(8,117,226,.08); }
+.vxcoach.ok { border-left-color: var(--ok); background: var(--okbg); }
+.vxhint-item { margin-top: 6px; padding: 6px 10px; background: #fff; border: 1px solid var(--line); border-radius: 7px; font-size: .92rem; }
 .changes { max-width: 460px; margin: 12px auto; text-align: left; }
 .chg { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); } .up { color: var(--ok); font-weight: 700; } .down { color: var(--bad); font-weight: 700; }
 .crow { display: flex; gap: 14px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; } .crow .blocks { margin: 0; min-width: 260px; } .cd { flex: 1; min-width: 180px; color: var(--mute); }

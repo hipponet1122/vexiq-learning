@@ -112,15 +112,15 @@
   const mastered = (id) => pOf(id) >= 0.8;
   const stars = (p) => (p < 0.25 ? 0 : p < 0.5 ? 1 : p < 0.8 ? 2 : 3);
 
-  function applyResult(q, correct) {
+  function applyResult(q, correct, assisted) {
     const m = st.m[q.s] || (st.m[q.s] = { p: 0, n: 0, t: 0 });
     const L = q.l - 1;
-    if (correct) m.p += Math.max(0, CEIL[L] - m.p) * 0.45; else m.p *= WRONG[L];
+    if (correct) m.p += Math.max(0, CEIL[L] - m.p) * (assisted ? 0.25 : 0.45); else m.p *= WRONG[L];
     m.p = clamp(m.p, 0, 1);
     m.n += 1; m.t = Date.now();
     if (window.VX && VX.act) VX.act('practice', q.s);
     const sn = st.seen[q.id] || (st.seen[q.id] = { c: 0, w: 0, t: 0 });
-    if (correct) sn.c++; else sn.w++;
+    if (correct && !assisted) sn.c++; else sn.w++; // 靠提示或重試才答對，不算「獨立答對」
     sn.t = Date.now();
     const d = todayStr();
     st.days[d] = (st.days[d] || 0) + 1;
@@ -148,9 +148,11 @@
     return cands[cands.length - 1].id;
   }
 
-  function pickQuestion(skillId, level, used) {
-    const pool = QS.filter((q) => q.s === skillId && !used.has(q.id));
-    const pool2 = pool.length ? pool : QS.filter((q) => q.s === skillId);
+  function pickQuestion(skillId, level, used, avoid) {
+    const base = QS.filter((q) => q.s === skillId);
+    let pool = base.filter((q) => !used.has(q.id) && !(avoid && avoid.has(q.id)));
+    if (!pool.length) pool = base.filter((q) => !used.has(q.id));
+    const pool2 = pool.length ? pool : base;
     const now = Date.now();
     const scored = pool2.map((q) => {
       const sn = st.seen[q.id];
@@ -164,10 +166,12 @@
   }
 
   async function save(q, res, mode) {
+    // 家長頁的正確率與迷思統計看的是「第一次、不靠提示」的結果；靠提示／重試才答對的記成未獨立答對，並保留第一次選錯的類型
+    const indep = !!res.correct && !res.assisted;
     try {
       await api('/api/answer', {
-        qid: q.id, skill: q.s, level: q.l, correct: res.correct, choice: res.choice,
-        tag: res.correct ? '' : res.tag || '', ms: res.ms, mode, state: st,
+        qid: q.id, skill: q.s, level: q.l, correct: indep, choice: res.assisted && res.firstChoice ? res.firstChoice : res.choice,
+        tag: indep ? '' : res.tag || res.firstTag || '', ms: res.ms, mode, state: st,
       });
     } catch (e) {
       toast('這題的紀錄沒有存到（' + e.message + '）');
@@ -177,38 +181,74 @@
     try { await api('/api/answer', { state: st }); } catch (e) { toast('進度沒有存到：' + e.message); }
   }
 
+  const TAG_HINTS = {
+    'angle-dist': '注意題目問的是「角度（度）」還是「距離（mm）」。',
+    direction: '想像自己坐在機器人上面：左轉（left）和右轉（right）是以車頭朝向來看。',
+    order: '程式是由上到下依序執行的，順著步驟一步一步走一遍。',
+    'loop-count': '數數看重複積木裡面有幾個動作、總共重複幾次。',
+    'cond-logic': '檢查條件是 < 還是 >，and 要兩邊都成立，or 只要一邊成立。',
+    'sensor-choice': '想想這題需要量「距離、顏色、角度、還是有沒有撞到」？',
+    unit: '檢查單位有沒有統一：1 公分 = 10 毫米（mm）。',
+    gear: '小齒輪帶大齒輪會變慢但有力；大帶小會變快但力量小。',
+    calc: '把題目給的數字列出來再驗算一次。',
+    var: 'set 是直接改成新數字；change 是在原本的數字上加減。',
+    debug: '從最前面開始，一行一行模擬機器人會做什麼。',
+  };
+
   /* ---------- 題目畫面 ---------- */
-  function renderQuestion(q, { onDone, allowSkip = true }) {
+  function renderQuestion(q, { onDone, allowSkip = true, allowHint = false, banner = '' }) {
     const t0 = Date.now();
     const card = h('div', { class: 'qcard' });
     const sk = SK[q.s];
+    if (banner) card.append(h('div', { class: 'qbanner' }, banner));
     card.append(h('div', { class: 'qmeta' }, h('span', { class: 'chip', style: 'background:' + DOM[sk.d].color + ';border-color:' + DOM[sk.d].stroke }, sk.name), h('span', { class: 'lv' }, '難度 ' + '★'.repeat(q.l) + '☆'.repeat(3 - q.l))));
     card.append(h('div', { class: 'qtext' }, q.q));
     if (q.code && q.t !== 'bug') card.append(blocksEl(q.code));
     const area = h('div', { class: 'qarea' });
     card.append(area);
+    const hintBox = h('div', { class: 'qhint hidden' });
+    card.append(hintBox);
     const fb = h('div', { class: 'feedback hidden' });
     card.append(fb);
-    let finished = false;
+    let finished = false, tries = 0, usedHint = false, hintBtn = null, firstTag = '', firstChoice = '';
+
+    function showHint(lead) {
+      usedHint = true;
+      if (hintBtn) hintBtn.disabled = true;
+      hintBox.classList.remove('hidden');
+      hintBox.replaceChildren(
+        h('div', { class: 'qhint-title' }, '💡 ' + lead),
+        sk && sk.lesson ? h('div', { class: 'qhint-body', html: sk.lesson }) : null
+      );
+    }
 
     function finish(correct, choice, tag, correctText) {
       if (finished) return;
       finished = true;
       const ms = Date.now() - t0;
+      const assisted = usedHint || tries > 0;
       card.classList.add('answered');
       fb.classList.remove('hidden');
       fb.classList.add(correct ? 'ok' : 'bad');
+      const title = correct ? (assisted ? '✅ 想通了，答對了！（提示後完成）' : '✅ 答對了！') : '❌ 這題沒答對';
       fb.append(
-        h('div', { class: 'fb-title' }, correct ? '✅ 答對了！' : '❌ 這題沒答對'),
+        h('div', { class: 'fb-title' }, title),
         !correct && correctText ? h('div', { class: 'fb-ans' }, '正確答案：', correctText) : null,
         h('div', { class: 'fb-why' }, q.why),
-        h('button', { class: 'btn primary', id: 'nextBtn', onclick: () => onDone({ correct, choice, tag, ms }) }, '下一題 ➜')
+        h('button', { class: 'btn primary', id: 'nextBtn', onclick: () => onDone({ correct, choice, tag, ms, assisted, firstTag, firstChoice }) }, '下一題 ➜')
       );
       const nb = fb.querySelector('#nextBtn'); if (nb) nb.focus();
     }
-    function addSkip(correctText) {
-      if (!allowSkip) return;
-      area.append(h('button', { class: 'btn ghost skip', onclick: () => { lock(); finish(false, '(還不會)', 'unknown', correctText); } }, '我還不會'));
+    function addActions(correctText, onHint) {
+      const row = h('div', { class: 'qactions' });
+      if (allowHint) {
+        hintBtn = h('button', { class: 'btn sm', onclick: () => onHint() }, '💡 給我一點提示');
+        row.append(hintBtn);
+      }
+      if (allowSkip) {
+        row.append(h('button', { class: 'btn ghost skip', onclick: () => { lock(); finish(false, '(還不會)', 'unknown', correctText); } }, '我還不會'));
+      }
+      if (row.childNodes.length) area.append(row);
     }
     function lock() { area.querySelectorAll('button,input').forEach((b) => (b.disabled = true)); }
 
@@ -217,8 +257,16 @@
       const list = h('div', { class: 'opts' });
       idx.forEach((oi, pos) => {
         const b = h('button', { class: 'opt', onclick: () => {
-          lock();
           const ok = oi === q.a;
+          if (!ok && allowHint && tries === 0) {
+            tries++;
+            b.classList.add('wrong'); b.disabled = true;
+            const wtag = (q.tags && q.tags[oi]) || 'concept';
+            firstTag = wtag; firstChoice = q.opts[oi];
+            showHint('再試一次！先幫你刪掉這個選項。' + (TAG_HINTS[wtag] || '看看下面的重點再選一次：'));
+            return;
+          }
+          lock();
           b.classList.add(ok ? 'right' : 'wrong');
           if (!ok) list.children[idx.indexOf(q.a)].classList.add('right');
           finish(ok, q.opts[oi], ok ? '' : (q.tags && q.tags[oi]) || 'concept', q.opts[q.a]);
@@ -226,19 +274,36 @@
         list.append(b);
       });
       area.append(list);
-      addSkip(q.opts[q.a]);
+      addActions(q.opts[q.a], () => {
+        const aliveWrong = idx.map((oi, pos) => ({ oi, btn: list.children[pos] })).filter((x) => x.oi !== q.a && !x.btn.disabled);
+        if (aliveWrong.length >= 2) {
+          const pick = aliveWrong[Math.floor(Math.random() * aliveWrong.length)];
+          pick.btn.disabled = true; pick.btn.classList.add('elim');
+          showHint('先幫你刪掉一個錯的選項，再看看重點提示：');
+        } else {
+          showHint('看看這個重點提示，再選選看：');
+        }
+      });
     } else if (q.t === 'num') {
       const inp = h('input', { type: 'text', inputmode: 'decimal', class: 'numin', placeholder: '輸入數字', autocomplete: 'off' });
       const go = () => {
         const v = parseFloat(inp.value.replace(/[,，\s]/g, ''));
         if (isNaN(v)) { inp.focus(); return; }
-        lock();
         const ok = Math.abs(v - q.a) <= q.tol + 1e-9;
+        if (!ok && allowHint && tries === 0) {
+          tries++;
+          firstTag = q.tag || ''; firstChoice = String(v);
+          const dir = v > q.a ? '你算的數字偏大了一點' : '你算的數字偏小了一點';
+          showHint('再試一次！' + dir + '。' + (TAG_HINTS[q.tag] || '看看重點公式再算一次：'));
+          inp.focus(); inp.select();
+          return;
+        }
+        lock();
         finish(ok, String(v), ok ? '' : q.tag, q.a + (q.unit ? ' ' + q.unit : ''));
       };
       inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
       area.append(h('div', { class: 'numrow' }, inp, q.unit ? h('span', { class: 'unit' }, q.unit) : null, h('button', { class: 'btn primary', onclick: go }, '送出')));
-      addSkip(q.a + (q.unit ? ' ' + q.unit : ''));
+      addActions(q.a + (q.unit ? ' ' + q.unit : ''), () => showHint('先看清楚單位與公式，再算算看：' + (TAG_HINTS[q.tag] || '')));
       setTimeout(() => inp.focus(), 50);
     } else if (q.t === 'ord') {
       const items = q.items.map((text, i) => ({ text, i }));
@@ -247,9 +312,17 @@
       const ansBox = h('div', { class: 'ordans' });
       const poolBox = h('div', { class: 'ordpool' });
       const goBtn = h('button', { class: 'btn primary', disabled: true, onclick: () => {
-        lock();
         const norm = (s) => s.trim();
         const ok = chosen.every((it, k) => norm(it.text) === norm(q.items[k]));
+        if (!ok && allowHint && tries === 0) {
+          tries++;
+          const rightN = chosen.filter((it, k) => norm(it.text) === norm(q.items[k])).length;
+          firstTag = 'order'; firstChoice = chosen.map((c) => c.text.trim()).join(' → ');
+          const firstBad = chosen.findIndex((it, k) => norm(it.text) !== norm(q.items[k]));
+          showHint('再試一次！目前有 ' + rightN + ' 個位置排對了，先檢查看看第 ' + (firstBad + 1) + ' 步（點上方項目可以拿掉重排）：');
+          return;
+        }
+        lock();
         finish(ok, chosen.map((c) => c.text.trim()).join(' → '), ok ? '' : 'order', q.items.map((s, k) => (k + 1) + '. ' + s.trim()).join('　'));
       } }, '送出順序');
       function draw() {
@@ -259,14 +332,21 @@
       }
       draw();
       area.append(ansBox, poolBox, goBtn);
-      addSkip(q.items.map((s, k) => (k + 1) + '. ' + s.trim()).join('　'));
+      addActions(q.items.map((s, k) => (k + 1) + '. ' + s.trim()).join('　'), () => showHint('想想機器人最先要做的動作是什麼，依序往下排：'));
     } else if (q.t === 'bug') {
       const list = h('div', { class: 'buglist' });
       q.code.forEach((ln, idx) => {
         const ind = (ln.match(/^ */)[0].length / 2) | 0;
         const b = h('button', { class: 'bugline', style: 'padding-left:' + (2 + ind * 22) + 'px', onclick: () => {
-          lock();
           const ok = idx === q.a;
+          if (!ok && allowHint && tries === 0) {
+            tries++;
+            b.classList.add('wrong'); b.disabled = true;
+            firstTag = q.tag || 'debug'; firstChoice = ln.trim();
+            showHint('再試一次！這一行沒有錯喔，順著程式再看看其他積木：');
+            return;
+          }
+          lock();
           b.classList.add(ok ? 'right' : 'wrong');
           if (!ok) list.children[q.a].classList.add('right');
           finish(ok, ln.trim(), ok ? '' : q.tag || 'debug', q.code[q.a].trim());
@@ -274,7 +354,7 @@
         list.append(b);
       });
       area.append(list);
-      addSkip(q.code[q.a].trim());
+      addActions(q.code[q.a].trim(), () => showHint('從最上面開始，一步一步想像機器人怎麼動，找出哪一行會讓結果不對：'));
     }
     return card;
   }
@@ -332,25 +412,95 @@
   }
 
   /* ---------- 練習 ---------- */
-  function startPractice(skillId) {
-    session = { type: 'practice', skill: skillId || null, n: skillId ? Math.min(5, QS.filter((q) => q.s === skillId).length) : 10, idx: 0, used: new Set(), recent: [], rescue: null, right: 0, before: JSON.parse(JSON.stringify(st.m)) };
+  function startPractice(skillId, count, opts) {
+    opts = opts || {};
+    const validSkill = skillId && SK[skillId] ? skillId : null;
+    const drillSkills = opts.drillSkills && opts.drillSkills.length ? opts.drillSkills.filter((id) => SK[id]) : null;
+    const poolN = drillSkills
+      ? drillSkills.reduce((sum, id) => sum + QS.filter((q) => q.s === id).length, 0)
+      : validSkill ? QS.filter((q) => q.s === validSkill).length : 10;
+    const defaultN = drillSkills ? Math.min(4, Math.max(2, drillSkills.length * 2)) : validSkill ? Math.min(5, poolN) : 10;
+    const n = count > 0 ? Math.min(count, Math.max(1, poolN)) : defaultN;
+    session = {
+      type: 'practice',
+      skill: validSkill,
+      drillSkills,
+      title: opts.title || (drillSkills ? '🎯 類似題加強練習' : validSkill ? '練習：' + SK[validSkill].name : '今日練習'),
+      n, idx: 0, used: new Set(), avoid: new Set(opts.avoidUsed || []),
+      recent: [], rescue: null, right: 0, assistedRight: 0,
+      streakWrong: 0, skillWrong: {}, coached: new Set(), weakSkills: new Set(),
+      before: JSON.parse(JSON.stringify(st.m)),
+    };
     nextPractice();
+  }
+  function startDrill(skillIds, avoidUsed) {
+    startPractice(null, Math.min(4, Math.max(2, skillIds.length * 2)), {
+      drillSkills: skillIds,
+      avoidUsed: avoidUsed ? [...avoidUsed] : [],
+      title: '🎯 卡關觀念類似題練習',
+    });
+  }
+  function showCoachCard(skillId, onContinue) {
+    const S = session, sk = SK[skillId];
+    if (!S || !sk) return onContinue();
+    const bar = h('div', { class: 'pbar' }, h('div', { style: 'width:' + Math.round(clamp(S.idx / S.n, 0, 1) * 100) + '%' }));
+    $app.replaceChildren(shell(h('div', null,
+      h('div', { class: 'quizhead' }, h('h2', null, S.title), h('span', { class: 'qnum' }, S.idx + ' / ' + S.n), h('a', { class: 'quit', href: '#/', onclick: () => { session = null; } }, '離開')),
+      bar,
+      h('div', { class: 'qcard coachcard' },
+        h('div', { class: 'qmeta' }, h('span', { class: 'chip', style: 'background:' + DOM[sk.d].color + ';border-color:' + DOM[sk.d].stroke }, sk.name), h('span', { class: 'tag' }, '🧭 30 秒重點小抄')),
+        h('h3', { style: 'margin:4px 0 8px' }, '先停一下，這塊很容易搞混！我們一起看重點再繼續：'),
+        h('div', { class: 'lesson', html: sk.lesson }),
+        h('p', { class: 'sub' }, '看完之後，系統會先出一題比較簡單的類似題讓你暖身，不用緊張！'),
+        h('div', { class: 'row gap' },
+          h('button', { class: 'btn primary', id: 'coachNextBtn', onclick: onContinue }, '我看懂了，來一題簡單的試試看 ▶'),
+          h('a', { class: 'btn ghost', href: '#/skill/' + sk.id, onclick: () => { session = null; } }, '去這個技能的完整課文')
+        )
+      )
+    )));
+    const nb = document.getElementById('coachNextBtn'); if (nb) nb.focus();
+    window.scrollTo(0, 0);
   }
   function nextPractice() {
     const S = session;
     if (S.idx >= S.n) return finishPractice();
-    let sid, level;
-    if (S.rescue) { sid = S.rescue.skill; level = Math.max(1, S.rescue.level - 1); S.rescue = null; }
-    else { sid = S.skill || pickSkill(S.recent); level = levelFor(pOf(sid)); }
-    const q = pickQuestion(sid, level, S.used);
+    let sid, level, banner = '';
+    if (S.rescue) {
+      sid = S.rescue.skill; level = S.rescue.level; banner = S.rescue.banner || '';
+      S.rescue = null;
+    } else if (S.drillSkills && S.drillSkills.length) {
+      sid = S.drillSkills[S.idx % S.drillSkills.length];
+      level = Math.max(1, levelFor(pOf(sid)));
+      banner = S.idx === 0 ? '🎯 針對剛才卡關的觀念，挑了不一樣的類似題來試試看！' : '';
+    } else {
+      sid = S.skill || pickSkill(S.recent);
+      level = levelFor(pOf(sid));
+    }
+    const q = pickQuestion(sid, level, S.used, S.avoid);
     S.used.add(q.id); S.recent.push(sid); S.idx++;
     drawQuiz({
-      title: S.skill ? '練習：' + SK[S.skill].name : '今日練習', sub: '',
+      title: S.title, sub: '',
       progress: S.idx / S.n, q, qnum: S.idx + ' / ' + S.n,
+      allowHint: true, banner,
       onDone: async (res) => {
-        applyResult(q, res.correct);
-        if (res.correct) S.right++; else S.rescue = { skill: q.s, level: q.l };
+        applyResult(q, res.correct, res.assisted);
+        if (res.correct) {
+          S.right++;
+          S.streakWrong = 0;
+          if (res.assisted) { S.assistedRight++; S.weakSkills.add(q.s); }
+        } else {
+          S.streakWrong++;
+          S.skillWrong[q.s] = (S.skillWrong[q.s] || 0) + 1;
+          S.weakSkills.add(q.s);
+          S.rescue = { skill: q.s, level: Math.max(1, q.l - 1), banner: '💡 換一題比較簡單的類似題，再試試看！' };
+        }
         await save(q, res, 'practice');
+        if (!res.correct && S.idx < S.n && (S.skillWrong[q.s] >= 2 || S.streakWrong >= 2) && !S.coached.has(q.s)) {
+          S.coached.add(q.s);
+          S.rescue = { skill: q.s, level: 1, banner: '💡 暖身類似題：用剛剛看的小抄試試看！' };
+          showCoachCard(q.s, () => nextPractice());
+          return;
+        }
         nextPractice();
       },
     });
@@ -358,20 +508,28 @@
   function finishPractice() {
     const S = session; session = null;
     const rows = Object.keys(st.m).filter((id) => Math.abs((st.m[id].p || 0) - ((S.before[id] && S.before[id].p) || 0)) > 0.005).map((id) => ({ id, a: (S.before[id] && S.before[id].p) || 0, b: st.m[id].p }));
+    const weakArr = [...S.weakSkills].filter((id) => SK[id]);
+    const drillN = Math.min(4, Math.max(2, weakArr.length * 2));
+    const drillBox = weakArr.length ? h('div', { class: 'callout', style: 'text-align:left;max-width:520px;margin:14px auto' },
+      h('b', null, '🎯 趁剛想通，鞏固一下！'),
+      h('div', { style: 'margin:4px 0 10px' }, '剛才在「' + weakArr.map((id) => SK[id].name).join('、') + '」有用到提示或答錯，要不要馬上做 ' + drillN + ' 題類似題確認自己會了？'),
+      h('button', { class: 'btn primary', onclick: () => startDrill(weakArr, S.used) }, '🎯 專練類似題（' + drillN + ' 題）')
+    ) : null;
     $app.replaceChildren(shell(h('div', { class: 'panel center' },
       h('div', { class: 'big' }, S.right === S.n ? '🎉' : S.right >= S.n / 2 ? '👍' : '💪'),
-      h('h2', null, '這回合答對 ' + S.right + ' / ' + S.n + ' 題'),
+      h('h2', null, '這回合答對 ' + S.right + ' / ' + S.n + ' 題' + (S.assistedRight ? '（其中 ' + S.assistedRight + ' 題看提示後想通）' : '')),
+      drillBox,
       rows.length ? h('div', { class: 'changes' }, rows.map((r) => h('div', { class: 'chg' }, h('span', null, SK[r.id].name), h('span', { class: r.b >= r.a ? 'up' : 'down' }, (r.b >= r.a ? '▲ ' : '▼ ') + Math.round(r.a * 100) + '% → ' + Math.round(r.b * 100) + '%')))) : null,
-      h('div', { class: 'row gap' }, h('button', { class: 'btn primary', onclick: () => startPractice(S.skill) }, '再練一回合'), h('a', { class: 'btn', href: '#/' }, '回首頁'))
+      h('div', { class: 'row gap', style: 'justify-content:center;margin-top:12px' }, h('button', { class: 'btn' + (weakArr.length ? '' : ' primary'), onclick: () => startPractice(S.skill) }, '再練一回合'), h('a', { class: 'btn', href: '#/' }, '回首頁'))
     )));
   }
 
-  function drawQuiz({ title, sub, progress, q, qnum, onDone }) {
+  function drawQuiz({ title, sub, progress, q, qnum, onDone, allowHint = false, banner = '' }) {
     const bar = h('div', { class: 'pbar' }, h('div', { style: 'width:' + Math.round(clamp(progress, 0, 1) * 100) + '%' }));
     $app.replaceChildren(shell(h('div', null,
       h('div', { class: 'quizhead' }, h('h2', null, title), qnum ? h('span', { class: 'qnum' }, qnum) : null, h('a', { class: 'quit', href: '#/', onclick: () => { session = null; } }, '離開')),
       sub ? h('p', { class: 'sub' }, sub) : null, bar,
-      renderQuestion(q, { onDone })
+      renderQuestion(q, { onDone, allowHint, banner })
     )));
     window.scrollTo(0, 0);
   }
@@ -693,7 +851,7 @@
 
   function render() {
     const hash = location.hash.replace(/^#/, '') || '/';
-    const [, a, b] = hash.split('/');
+    const [, a, b, c] = hash.split('/');
     if (a === 'about') return VX.routes.about();
     if (!user) { if (hash !== '/login') history.replaceState(null, '', '#/login'); return viewLogin(); }
     if (hash === '/login') { location.hash = '#/'; return; }
@@ -702,7 +860,12 @@
     if (user.role === 'coach' && a !== 'me' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
     if (user.role === 'parent' && a !== 'me' && a !== 'guide' && a !== 'start' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
     if (a === 'placement') { if (!session) startPlacement(); return; }
-    if (a === 'practice') { if (!st.done) { location.hash = '#/placement'; return; } if (!session) startPractice(b || null); return; }
+    if (a === 'practice') {
+      const cnt = c ? parseInt(c, 10) : 0;
+      if (!st.done && !(b && SK[b])) { location.hash = '#/placement'; return; }
+      if (!session) startPractice(b || null, cnt > 0 ? cnt : 0);
+      return;
+    }
     if (VX.routes[a]) return VX.routes[a](...hash.split('/').slice(2));
     if (a === 'skill') return viewSkill(b);
     if (a === 'cheat') return viewCheat();
@@ -712,7 +875,7 @@
   }
 
   const VX = window.VX = {
-    routes: {}, h, api, shell, toEn, blocksEl, oneBlock, toast, DOM, SK, DOMAINS, SKILLS, QS, TAGS, radarSvg, domainAvg, pOf, newState, clamp, shuffle, startPractice,
+    routes: {}, h, api, shell, toEn, blocksEl, oneBlock, toast, DOM, SK, DOMAINS, SKILLS, QS, TAGS, TAG_HINTS, radarSvg, domainAvg, pOf, newState, clamp, shuffle, startPractice, startDrill, pickQuestion,
     get user() { return user; }, get st() { return st; }, saveState, render, app: $app, plainOrBlock, todayStr,
   };
   window.addEventListener('hashchange', render);
