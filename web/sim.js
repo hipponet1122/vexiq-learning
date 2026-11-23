@@ -999,6 +999,19 @@
     const tip = h('div', { class: 'vxscope vxtip hidden' }); document.body.append(tip);
     let tipTimer = 0, tipHide = 0;
     const hideTip = () => { clearTimeout(tipTimer); clearTimeout(tipHide); tip.classList.add('hidden'); };
+    /* 把浮動方塊放在某個元素旁邊。用「文件座標」的 absolute，而不是 fixed：
+       iPad／iPhone Safari 的 fixed 會受工具列伸縮、縮放影響，提示框會跑到畫面最上面（看不到）；
+       同時用 visualViewport 夾在目前看得到的範圍內，絕不會超出螢幕。 */
+    function placeNear(el, anchor, toRight) {
+      const vv = window.visualViewport, sx = window.scrollX || 0, sy = window.scrollY || 0;
+      const r = anchor.getBoundingClientRect(), t = el.getBoundingClientRect();
+      const vx = vv ? vv.pageLeft : sx, vy = vv ? vv.pageTop : sy, vw = vv ? vv.width : window.innerWidth, vh = vv ? vv.height : window.innerHeight;
+      let x = (toRight ? r.right + 8 : r.left) + sx, y = (toRight ? r.top : r.bottom + 8) + sy;
+      if (y + t.height > vy + vh - 8) y = toRight ? r.bottom + sy - t.height : r.top + sy - t.height - 8;
+      x = Math.max(vx + 8, Math.min(x, vx + vw - t.width - 8));
+      y = Math.max(vy + 8, Math.min(y, vy + vh - t.height - 8));
+      el.style.position = 'absolute'; el.style.left = x + 'px'; el.style.top = y + 'px';
+    }
     function showTip(anchor, b) {
       const other = lang === 'en' ? 'zh' : 'en';
       if (b.t === 'cat') {
@@ -1010,12 +1023,7 @@
         tip.replaceChildren(h('div', { class: 'vxtipl' }, other === 'zh' ? '中文' : 'English'), blk, h('div', { class: 'vxtipd' }, b.t === 'expr' ? descOfExpr(b.x) : (DESC[b.t] || '')));
       }
       tip.classList.remove('hidden');
-      const r = anchor.getBoundingClientRect(), tr = tip.getBoundingClientRect();
-      let top = b.t === 'cat' && window.innerWidth > 760 ? r.top : r.bottom + 8;
-      let left = b.t === 'cat' && window.innerWidth > 760 ? r.right + 8 : r.left;
-      if (top + tr.height > window.innerHeight - 8) top = Math.max(8, r.top - tr.height - 8);
-      left = Math.max(8, Math.min(left, window.innerWidth - tr.width - 8));
-      tip.style.top = top + 'px'; tip.style.left = left + 'px';
+      placeNear(tip, anchor, b.t === 'cat' && window.innerWidth > 760);
     }
     function attachTip(el, getBlock) {
       el.addEventListener('mouseenter', () => { clearTimeout(tipTimer); tipTimer = setTimeout(() => showTip(el, getBlock()), 1000); });
@@ -1222,7 +1230,7 @@
       closeMenu();
       menuEl = h('div', { class: 'vxmenu' }, items.map(([label, fn]) => h('button', { onclick: () => { closeMenu(); fn(); } }, label)));
       document.body.append(menuEl);
-      const r = anchor.getBoundingClientRect(); menuEl.style.top = r.bottom + 4 + 'px'; menuEl.style.left = Math.max(6, Math.min(r.left, window.innerWidth - 220)) + 'px';
+      placeNear(menuEl, anchor, false);
       setTimeout(() => document.addEventListener('pointerdown', (e) => { if (menuEl && !menuEl.contains(e.target)) closeMenu(); }, { once: true }), 0);
     }
     // 積木選「中文」時，積木庫與工作區的字保持中文，不被英文介面的自動翻譯改掉
