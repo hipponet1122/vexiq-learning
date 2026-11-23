@@ -9,6 +9,9 @@
 - 新增 `LICENSE`（MIT）、`LICENSE-CONTENT.md`（內容 CC BY-SA 4.0）、`NOTICE.md`（VEX 商標與非官方聲明）、`SECURITY.md`、`CODE_OF_CONDUCT.md`、`CONTRIBUTING.md`、Issue／PR 範本。
 - `README.md` 改寫為公開版（功能、本機執行、自架）；營運細節移到不進版控的私人紀錄。
 
+### 社群與治理
+- 新增 `ROADMAP.md`、`MAINTAINERS.md`、`.github/CODEOWNERS`；`tools/check.py` 與 GitHub Actions 自動檢查（語法、簡體字、不該入庫的檔案、疑似金鑰）。
+
 ### 部署
 - `docker-compose.yml` 改為通用設定（`VEXIQ_PORT`、`VEXIQ_DATA`），不再寫死主機路徑。
 - 關於頁隱私與授權說明改為通用文字。
