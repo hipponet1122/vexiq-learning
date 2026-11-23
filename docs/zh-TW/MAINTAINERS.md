@@ -1,4 +1,4 @@
-**繁體中文** · [English](../MAINTAINERS.md)
+**正體中文** · [English](../MAINTAINERS.md)
 
 # 維護者與治理
 

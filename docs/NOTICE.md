@@ -1,4 +1,4 @@
-[繁體中文](zh-TW/NOTICE.md) · **English**
+[正體中文](zh-TW/NOTICE.md) · **English**
 
 # Notice
 

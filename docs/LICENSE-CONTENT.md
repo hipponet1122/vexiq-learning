@@ -1,4 +1,4 @@
-[繁體中文](zh-TW/LICENSE-CONTENT.md) · **English**
+[正體中文](zh-TW/LICENSE-CONTENT.md) · **English**
 
 # Content License
 

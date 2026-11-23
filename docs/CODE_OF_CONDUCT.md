@@ -1,4 +1,4 @@
-[繁體中文](zh-TW/CODE_OF_CONDUCT.md) · **English**
+[正體中文](zh-TW/CODE_OF_CONDUCT.md) · **English**
 
 # Code of Conduct
 

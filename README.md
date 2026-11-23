@@ -1,4 +1,4 @@
-[繁體中文](docs/zh-TW/README.md) · **English**
+[正體中文](docs/zh-TW/README.md) · **English**
 
 # VEX IQ Self-Study Site
 

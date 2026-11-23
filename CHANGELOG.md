@@ -9,7 +9,7 @@
 
 ## 1.3.0 — 2026-11-23
 ### 中英文介面
-- 右上角「中／EN」切換繁體中文與英文；選擇存在這台裝置，第一次來會依瀏覽器語言決定。題目（138 題）、技能課文、挑戰、組裝課、筆記課、當季規則、術語、後端訊息都有英文版。
+- 右上角「中／EN」切換正體中文與英文；選擇存在這台裝置，第一次來會依瀏覽器語言決定。題目（138 題）、技能課文、挑戰、組裝課、筆記課、當季規則、術語、後端訊息都有英文版。
 - 做法：程式裡維持中文，英文由 `web/i18n-en.js` 字典在畫面出現文字時自動換上（整句精準比對，找不到再逐段比對）；字典由 `i18n/en/*.tsv` 經 `python3 tools/i18n_build.py` 產生，`tools/i18n_extract.js` 會重新擷取全站中文字串。測試會檢查翻譯齊全、HTML 標籤沒被弄壞、字典是最新的。
 - 模擬器選「中文積木」時，積木庫與工作區維持中文；每週報告「複製文字」與問題回報信在英文介面下也是英文。
 
@@ -37,7 +37,7 @@
 
 ## 1.2.1 — 2026-11-23（只有文件）
 ### 文件
-- GitHub 文件改成中英雙語：`README`、`CONTRIBUTING`、`SECURITY`、`NOTICE`、`ROADMAP`、`MAINTAINERS`、`CODE_OF_CONDUCT`、`LICENSE-CONTENT` 預設為英文，另有 `*.zh-TW.md` 繁體中文版，頂端互相連結；中文 README 補上 `requirements.txt`、`TRUST_CF_IP` 與防鬼打牆說明。
+- GitHub 文件改成中英雙語：`README`、`CONTRIBUTING`、`SECURITY`、`NOTICE`、`ROADMAP`、`MAINTAINERS`、`CODE_OF_CONDUCT`、`LICENSE-CONTENT` 預設為英文，另有 `*.zh-TW.md` 正體中文版，頂端互相連結；中文 README 補上 `requirements.txt`、`TRUST_CF_IP` 與防鬼打牆說明。
 
 ## 1.2.0 — 2026-11-23
 ### 防鬼打牆：提示、小抄與鞏固閉環

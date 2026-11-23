@@ -1,4 +1,4 @@
-**繁體中文** · [English](../../README.md)
+**正體中文** · [English](../../README.md)
 
 # VEX IQ 自學網站
 
@@ -7,7 +7,7 @@
 家長與教練可以看到孩子的練習狀況。
 
 > 非官方專案，與 VEX Robotics／Innovation First／REC Foundation 無關。見 [`NOTICE.md`](NOTICE.md)。
-> 介面有繁體中文（台灣）與英文。歡迎老師、教練、家長一起改進 → [`CONTRIBUTING.md`](CONTRIBUTING.md)。
+> 介面有正體中文（台灣）與英文。歡迎老師、教練、家長一起改進 → [`CONTRIBUTING.md`](CONTRIBUTING.md)。
 
 ## 功能
 - **自適應出題**：6 個領域、26 個技能點、138 題（選擇／數值／排序／找錯）；定位測驗＋依熟練度練習、錯題回補。

@@ -1,4 +1,4 @@
-**繁體中文** · [English](../ROADMAP.md)
+**正體中文** · [English](../ROADMAP.md)
 
 # 路線圖
 

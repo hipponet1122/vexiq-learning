@@ -1,4 +1,4 @@
-**繁體中文** · [English](../LICENSE-CONTENT.md)
+**正體中文** · [English](../LICENSE-CONTENT.md)
 
 # 內容授權
 
