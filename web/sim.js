@@ -1004,6 +1004,7 @@
        同時用 visualViewport 夾在目前看得到的範圍內，絕不會超出螢幕。 */
     function placeNear(el, anchor, toRight) {
       const vv = window.visualViewport, sx = window.scrollX || 0, sy = window.scrollY || 0;
+      el.style.position = 'absolute'; el.style.left = '0px'; el.style.top = '0px'; // 先歸位再量大小：上次殘留的 left 會讓 max-width 內的方塊被擠窄、量到的寬高不準
       const r = anchor.getBoundingClientRect(), t = el.getBoundingClientRect();
       const vx = vv ? vv.pageLeft : sx, vy = vv ? vv.pageTop : sy, vw = vv ? vv.width : window.innerWidth, vh = vv ? vv.height : window.innerHeight;
       let x = (toRight ? r.right + 8 : r.left) + sx, y = (toRight ? r.top : r.bottom + 8) + sy;
@@ -1225,13 +1226,17 @@
 
     /* ---- 頂欄、選單 ---- */
     let menuEl = null;
-    function closeMenu() { if (menuEl) { menuEl.remove(); menuEl = null; } }
+    let menuOff = null;
+    function closeMenu() { if (menuEl) { menuEl.remove(); menuEl = null; } if (menuOff) { document.removeEventListener('pointerdown', menuOff); menuOff = null; } }
     function popMenu(anchor, items) {
       closeMenu();
       menuEl = h('div', { class: 'vxmenu' }, items.map(([label, fn]) => h('button', { onclick: () => { closeMenu(); fn(); } }, label)));
       document.body.append(menuEl);
       placeNear(menuEl, anchor, false);
-      setTimeout(() => document.addEventListener('pointerdown', (e) => { if (menuEl && !menuEl.contains(e.target)) closeMenu(); }, { once: true }), 0);
+      // 點選單外面才關；點到選單內距不會把監聽器用掉（不再用 once），關閉時一併移除
+      const off = (e) => { if (menuEl && !menuEl.contains(e.target)) closeMenu(); };
+      menuOff = off;
+      setTimeout(() => { if (menuOff === off) document.addEventListener('pointerdown', off); }, 0);
     }
     // 積木選「中文」時，積木庫與工作區的字保持中文，不被英文介面的自動翻譯改掉
     const protectZh = () => {
