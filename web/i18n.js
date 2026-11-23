@@ -37,7 +37,7 @@
     const okHit = (s, i, k) => {
       if (k.trim().length !== 1) return true;
       const prev = s[i - 1], next = s[i + k.length];
-      return !!(prev && /[\d\s]/.test(prev)) && !(next && /[一-鿿]/.test(next));
+      return (!prev || /[\d\s]/.test(prev)) && !(next && /[一-鿿]/.test(next));
     };
     // 逐段翻譯：用動態規劃找「換掉最多字」的切法，而不是從左到右搶最長的（否則「0 分」會搶走比它長的「 分　用掉時間：」）
     const frag = (s) => {
@@ -132,6 +132,7 @@
     const doAttrs = (el) => {
       if (el.nodeType !== 1) return;
       for (const a of ATTRS) {
+        if (a === 'title' && el.classList && el.classList.contains('blk')) continue; // 積木上的中文提示要維持中文
         if (a === 'value' && !(el.tagName === 'INPUT' && /^(button|submit)$/.test(el.type))) continue;
         const v = el.getAttribute(a); if (v && ZH.test(v) && !skipAttrEl(el)) { const r = tr(v); if (r !== v) el.setAttribute(a, r); }
       }
