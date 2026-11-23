@@ -2,6 +2,10 @@
 
 格式參考 Keep a Changelog；版本號採語意化版本（主.次.修）。每次部署前請更新這份檔案與 `VERSION`。
 
+## 未發版
+### 文件
+- GitHub 文件改成中英雙語：`README`、`CONTRIBUTING`、`SECURITY`、`NOTICE`、`ROADMAP`、`MAINTAINERS`、`CODE_OF_CONDUCT`、`LICENSE-CONTENT` 預設為英文，另有 `*.zh-TW.md` 繁體中文版，頂端互相連結；中文 README 補上 `requirements.txt`、`TRUST_CF_IP` 與防鬼打牆說明。
+
 ## 1.2.0 — 2026-11-23
 ### 防鬼打牆：提示、小抄與鞏固閉環
 - 練習加「💡 給我一點提示」與兩次機會制：第一次答錯不鎖死也不公布答案，依題型給提示（劃掉錯誤選項、偏大／偏小、排對幾個位置），再試一次才揭曉。定位測驗維持無提示。

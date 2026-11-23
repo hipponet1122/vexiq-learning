@@ -22,7 +22,7 @@ VEX IQ 每年（約 4～5 月）公布新的比賽主題與 Game Manual，規則
 | `web/content.js` → `CHALLENGES` 中 `lu1`～`lu3` | 當季練習挑戰：場地示意、得分動作、參考解答 `code`、提示。**場地是示意，不是官方尺寸**，若手冊有附錄尺寸，可在確認後再改成實際比例 |
 | `web/modules.js` 比賽專區 | 計分規劃器的得分項目（讀自 `SEASON.scoring`，通常不必改）、說明文字、官方資源連結（Competition 101 等） |
 | `web/guide.js` | 「當季」相關的導覽與步驟文字 |
-| `web/data.js` 檔頭註解、`README.md`、`ROADMAP.md`、`NOTICE.md`、`web/about.js` | 季別與主題名稱字樣 |
+| `web/data.js` 檔頭註解、`README.md`／`README.zh-TW.md`、`ROADMAP.md`／`ROADMAP.zh-TW.md`、`NOTICE.md`／`NOTICE.zh-TW.md`、`web/about.js` | 季別與主題名稱字樣 |
 | `tests/run.js` | 「當季計分」群組：分數表與算術題的期望值（這是防止改錯的保險） |
 | `CHANGELOG.md`、`VERSION` | 新增一版，例如 `1.2.0 — 換季：…` |
 

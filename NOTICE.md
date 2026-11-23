@@ -1,8 +1,10 @@
-# 聲明
+[繁體中文](NOTICE.zh-TW.md) · **English**
 
-- 本專案是**非官方**的個人學習工具，與 Innovation First International, Inc.、VEX Robotics、REC Foundation 無隸屬、贊助或背書關係。
-- VEX、VEX IQ、VEXcode、Level Up 為其商標；僅用於說明本工具的對象，不代表官方。
-- 當季規則、計分、機器人規定是依官方 Game Manual 用自己的話整理，**可能過時或有誤**；比賽請一律以官方最新版為準。
-- 本專案**不包含**官方手冊原文、圖片、字型或 VEXcode 程式碼。介面是參考 VEXcode IQ 的風格重新實作。
-- 模擬器是教學用的簡化物理，與實體機器人有差異；不保證跑得過的程式在真機一定成功。
-- 請勿用本專案收集孩子的全名、學校、聯絡方式等個資。
+# Notice
+
+- This is an **unofficial** personal learning tool. It is not affiliated with, sponsored by or endorsed by Innovation First International, Inc., VEX Robotics or the REC Foundation.
+- VEX, VEX IQ, VEXcode and Level Up are their trademarks, used here only to describe who this tool is for.
+- Season rules, scoring and robot requirements are summarized in our own words from the official Game Manual and **may be outdated or wrong**. For competition, always follow the latest official version.
+- This project **does not include** the official manual's text, images, fonts or any VEXcode code. The interface is a fresh implementation inspired by the style of VEXcode IQ.
+- The simulator uses simplified physics for teaching and differs from a real robot; a program that passes in the simulator is not guaranteed to work on hardware.
+- Please do not use this project to collect children's full names, schools, contact details or other personal data.

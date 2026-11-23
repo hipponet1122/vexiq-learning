@@ -1,10 +1,12 @@
-# 行為準則
+[繁體中文](CODE_OF_CONDUCT.zh-TW.md) · **English**
 
-這個專案的使用者是孩子與家長，所以我們對互動的標準是：
+# Code of Conduct
 
-- 友善、尊重、就事論事；歡迎初學者的任何問題。
-- 不容忍騷擾、歧視、人身攻擊。
-- **不要**在 Issue、PR、討論中貼孩子的真實姓名、照片、學校、聯絡方式或任何個資（包含自己的孩子）。
-- 內容適合國小到國中學生閱讀。
+This project's users are children and parents, so our standard for interaction is:
 
-違反者的留言會被刪除，必要時封鎖。回報請寄 elvis@mingchhun.com。
+- Be friendly, respectful and focus on the issue; every beginner question is welcome.
+- No harassment, discrimination or personal attacks.
+- **Do not** post a child's real name, photo, school, contact details or any personal data in Issues, PRs or discussions (including your own child's).
+- Keep content suitable for elementary to middle-school readers.
+
+Comments that violate this will be removed, and offenders may be blocked. To report, email elvis@mingchhun.com.

@@ -1,9 +1,11 @@
-# 安全政策
+[繁體中文](SECURITY.zh-TW.md) · **English**
 
-這個網站會處理孩子的學習資料，請負責任地回報漏洞：
+# Security Policy
 
-- **請不要**在公開 Issue 貼漏洞細節。
-- 請寄信到 **elvis@mingchhun.com**，主旨「[VEX IQ 自學] 安全回報」，說明重現步驟與影響範圍。
-- 我會在 7 天內回覆，修好後在 CHANGELOG 誌謝（若你同意）。
+This site handles children's learning data, so please report vulnerabilities responsibly:
 
-自架部署者請務必：使用 HTTPS、設定強密碼（家長／教練至少 12 字元）、備份 `data/`、不要把 `data/`、`seed_users.json`、`.env` 放進版控。
+- **Do not** post vulnerability details in public Issues.
+- Email **elvis@mingchhun.com** with the subject "[VEX IQ Self-Study] Security report", including reproduction steps and impact.
+- I will reply within 7 days and credit you in the CHANGELOG once it is fixed (if you agree).
+
+If you self-host, please: use HTTPS, set strong passwords (at least 12 characters for parents/coaches), back up `data/`, and never put `data/`, `seed_users.json` or `.env` under version control.

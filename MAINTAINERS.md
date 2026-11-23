@@ -1,25 +1,27 @@
-# 維護者與治理
+[繁體中文](MAINTAINERS.zh-TW.md) · **English**
 
-## 角色
-| 角色 | 能做什麼 | 怎麼成為 |
+# Maintainers and Governance
+
+## Roles
+| Role | Can do | How to become one |
 |---|---|---|
-| **貢獻者** | 開 Issue、送 Pull Request、參與討論 | 任何人 |
-| **審題人** | 審查題庫與當季規則的 PR（`web/data.js`、`web/content.js`）；需有 VEX IQ 教學或競賽經驗 | 由主維護者邀請 |
-| **維護者** | 審查並合併 PR、整理 Issue 與標籤 | 持續貢獻並通過審查（約 5 個以上被合併的 PR），經主維護者邀請 |
-| **主維護者** | 以上全部，加上**部署到正式站**、管理倉庫設定與授權 | Elvis Huang（@hipponet1122） |
+| **Contributor** | Open Issues, send Pull Requests, join discussions | Anyone |
+| **Question reviewer** | Review PRs to the question bank and season rules (`web/data.js`, `web/content.js`); needs VEX IQ teaching or competition experience | Invited by the lead maintainer |
+| **Maintainer** | Review and merge PRs, triage Issues and labels | Sustained contributions and review (about 5+ merged PRs), invited by the lead maintainer |
+| **Lead maintainer** | All of the above, plus **deploying to production**, repository settings and licensing | Elvis Huang (@hipponet1122) |
 
-## 原則
-1. **部署權限只有主維護者。** 正式站有孩子的學習資料，維護者與貢獻者不接觸正式站、資料庫或帳號。
-2. **題目要有依據。** 題庫修改附官方文件連結或計算過程；沒有依據不合併。
-3. **一個 PR 至少一位審查者核准**，題庫與規則另需審題人核准（見 `.github/CODEOWNERS`）。自動檢查（`tools/check.py`）必須通過。
-4. **不碰個資。** 任何地方都不貼孩子的姓名、照片、學校、聯絡方式。
-5. **友善。** 依 `CODE_OF_CONDUCT.md`；對初學者耐心。
-6. 重大決定（授權、資料收集範圍、架構）先開 Issue 討論，至少等 7 天。
+## Principles
+1. **Only the lead maintainer can deploy.** Production holds children's learning data; maintainers and contributors do not touch the production site, database or accounts.
+2. **Questions need sources.** Question changes include a link to the official document or the calculation; no source, no merge.
+3. **Every PR needs at least one approving reviewer**, and question/rule changes also need a question reviewer (see `.github/CODEOWNERS`). The automated check (`tools/check.py`) must pass.
+4. **No personal data.** Never post a child's name, photo, school or contact details anywhere.
+5. **Be kind.** Follow `CODE_OF_CONDUCT.md`; be patient with beginners.
+6. For major decisions (license, scope of data collection, architecture), open an Issue first and wait at least 7 days.
 
-## 邀請維護者的流程
-主維護者在 Issue 或私訊邀請 → 對方同意遵守本文件與行為準則 → 先給 **Triage** 權限（整理 Issue），熟悉後再給 **Write**。不給管理員權限。
+## Inviting maintainers
+The lead maintainer invites via Issue or message → the person agrees to follow this document and the code of conduct → first **Triage** permission (Issue management), then **Write** once familiar. Admin permission is not granted.
 
-## 卸任
-維護者可隨時退出；超過 6 個月沒有活動，會先詢問再調整權限，不是處罰。
+## Stepping down
+Maintainers may leave at any time; after 6 months of inactivity we will ask first and then adjust permissions. This is not a penalty.
 
-聯絡：elvis@mingchhun.com
+Contact: elvis@mingchhun.com

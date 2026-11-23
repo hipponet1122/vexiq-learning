@@ -1,30 +1,35 @@
-# 路線圖
+[繁體中文](ROADMAP.zh-TW.md) · **English**
 
-這是**打算**做的事，不是承諾；順序會依參與者的時間與回饋調整。想認領請到對應的 Issue 留言。
+# Roadmap
 
-## 已完成（v1.1.0）
-- 自動測試 69 項、題目積木英文化、無障礙第一輪（標籤、對比、鍵盤焦點）、平板與手機版型檢查、新增 3 個挑戰、審題清單匯出、換季更新流程文件。
+These are things we **intend** to do, not promises; the order depends on contributors' time and feedback. To claim one, comment on the matching Issue.
 
-## 近期：把內容做對
-- 題庫審題：全部 138 題的答案、解釋、難度由教練／老師逐領域審過（最重要）。
-- 補挑戰題、組裝教學與零件圖鑑的錯誤與缺漏。
-- 平板（iPad）與手機版型、無障礙（鍵盤操作、對比、螢幕閱讀器）。
-- 補自動測試：模擬器引擎、`.iqblocks` 匯入。
+## Done (v1.2.0)
+- Anti-frustration loop: hints and a second try, concept cheat sheets after repeated misses, similar-question practice, simulator coaching after repeated failures and follow-ups after a pass; security hardening (rate limiting, CSP, non-root container).
 
-## 中期：更好用
-- Level Up 場地模擬（依官方手冊附錄尺寸；需對照官方資料，不複製原文與圖）。
-- 更多積木與感測器的支援，讓更多真實存檔能被模擬與檢查。
-- 教練功能：多位學員比較、評語、練習提醒。
-- 題庫匯出／匯入格式，讓老師能用試算表維護題目。
+## Done (v1.1.0)
+- 69 automated tests, English block text in questions, first accessibility pass (labels, contrast, keyboard focus), tablet and phone layout checks, 3 new challenges, question-review export, season-update guide.
 
-## 長期：可持續
-- **每年換季流程**：官方新 Game Manual 出來後，一份清楚的更新清單（`SEASON`、當季題、挑戰、模擬場地）。
-- 多隊伍／多教室使用的部署與備份指南。
-- 英文介面（選項）。
+## Near term: get the content right
+- Question review: every one of the 138 questions' answers, explanations and difficulty checked by coaches/teachers, domain by domain (most important).
+- Fix errors and gaps in challenges, build lessons and the parts catalog.
+- Tablet (iPad) and phone layout, accessibility (keyboard use, contrast, screen readers).
+- More automated tests: simulator engine and `.iqblocks` import.
 
-## 不打算做
-- 蒐集孩子個資、廣告、第三方追蹤。
-- 複製官方手冊原文、圖片、VEXcode 程式碼。
-- 取代實體機器人實作：模擬器只是練習與檢查工具。
+## Mid term: more useful
+- Level Up field simulation (using the dimensions in the official manual appendix; verify against official data, no copying of text or images).
+- Support more blocks and sensors so more real files can be simulated and checked.
+- Coach features: compare several learners, comments, practice reminders.
+- A question export/import format so teachers can maintain questions in a spreadsheet.
 
-想法請開 Issue（標籤 `enhancement`），或到 Discussions 討論。
+## Long term: sustainable
+- **Yearly season process**: a clear update checklist once the new Game Manual is out (`SEASON`, season questions, challenges, simulated field).
+- Deployment and backup guide for multiple teams / classrooms.
+- English interface (optional).
+
+## Not planned
+- Collecting children's personal data, ads, third-party tracking.
+- Copying the official manual's text, images or VEXcode code.
+- Replacing hands-on robot work: the simulator is only a practice and checking tool.
+
+Ideas: open an Issue (label `enhancement`) or discuss in Discussions.

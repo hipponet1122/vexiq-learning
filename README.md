@@ -1,59 +1,58 @@
-# VEX IQ 自學網站
+[繁體中文](README.zh-TW.md) · **English**
 
-給國小高年級到國中學生自學 **VEX IQ（第二代、VEXcode IQ Blocks）** 的網站：先用測驗找出程度，再依程度出題、
-教組裝、教積木程式、教工程筆記，並提供網頁模擬器與比賽（目前季：Level Up 2026–2027）練習。
-家長與教練可以看到孩子的練習狀況。
+# VEX IQ Self-Study Site
 
-> 非官方專案，與 VEX Robotics／Innovation First／REC Foundation 無關。見 [`NOTICE.md`](NOTICE.md)。
-> 繁體中文（台灣）為主。歡迎老師、教練、家長一起改進 → [`CONTRIBUTING.md`](CONTRIBUTING.md)。
+A website for upper-elementary to middle-school students to teach themselves **VEX IQ (2nd generation, VEXcode IQ Blocks)**. A placement quiz finds the learner's level, then the site adapts: practice questions, build lessons, block programming, engineering notebook coaching, a web simulator, and competition practice (current season: Level Up 2026–2027). Parents and coaches can see how the child is doing.
 
-## 功能
-- **自適應出題**：6 個領域、26 個技能點、138 題（選擇／數值／排序／找錯）；定位測驗＋依熟練度練習、錯題回補。
-- **網頁模擬器**：參照 VEXcode IQ Blocks（英文積木＋停留顯示中文、拖曳、感測器、我的積木、復原重做、
-  Python／C++ 程式碼檢視、Brain 螢幕）。
-- **上傳 VEXcode 存檔**（`.iqblocks`）：自動／遙控程式的模擬、逐步對照、提示與工程筆記草稿。
-- **工程筆記**：7 課教學、7 種頁面、自我檢查清單、家長留言、可列印作品集。
-- **挑戰、組裝教學與零件圖鑑、比賽專區**（當季規則整理、得分規劃器、技能賽記錄、英中術語卡、面談練習）。
-- **引導**：今日任務、起步路徑、徽章與連續天數、家長使用說明與每週學習報告。
-- **三種角色**：學員、家長（管理）、教練（**唯讀**，只看被指派的學員）。
-- **版本資訊**：頁尾與 `#/about` 顯示版本、Git 提交代號、更新時間、作者聯絡；`/healthz` 健康檢查。
+> Unofficial project. Not affiliated with VEX Robotics, Innovation First or the REC Foundation. See [`NOTICE.md`](NOTICE.md).
+> The interface is in Traditional Chinese (Taiwan). Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## 技術
-FastAPI + SQLite（單一 worker）＋ 無框架、無 build step 的純 JavaScript（`web/`）。密碼 PBKDF2、登入失敗限流、
-不使用第三方追蹤；不被搜尋引擎收錄（`robots.txt`、`X-Robots-Tag`）。
+## Features
+- **Adaptive practice**: 6 domains, 26 skills, 138 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
+- **Anti-frustration loop**: on a wrong answer the learner gets a hint and a second try; two misses in a skill pop up a 30-second cheat sheet; each round ends with a "practice similar questions" option. In the simulator, repeated failures reveal challenge hints step by step and suggest a follow-up quiz after a pass.
+- **Web simulator** modeled on VEXcode IQ Blocks (English blocks with Chinese tooltips, drag and drop, sensors, My Blocks, undo/redo, Python/C++ code view, Brain screen).
+- **Upload VEXcode files** (`.iqblocks`): simulate autonomous/driver-control programs, step-by-step comparison, hints and engineering notebook drafts.
+- **Engineering notebook**: 7 lessons, 7 page types, self-check lists, parent comments, printable portfolio.
+- **Challenges, build lessons with a parts catalog, competition zone** (season rules summary, score planner, skills-run log, English–Chinese term cards, interview practice).
+- **Guidance**: daily task, starter path, badges and streaks, parent guide and weekly report.
+- **Three roles**: learner, parent (admin), coach (**read-only**, sees only assigned learners).
+- **Version info**: version, Git commit, update time and author contact in the footer and `#/about`; `/healthz` health check.
+
+## Tech
+FastAPI + SQLite (single worker) and plain JavaScript with no framework and no build step (`web/`). PBKDF2 passwords, login rate limiting, no third-party tracking, and not indexed by search engines (`robots.txt`, `X-Robots-Tag`).
 
 ```
-server.py        後端 API 與靜態檔
-web/data.js      技能地圖與題庫          web/content.js  課程、挑戰、當季規則
-web/app.js       路由、登入、練習、家長頁   web/sim.js      模擬器
-web/iqimport.js  .iqblocks 匯入          web/guide.js    引導、徽章
-web/modules.js   筆記、挑戰、組裝、比賽、資源   web/extras.js   週報、作品集、題庫審閱
-web/about.js     關於頁與頁尾            web/blocktext.js 題目積木中文→英文            build_info.py   產生 web/version.json
+server.py        backend API and static files
+web/data.js      skill map and question bank     web/content.js  lessons, challenges, season rules
+web/app.js       routing, login, practice, parent pages   web/sim.js  simulator
+web/iqimport.js  .iqblocks import                web/guide.js    guidance, badges
+web/modules.js   notebook, challenges, build, competition, resources   web/extras.js  weekly report, portfolio, question review
+web/about.js     about page and footer           web/blocktext.js  block text zh→en            build_info.py  writes web/version.json
 ```
 
-## 本機執行
+## Run locally
 ```bash
-pip install fastapi "uvicorn[standard]" itsdangerous
-python3 make_seed.py                     # 產生初始帳號（學員／家長）與一次性密碼檔
-python3 build_info.py                    # 產生版本資訊（可略過）
+pip install -r requirements.txt
+python3 make_seed.py                     # creates the starter accounts (learner / parent) and a one-time password file
+python3 build_info.py                    # writes version info (optional)
 DATA_DIR=./data python3 -m uvicorn server:app --port 8599
 ```
-開 http://localhost:8599/ 。初始密碼在 `初始帳密.txt`（登入後請改掉並刪除該檔）。
+Open http://localhost:8599/. The starter passwords are in `初始帳密.txt` (change them after logging in and delete that file).
 
-## 自架（Docker）
+## Self-host (Docker)
 ```bash
 python3 make_seed.py && python3 build_info.py
-docker compose up -d --build            # 預設只綁 127.0.0.1:8518，資料放 ./data
+docker compose up -d --build            # binds 127.0.0.1:8518 by default, data in ./data
 ```
-請用反向代理（Nginx／Caddy／Cloudflare Tunnel）加上 **HTTPS** 再對外；並備份 `data/`（`vexiq.sqlite`）。
-環境變數：`VEXIQ_PORT`、`VEXIQ_DATA`（資料夾）。家長登入後可在「家長頁」新增學員與教練。
+Put it behind a reverse proxy (Nginx / Caddy / Cloudflare Tunnel) with **HTTPS** before exposing it, and back up `data/` (`vexiq.sqlite`).
+Environment variables: `VEXIQ_PORT`, `VEXIQ_DATA` (data folder), and `TRUST_CF_IP` (set to `1` behind a Cloudflare Tunnel so `CF-Connecting-IP` is used for login rate limiting). The container drops privileges to the owner of `/data` (`docker-entrypoint.sh`) and does not run as root. After logging in, parents can add learners and coaches on the parent page.
 
-## 給參與者
-- 想幫忙：看 [`CONTRIBUTING.md`](CONTRIBUTING.md)、[`ROADMAP.md`](ROADMAP.md)、[`MAINTAINERS.md`](MAINTAINERS.md)，或找標籤 `good first issue` 的任務。
-- 改題庫：`web/data.js`（積木寫法 `[下拉]` `(數字)` `<條件>`，行首兩格空白＝縮排）。
-- 換季：更新 `web/content.js` 的 `SEASON` 與 `web/data.js` 的當季題，**用自己的話整理並附官方連結**。
-- 發版：改 `VERSION` 與 `CHANGELOG.md`。
+## For contributors
+- Want to help? See [`CONTRIBUTING.md`](CONTRIBUTING.md), [`ROADMAP.md`](ROADMAP.md), [`MAINTAINERS.md`](MAINTAINERS.md), or look for issues labeled `good first issue`.
+- Editing questions: `web/data.js` (block syntax: `[dropdown]` `(number)` `<condition>`; two leading spaces = one indent level).
+- New season: update `SEASON` in `web/content.js` and the season questions in `web/data.js`. **Write in your own words and link to the official source.**
+- Releasing: update `VERSION` and `CHANGELOG.md`.
 
-## 授權
-程式碼 MIT（[`LICENSE`](LICENSE)）；教學與題庫內容 CC BY-SA 4.0（[`LICENSE-CONTENT.md`](LICENSE-CONTENT.md)）。
-資安回報請看 [`SECURITY.md`](SECURITY.md)。作者：Elvis Huang <elvis@mingchhun.com>
+## License
+Code: MIT ([`LICENSE`](LICENSE)). Teaching content and question bank: CC BY-SA 4.0 ([`LICENSE-CONTENT.md`](LICENSE-CONTENT.md)).
+Security reports: see [`SECURITY.md`](SECURITY.md). Author: Elvis Huang <elvis@mingchhun.com>
