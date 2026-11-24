@@ -121,7 +121,61 @@
     rim.position.set(-14, 12, -14);
     scene.add(rim);
 
-    // 程式化 VEX IQ 地墊紋理（6 × 8 拼裝格紋＋起始線）
+    // 自建（非官方 CAD）的倒角幾何／材質小工具：讓球門與沙包比純色方塊更有質感
+    function roundedBoxGeometry(w, h, d, r, bevelSegments = 3) {
+      r = Math.max(0.001, Math.min(r, w / 2 - 0.001, d / 2 - 0.001));
+      const x = -w / 2, y = -d / 2;
+      const shape = new THREE.Shape();
+      shape.moveTo(x, y + r);
+      shape.lineTo(x, y + d - r);
+      shape.quadraticCurveTo(x, y + d, x + r, y + d);
+      shape.lineTo(x + w - r, y + d);
+      shape.quadraticCurveTo(x + w, y + d, x + w, y + d - r);
+      shape.lineTo(x + w, y + r);
+      shape.quadraticCurveTo(x + w, y, x + w - r, y);
+      shape.lineTo(x + r, y);
+      shape.quadraticCurveTo(x, y, x, y + r);
+      const bevel = Math.min(r * 0.5, h * 0.4);
+      const geo = new THREE.ExtrudeGeometry(shape, { depth: h, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments, curveSegments: 6 });
+      geo.rotateX(-Math.PI / 2);
+      geo.translate(0, -h / 2, 0);
+      return geo;
+    }
+    // 程式化布面沙包紋理：底色＋細緻雜訊纖維感＋十字縫線，取代純色材質
+    function fabricTexture(hex) {
+      const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+      const g = c.getContext('2d');
+      const col = '#' + hex.toString(16).padStart(6, '0');
+      g.fillStyle = col; g.fillRect(0, 0, 128, 128);
+      const img = g.getImageData(0, 0, 128, 128);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const n = (Math.random() - 0.5) * 20;
+        img.data[i] = Math.max(0, Math.min(255, img.data[i] + n));
+        img.data[i + 1] = Math.max(0, Math.min(255, img.data[i + 1] + n));
+        img.data[i + 2] = Math.max(0, Math.min(255, img.data[i + 2] + n));
+      }
+      g.putImageData(img, 0, 0);
+      g.strokeStyle = 'rgba(0,0,0,.32)'; g.lineWidth = 2; g.setLineDash([3, 3]);
+      g.beginPath(); g.moveTo(64, 8); g.lineTo(64, 120); g.moveTo(8, 64); g.lineTo(120, 64); g.stroke();
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      return tex;
+    }
+    // 程式化拉絲鋁材紋理：給球門立柱用，取代純色塑膠感
+    const brushedMetalTex = (() => {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      const g = c.getContext('2d');
+      g.fillStyle = '#9aa7b5'; g.fillRect(0, 0, 64, 64);
+      for (let i = 0; i < 160; i++) {
+        g.strokeStyle = `rgba(255,255,255,${Math.random() * 0.12})`;
+        g.beginPath(); const yy = Math.random() * 64; g.moveTo(0, yy); g.lineTo(64, yy + (Math.random() - 0.5) * 2); g.stroke();
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(1, 4);
+      return tex;
+    })();
+
+    // 程式化 VEX IQ 地墊紋理（6 × 8 拼裝格紋＋泡棉顆粒雜訊＋內嵌斜角立體感＋起始線）
     const floorTex = (() => {
       const c = document.createElement('canvas'); c.width = 768; c.height = 1024;
       const g = c.getContext('2d');
@@ -129,12 +183,23 @@
       const cols = 6, rows = 8, cw = c.width / cols, ch = c.height / rows;
       for (let r = 0; r < rows; r++) {
         for (let k = 0; k < cols; k++) {
-          g.fillStyle = (r + k) % 2 === 0 ? '#dce3ec' : '#cfd8e3';
+          g.fillStyle = (r + k) % 2 === 0 ? '#dfe6ee' : '#d2dae5';
           g.fillRect(k * cw + 2, r * ch + 2, cw - 4, ch - 4);
+          const grad = g.createLinearGradient(0, r * ch, 0, r * ch + ch);
+          grad.addColorStop(0, 'rgba(255,255,255,.3)'); grad.addColorStop(0.1, 'rgba(255,255,255,0)');
+          grad.addColorStop(0.9, 'rgba(0,0,0,0)'); grad.addColorStop(1, 'rgba(0,0,0,.14)');
+          g.fillStyle = grad; g.fillRect(k * cw + 2, r * ch + 2, cw - 4, ch - 4);
           g.strokeStyle = '#94a3b8'; g.lineWidth = 2;
           g.strokeRect(k * cw + 1, r * ch + 1, cw - 2, ch - 2);
         }
       }
+      // 泡棉顆粒雜訊
+      const img = g.getImageData(0, 0, c.width, c.height);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const n = (Math.random() - 0.5) * 10;
+        img.data[i] += n; img.data[i + 1] += n; img.data[i + 2] += n;
+      }
+      g.putImageData(img, 0, 0);
       // 起始區線條
       g.strokeStyle = '#1e293b'; g.lineWidth = 6;
       g.beginPath(); g.moveTo(0, ch * 6); g.lineTo(c.width, ch * 6); g.stroke();
@@ -180,28 +245,29 @@
       return sp;
     }
 
-    // 5 座立體 Level Up 階梯球門（帶四角 VEX 支撐柱、透明背板與彩色計分籃框）
-    const postMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.45, metalness: 0.45 });
+    // 5 座立體 Level Up 階梯球門（圓柱拉絲鋁支撐柱、倒角籃底盤與有光澤塗裝護框）
+    const postMat = new THREE.MeshStandardMaterial({ map: brushedMetalTex, color: 0xcbd5e1, roughness: 0.38, metalness: 0.75 });
     GOALS.forEach((g) => {
       const grp = new THREE.Group();
       grp.position.set(g.x, 0, g.z);
-      const colMat = new THREE.MeshStandardMaterial({ color: COL[g.col].hex, roughness: 0.32, metalness: 0.15 });
-      const trayMat = new THREE.MeshStandardMaterial({ color: COL[g.col].hex, roughness: 0.45, metalness: 0.1, transparent: true, opacity: 0.88 });
-      // 四角支撐柱
+      const colMat = new THREE.MeshPhysicalMaterial({ color: COL[g.col].hex, roughness: 0.35, metalness: 0.08, clearcoat: 0.6, clearcoatRoughness: 0.25 });
+      const trayMat = new THREE.MeshPhysicalMaterial({ color: COL[g.col].hex, roughness: 0.4, metalness: 0.05, clearcoat: 0.4, transparent: true, opacity: 0.9 });
+      // 四角圓柱支撐柱（拉絲鋁材質）
       if (g.h > 0.5) {
+        const postGeo = new THREE.CylinderGeometry(0.085, 0.085, g.h, 14);
         [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
-          const post = new THREE.Mesh(new THREE.BoxGeometry(0.16, g.h, 0.16), postMat);
+          const post = new THREE.Mesh(postGeo, postMat);
           post.position.set(sx * (g.w / 2 - 0.12), g.h / 2, sz * (g.d / 2 - 0.12));
           post.castShadow = true; post.receiveShadow = true;
           grp.add(post);
         });
       }
-      // 籃底盤與四側護框
-      const base = new THREE.Mesh(new THREE.BoxGeometry(g.w, 0.14, g.d), trayMat);
+      // 倒角籃底盤與四側倒角護框
+      const base = new THREE.Mesh(roundedBoxGeometry(g.w, 0.14, g.d, 0.09), trayMat);
       base.position.y = g.h; base.castShadow = true; base.receiveShadow = true; grp.add(base);
       const rimH = 0.28;
       [[0, -g.d / 2 + 0.06, g.w, 0.12], [0, g.d / 2 - 0.06, g.w, 0.12], [-g.w / 2 + 0.06, 0, 0.12, g.d], [g.w / 2 - 0.06, 0, 0.12, g.d]].forEach(([rx, rz, rw, rd]) => {
-        const rm = new THREE.Mesh(new THREE.BoxGeometry(rw, rimH, rd), colMat);
+        const rm = new THREE.Mesh(roundedBoxGeometry(rw, rimH, rd, Math.min(0.05, rw / 2 - 0.001, rd / 2 - 0.001)), colMat);
         rm.position.set(rx, g.h + rimH / 2, rz); rm.castShadow = true; grp.add(rm);
       });
       const lbl = makeLabelSprite(g.name + ' ' + g.pts + '分', COL[g.col].css);
@@ -276,13 +342,12 @@
     robotGroup.add(armPivot);
     scene.add(robotGroup);
 
-    // 14 顆立體軟質沙包 Mesh
-    const bagGeo = new THREE.SphereGeometry(0.46, 16, 12);
-    bagGeo.scale(1.05, 0.62, 1.05);
+    // 14 顆立體軟質沙包 Mesh（倒角方枕造型＋布面雜訊貼圖與十字縫線，取代純色橢球）
+    const bagGeo = roundedBoxGeometry(0.76, 0.34, 0.76, 0.3, 4);
     const bagMats = {
-      red: new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.82, metalness: 0.02 }),
-      blue: new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.82, metalness: 0.02 }),
-      yellow: new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.75, metalness: 0.05 }),
+      red: new THREE.MeshStandardMaterial({ map: fabricTexture(0xef4444), roughness: 0.85, metalness: 0.02 }),
+      blue: new THREE.MeshStandardMaterial({ map: fabricTexture(0x2563eb), roughness: 0.85, metalness: 0.02 }),
+      yellow: new THREE.MeshStandardMaterial({ map: fabricTexture(0xfacc15), roughness: 0.78, metalness: 0.03 }),
     };
 
     let bot, bags, flying, score, scoredLog;
@@ -297,6 +362,7 @@
     ];
     bags = bagInit.map(([col, x, z], i) => {
       const m = new THREE.Mesh(bagGeo, bagMats[col]);
+      m.rotation.y = Math.random() * Math.PI * 2;
       m.castShadow = true; m.receiveShadow = true;
       scene.add(m);
       return { id: i + 1, col, ix: x, iz: z, x, y: 0.28, z, goal: null, mesh: m };

@@ -73,7 +73,7 @@ function literals(src) {
   }
   return res;
 }
-const UI = ['app.js', 'modules.js', 'guide.js', 'extras.js', 'sim.js', 'iqimport.js', 'about.js', 'a11y.js'];
+const UI = ['app.js', 'modules.js', 'guide.js', 'extras.js', 'sim.js', 'arena3d.js', 'pathplan.js', 'control.js', 'taiwan.js', 'iqimport.js', 'about.js', 'a11y.js'];
 for (const f of UI) {
   const src = fs.readFileSync(path.join(ROOT, 'web', f), 'utf8');
   for (const s of literals(src)) { const t = s.trim(); if (t && ZH.test(t) && !(DSL.test(t) && /[\[(<（]/.test(t))) add('ui-' + f.replace('.js', ''), t.length === s.length ? s : s); }

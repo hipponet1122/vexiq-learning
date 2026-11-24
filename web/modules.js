@@ -7,6 +7,7 @@
   const fmt = (ts) => { const d = new Date(ts * 1000); return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate(); };
   const stars = (n) => '★'.repeat(n) + '☆'.repeat(Math.max(0, 3 - n));
   const paint = (c, title, icon) => $().replaceChildren(shell(c, { title, icon }));
+  VX.paint = paint;
   const html = (s) => h('div', { html: s });
 
   /* ============ 挑戰題庫 ============ */
@@ -555,11 +556,12 @@
 
   /* ============ 比賽專區 ============ */
   async function viewCompete(a, b) {
-    const nav = h('div', { class: 'row gap', style: 'margin:10px 0' }, [['', '總覽'], ['timer', '⏱️ 場地計時記分'], ['prep', '🎒 賽前準備與分工'], ['season', '當季 Level Up'], ['plan', '得分規劃器'], ['skills', '技能賽練習'], ['vocab', '英中術語卡'], ['interview', '面談練習']].map(([k, n]) => h('a', { class: 'btn sm' + ((a || '') === k ? ' primary' : ''), href: '#/compete' + (k ? '/' + k : '') }, n)));
+    const nav = h('div', { class: 'row gap', style: 'margin:10px 0' }, [['', '總覽'], ['timer', '⏱️ 場地計時記分'], ['prep', '🎒 賽前準備與分工'], ['season', '當季 Level Up'], ['plan', '得分規劃器'], ['taiwan', '🇹🇼 台灣賽事路線'], ['skills', '技能賽練習'], ['vocab', '英中術語卡'], ['interview', '面談練習']].map(([k, n]) => h('a', { class: 'btn sm' + ((a || '') === k ? ' primary' : ''), href: '#/compete' + (k ? '/' + k : '') }, n)));
     if (a === 'timer') return matchTimer(nav);
     if (a === 'prep') return prep(nav);
     if (a === 'season') return season(nav);
     if (a === 'plan') return planner(nav);
+    if (a === 'taiwan') return VX.taiwanPage(nav);
     if (a === 'vocab') return vocab(nav);
     if (a === 'interview') return interview(nav);
     if (a === 'skills') return skills(nav);
@@ -571,6 +573,8 @@
           h('a', { class: 'tile', href: '#/compete/timer', style: 'background:#ef4444;border-color:#b91c1c;color:#fff' }, h('span', { class: 'ti' }, '🚨'), '場地計時與記分', h('small', { style: 'color:rgba(255,255,255,.9)' }, '60秒倒數＋官方音效')),
           h('a', { class: 'tile', href: '#/compete/prep', style: 'background:#8b5cf6;border-color:#6d28d9;color:#fff' }, h('span', { class: 'ti' }, '🎒'), '賽前準備與分工', h('small', { style: 'color:rgba(255,255,255,.9)' }, '組隊、駕駛模式、清單')),
           h('a', { class: 'tile', href: '#/compete/season', style: 'background:#f1ae34;border-color:#b38136' }, h('span', { class: 'ti' }, '🎯'), '當季 Level Up', h('small', null, '規則、計分、策略')),
+          h('a', { class: 'tile', href: '#/control', style: 'background:#14b8a6;border-color:#0f766e;color:#fff' }, h('span', { class: 'ti' }, '🧪'), '控制實驗室', h('small', { style: 'color:rgba(255,255,255,.9)' }, '走直線、PID、里程計')),
+          h('a', { class: 'tile', href: '#/compete/taiwan', style: 'background:#f97316;border-color:#c2410c;color:#fff' }, h('span', { class: 'ti' }, '🇹🇼'), '台灣賽事路線', h('small', { style: 'color:rgba(255,255,255,.9)' }, '邀請賽→預賽→冠軍賽')),
           h('a', { class: 'tile', href: '#/compete/skills', style: 'background:#77b2ff;border-color:#5a85bb' }, h('span', { class: 'ti' }, '⏱️'), '技能賽練習', h('small', null, '記錄分數、看進步')),
           h('a', { class: 'tile', href: '#/compete/vocab', style: 'background:#bf9dee;border-color:#8d76ae' }, h('span', { class: 'ti' }, '🔤'), '英中術語卡', h('small', null, '比賽英文單字')),
           h('a', { class: 'tile', href: '#/compete/interview', style: 'background:#5ecd98;border-color:#4a9873' }, h('span', { class: 'ti' }, '🎤'), '面談練習', h('small', null, '練習跟評審說明')),
@@ -1103,6 +1107,22 @@
       ['iqdraw（組裝說明書產生器）', 'https://github.com/elijahcroft/iqdraw', '用文字描述零件位置，產生可列印的步驟式組裝說明書。適合以後做自己機器人的組裝教學。'],
       ['VEX-Robotics-AI / VEX-Robotics', 'https://github.com/VEX-Robotics-AI/VEX-Robotics', '彙整 VEX IQ 入門課程與範例（2023 年後沒更新，內容偏舊）。'],
       ['vextutorials', 'https://github.com/anyaiyer21/vextutorials', '積木與 Python 語法對照的教學網站原始碼。'],
+      ['VexIQ-Drag-Race（Python）', 'https://github.com/CodeByEx/VexIQ-Drag-Race', '一個用 Python 讓機器人在直線競速中盡量走直的範例，想法就是「一直修正偏移」。想先用玩的了解，請看本站「控制實驗室」。授權：GPL-3.0。'],
+      ['Team2420C / autonomous（C++）', 'https://github.com/Team2420C/autonomous', '參賽隊伍公開的自動階段程式，用到里程計（odometry）與 PID，屬於進階。先看本站「控制實驗室」再來讀會比較容易。授權：GPL-2.0。'],
+      ['GitHub：vex-iq 主題', 'https://github.com/topics/vex-iq', '全球開發者標記 vex-iq 的開源專案清單，可以定期逛逛。第三方內容，品質不一。'],
+    ]],
+    ['台灣賽事與在地資源', [
+      ['台灣賽事路線（本站整理）', '#/compete/taiwan', '邀請賽 → 預賽 → 冠軍賽 → 世界賽的大致流程與參賽準備清單。'],
+      ['VEX Taiwan Open（VTO）官網', 'https://vto.cacet.org/', '台灣 VEX 賽事的官方網站：日程、報名簡章、賽前通知、得獎名單。主辦：國立臺北教育大學、中華資訊與科技教育學會。'],
+      ['庫樂思機器人 Curious Blog', 'https://curious-edu.com/blog/', '台灣教育機構的部落格，會分享賽季車型與策略心得。第三方內容，請自行判斷。'],
+    ]],
+    ['問問題與給教練、家長', [
+      ['VEX Forum：VEX IQ 一般討論', 'https://www.vexforum.com/c/vex-iq-general-discussion/', '全球選手與教練的英文討論區（機構、齒輪比、規則疑問都有人問）。公開網站：請家長陪同，不要透露真實姓名、學校或聯絡方式；規則的最終解釋以官方手冊與官方 Q&A 為準。'],
+      ['VEX STEM Labs：教師資源', 'https://education.vex.com/stemlabs/zh-hant/iq/teacher-resources', '官方整理給老師的資源：進度節奏指南、材料清單、建構說明總表、評分細則、檢查表、給家長的信等（中文是機器翻譯）。教練與家長也很適合參考。'],
+      ['VEX 知識庫：IQ 課程類型指南', 'https://kb.vex.com/hc/zh-tw/articles/5835932140948-VEX-IQ-%E5%8F%AF%E7%94%A8%E8%AA%B2%E7%A8%8B%E9%A1%9E%E5%9E%8B%E6%8C%87%E5%8D%97', '說明 STEM Labs、活動、活動系列有什麼不同，以及該從哪裡開始。'],
+    ]],
+    ['看別人的程式，要注意「授權」', [
+      ['為什麼不能直接複製貼上？', '#/control', '上面幾個開源專案多半是 GPL 授權：可以讀、可以學概念；但把它們的程式碼放進自己的專案，自己的專案也得用同樣的授權公開。本站程式是 MIT 授權，所以我們沒有複製它們的程式，「控制實驗室」是自己從頭寫的。以後你寫作品集時，也要寫清楚參考了什麼、授權是什麼。'],
     ]],
   ];
   function viewResources() {

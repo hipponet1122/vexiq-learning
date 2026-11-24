@@ -14,7 +14,7 @@ These are things we **intend** to do, not promises; the order depends on contrib
 - 69 automated tests, English block text in questions, first accessibility pass (labels, contrast, keyboard focus), tablet and phone layout checks, 3 new challenges, question-review export, season-update guide.
 
 ## Near term: get the content right
-- Question review: every one of the 138 questions' answers, explanations and difficulty checked by coaches/teachers, domain by domain (most important).
+- Question review: every one of the 163 questions' answers, explanations and difficulty checked by coaches/teachers, domain by domain (most important).
 - Fix errors and gaps in challenges, build lessons and the parts catalog.
 - Tablet (iPad) and phone layout, accessibility (keyboard use, contrast, screen readers).
 - More automated tests: simulator engine and `.iqblocks` import.

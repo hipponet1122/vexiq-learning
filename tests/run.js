@@ -12,7 +12,7 @@ const run = (code, ch) => { const w = S.makeWorld(ch || null); const r = S.simul
 
 group('題庫結構');
 const { QS, SKILLS } = data;
-t('題數 150、技能 26', () => { assert.strictEqual(QS.length, 150); assert.strictEqual(SKILLS.length, 26); });
+t('題數 163、技能 28', () => { assert.strictEqual(QS.length, 163); assert.strictEqual(SKILLS.length, 28); });
 t('題號不重複、技能都存在', () => {
   const ids = new Set(), sk = new Set(SKILLS.map((s) => s.id));
   for (const q of QS) { assert(!ids.has(q.id), '重複 ' + q.id); ids.add(q.id); assert(sk.has(q.s), q.id + ' 技能不存在'); }
@@ -158,6 +158,32 @@ t('負數距離與負數角度會反方向移動／轉彎（與 VEXcode 一致�
   assert(S.judge(r2).ok, 'turn 負數應反向轉');
 });
 
+
+group('控制實驗室（走直線／PID／里程計的簡化模型）');
+const CT = VX.ctl;
+t('走直線：不修正會偏，加 P 控制偏移明顯變小', () => { const a = CT.simStraight({ drift: 3, kp: 0, on: false }), b = CT.simStraight({ drift: 3, kp: 2, on: true }); assert(a.maxOff > 200, '不修正偏 ' + a.maxOff); assert(b.maxOff < a.maxOff / 4, 'P 控制偏 ' + b.maxOff); });
+t('走直線：Kp 越大偏移越小（在不震盪的範圍）', () => { const o = (kp) => CT.simStraight({ drift: 3, kp, on: true }).maxOff; assert(o(1) > o(2) && o(2) > o(4)); });
+t('走直線：Kp 太大會左右擺動（震盪）', () => assert(CT.simStraight({ drift: 3, kp: 12, on: true }).flips >= 6));
+t('走直線：Kp 合理時不擺動', () => assert(CT.simStraight({ drift: 3, kp: 4, on: true }).flips <= 1));
+t('PID：Kp 太小很慢、停在差一點的地方；加 Ki 能縮小最後誤差', () => {
+  const p = CT.simPid({ kp: 0.5, ki: 0, kd: 0 }), pi = CT.simPid({ kp: 0.5, ki: 0.3, kd: 0.1 });
+  assert(Math.abs(p.endErr) > 5, 'P 末誤差 ' + p.endErr); assert(Math.abs(pi.endErr) < 2, 'PID 末誤差 ' + pi.endErr);
+});
+t('PID：加 Kd 會讓過衝變小', () => assert(CT.simPid({ kp: 3, ki: 0, kd: 0.15 }).over < CT.simPid({ kp: 3, ki: 0, kd: 0 }).over));
+t('里程計：沒有打滑時走正方形會回到起點、朝向轉 360°', () => {
+  const C = 200, T = 180, t90 = (Math.PI / 2) * T / 2 / C, sq = []; for (let i = 0; i < 4; i++) { sq.push([1.5, 1.5]); sq.push([-t90, t90]); }
+  const r = CT.odo(sq, C, T, 0, 7, false); assert(r.err < 0.01 && Math.abs(r.ith - 360) < 0.01, r.err + ' ' + r.ith);
+});
+t('里程計：有打滑誤差會累積；用 Gyro 校正朝向後誤差小很多', () => {
+  const C = 200, T = 180, t90 = (Math.PI / 2) * T / 2 / C, sq = []; for (let i = 0; i < 4; i++) { sq.push([1.5, 1.5]); sq.push([-t90, t90]); }
+  const a = CT.odo(sq, C, T, 4, 7, false), b = CT.odo(sq, C, T, 4, 7, true); assert(a.err > 30, '打滑誤差 ' + a.err); assert(b.err < a.err / 4, 'Gyro 後 ' + b.err);
+});
+t('里程計：右輪走比較遠會往左轉（數學上角度為正）', () => assert(CT.odo([[1, 1.4]], 200, 180, 0, 1, false).ith > 0));
+t('進階技能 E5、E6 各有 6～7 題，且解答算式正確', () => {
+  assert(QS.filter((q) => q.s === 'E5').length >= 6 && QS.filter((q) => q.s === 'E6').length >= 6);
+  assert.strictEqual(num('E5-3'), '12'); assert.strictEqual(num('E5-4'), '10'); assert.strictEqual(num('E6-2'), '500'); assert.strictEqual(num('E6-3'), '250');
+  assert.strictEqual(90 - 78, 12); assert.strictEqual(2 * 5, 10); assert.strictEqual(2.5 * 200, 500); assert.strictEqual((200 + 300) / 2, 250);
+});
 
 group('程式碼轉換');
 t('Python 與 C++ 都有 drive 動作', () => {
@@ -332,7 +358,8 @@ t('擷取清單內的字串雜湊不衝突', () => {
   fs.readdirSync(path.join(I18N, 'src')).forEach((f) => srcOf(f.replace('.json', '')).forEach((z) => { const h = H(z); assert(!seen[h] || seen[h] === z, '雜湊衝突 ' + h); seen[h] = z; }));
 });
 [['data-QS', 0], ['data-SKILLS', 0], ['data-DOMAINS', 0], ['data-TAGS', 0], ['content-CHALLENGES', 0], ['content-NB_LESSONS', 0], ['content-NB_KINDS', 0], ['content-BUILD', 0], ['content-PARTS', 0],
-  ['content-INTERVIEW', 0], ['content-SEASON', 0], ['server', 0], ['page', 0], ['ui-app', 12], ['ui-modules', 2], ['ui-guide', 0], ['ui-extras', 0], ['ui-about', 0], ['ui-a11y', 0], ['ui-iqimport', 5], ['ui-sim', 70]].forEach(([a, allow]) => {
+  ['content-BUILD_LAB_CATS', 0], ['content-BUILD_LABS', 0],
+  ['content-INTERVIEW', 0], ['content-SEASON', 0], ['server', 0], ['page', 0], ['ui-app', 12], ['ui-modules', 2], ['ui-guide', 0], ['ui-extras', 0], ['ui-about', 0], ['ui-a11y', 0], ['ui-iqimport', 5], ['ui-sim', 70], ['ui-arena3d', 0], ['ui-pathplan', 5], ['ui-control', 0], ['ui-taiwan', 0]].forEach(([a, allow]) => {
   t('英文翻譯齊全：' + a + (allow ? '（容許 ' + allow + ' 句中文積木字樣不翻）' : ''), () => { const m = missing(a); assert(m.length <= allow, '還有 ' + m.length + ' 句沒翻：' + m.slice(0, 3).join(' | ')); });
 });
 t('翻譯過的課文 HTML 標籤跟原文一致（不會把頁面弄壞）', () => {

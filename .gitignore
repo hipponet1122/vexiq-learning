@@ -9,6 +9,7 @@ data/
 web/version.json
 __pycache__/
 .DS_Store
+.venv_shots/
 # 含內網位址與 NAS 路徑的營運檔（公開前請改成範本）
 部署至NAS.command
 設定網址.command

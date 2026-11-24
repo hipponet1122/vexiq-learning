@@ -668,3 +668,64 @@ c26ca9	Play a cooler sound effect
 6ecbcf	Dead reckoning alone accumulates drift; strong competition teams square up against field walls or use Distance/Color sensors at key points to reset position.
 3a6562	Expected-value strategy: Route A takes 12 s for 6 pts (100% success); Route B takes 20 s for 16 pts (50% success). In 60 seconds, how many more expected points does Route A score than Route B?
 b7e735	Route A: (60 ÷ 12) × 6 × 100% = 30 pts. Route B: (60 ÷ 20) × 16 × 50% = 24 pts. Route A scores 30 − 24 = 6 more points.
+127db2|The robot is programmed to "drive straight" but slowly drifts to the left. What is the most likely cause?
+7b68dd|The real speeds of the left and right motors or wheels are not exactly the same
+3460ce|The program must have been written as "turn left"
+f3c305|The Brain battery is the wrong colour
+b2f02f|The field is too bright
+1a3c3a|Even if the program gives both sides the same speed, friction, wheel tightness and the mat make the two sides differ in reality, so straight driving slowly drifts. The fix is to measure how far off it is with a sensor and correct it.
+547b29|Which sentence is closest to "feedback"?
+7b5995|Measure the current result, then go back and adjust the next action
+2d3565|Run the program again from the start
+e06a27|Rely only on numbers worked out in advance and never measure
+e4a60d|Keep the speed at 100% all the time
+cd403a|Feedback = measure the result → compare with the target → adjust. When driving straight, what is measured is the heading (Gyro) and what is adjusted is the left and right wheel speeds.
+8d9338|The target heading is 90° and the Gyro now reads 78°. What is the error (target − current) in degrees?
+9506b8|Error = target − current = 90 − 78 = 12°. The bigger the error, the more correction is needed.
+691ab7|P control: correction = Kp × error. If Kp = 2 and the error = 5°, what is the correction (% speed)?
+3a3f5c|Correction = 2 × 5 = 10. When the error gets bigger, the correction grows in proportion.
+6e20b1|If you set Kp "very large", what is most likely to happen when the robot drives straight?
+15055d|It keeps wobbling hard left and right (over-correction causes oscillation)
+bf6235|It corrects more accurately and steadily
+a926f3|It does not correct at all
+7d71ae|It just stops and does not move
+573b26|Correcting too hard overshoots in one go, then has to correct back the other way, so it wobbles. Start Kp small and raise it slowly to find a value that "corrects without wobbling".
+c1e4cf|Why should the "measure and correct" step for driving straight run continuously inside a repeat block rather than only once at the start?
+0046c0|Because the drift builds up as the robot moves, so you have to keep measuring and keep correcting
+2c3445|Because repeat blocks run faster
+165196|Because it saves one variable
+a1e2a5|Because doing it only once would make the robot stop
+5f71ea|The drift is not there from the start; it grows as the robot moves. So measure and correct every short while inside the loop.
+6382e7|What does the I (integral) in PID mainly deal with?
+1458d3|A small error that stays for a long time
+1b21be|A situation where the error suddenly changes fast
+83a163|How far to travel
+cfa491|I "adds up" the error, so it can slowly push a small error that never gets fixed down to 0; D looks at how fast the error is changing and brakes to reduce overshoot.
+d01d3b|What does "odometry" do?
+85f0de|It works out the robot's position and heading from how far the wheels have turned
+4d240d|It measures how much battery is left
+fec152|It downloads the program to the Brain
+a7a120|It detects whether there is a wall ahead
+1fda85|Odometry uses how much the wheels have turned to work out, step by step, where the robot is and which way it faces.
+ef8b85|The wheel circumference is 200 mm and it turns 2.5 revolutions. How many mm does the robot move forward?
+48cf9c|Distance = revolutions × circumference = 2.5 × 200 = 500 mm.
+16626c|The left wheel travelled 200 mm and the right wheel 300 mm (both forward). About how many mm does the robot's centre move forward (average of the two wheels)?
+e5d9b7|Forward distance ≈ (left + right) ÷ 2 = (200 + 300) ÷ 2 = 250 mm.
+edc959|Both wheels go forward, but "the right wheel travels farther than the left". How does the robot turn?
+621476|Turns left
+a8ceef|Turns right
+764655|Goes straight, no turn
+d8e470|Reverses on the spot
+c73b40|The outer wheel (right) travels farther, so the robot swings around the inner wheel (left), which means turning left. The other way round, if the left wheel goes farther it turns right.
+aed57a|With wheel odometry alone, what usually happens to the position estimate the longer the robot runs?
+df2001|It gets less and less accurate, because slip and small errors build up step by step
+2f5bdd|It gets more and more accurate
+2ca2c8|It stays perfectly accurate forever
+987bf4|The position resets to zero by itself
+bfdf86|Wheel slip, uneven mats and wheel-size errors each add only a tiny bit per step, but they accumulate. So for long distances, teams often add a Gyro to correct the heading, or use walls and lines to re-align.
+ed9beb|The two wheels "travel the same distance" (both forward). The robot's heading will…
+571dd5|Not change (it drives straight)
+be8dd9|Turn left 90°
+5aefbd|Turn right 90°
+f870d1|Turn 180°
+4c6ce8|With the same distance on both sides, turn angle = (right − left) ÷ track width = 0, so the heading does not change; the robot just moves forward.

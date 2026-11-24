@@ -39,6 +39,7 @@ function load() {
   run('blocktext.js');
   run('sim.js');
   run('iqimport.js');
+  run('control.js');
   return { VX, VXEN: win.VXEN, data: win.__data, content: win.__content };
 }
 module.exports = { load, ROOT };

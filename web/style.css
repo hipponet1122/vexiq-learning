@@ -481,3 +481,32 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .blk .fd.num { text-shadow: none; }
 @media (max-width: 520px) { .vxscope .crow .blocks { min-width: 0; max-width: 100%; } }
 @media (max-width: 520px) { .vxscope .crow .blocks { overflow-x: auto; padding-bottom: 8px; } .vxscope .crow { min-width: 0; } }
+
+/* 控制實驗室、台灣賽事路線 */
+.ctlcharts { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start; margin: 10px 0; }
+.ctlcharts > div { flex: 1 1 340px; min-width: 0; }
+.ctlcharts h4 { margin: 0 0 4px; font-size: .9rem; color: var(--mute); }
+.ctlchart { width: 100%; height: auto; display: block; background: var(--card); border-radius: 8px; }
+.ctltick { font-size: 9px; fill: #5d6b7e; }
+.ctllab { font-size: 10px; fill: #5d6b7e; }
+.ctllegend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .82rem; color: var(--mute); margin: 4px 0 8px; }
+.ctllegend i { display: inline-block; width: 22px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.ctlctrl { display: grid; gap: 12px; }
+.ctlslider { display: grid; grid-template-columns: minmax(140px, 1.2fr) 2fr 90px; gap: 10px; align-items: center; font-size: .9rem; }
+.ctlslider input[type=range] { width: 100%; }
+.ctlval { text-align: right; font-variant-numeric: tabular-nums; }
+.ctlstats { display: flex; gap: 12px; flex-wrap: wrap; margin: 8px 0; }
+.ctlstats > div { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; min-width: 110px; }
+.ctlstats b { font-size: 1.3rem; }
+.ctlstats small { display: block; color: var(--mute); font-size: .75rem; }
+.ctlverdict { font-weight: 600; margin: 4px 0 8px; }
+.ctlpre { background: #f3f6fa; border-radius: 8px; padding: 10px 12px; overflow: auto; font-size: .88rem; line-height: 1.6; white-space: pre; }
+.ctlrows { display: grid; gap: 6px; max-height: 340px; overflow: auto; }
+.ctlrow { display: grid; grid-template-columns: 40px 90px 90px 40px; gap: 8px; align-items: center; font-size: .88rem; }
+.ctlhead { color: var(--mute); font-size: .78rem; }
+@media (max-width: 560px) { .ctlslider { grid-template-columns: 1fr; gap: 4px; } .ctlval { text-align: left; } }
+.twroute { display: grid; gap: 12px; }
+.twstep { display: flex; gap: 12px; align-items: flex-start; border-left: 4px solid var(--accent); padding: 4px 0 4px 12px; }
+.twic { font-size: 1.8rem; line-height: 1; }
+.twwhen { color: var(--mute); font-size: .85rem; margin: 2px 0 4px; }
+.twstep p { margin: 4px 0; }

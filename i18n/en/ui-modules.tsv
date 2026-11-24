@@ -520,3 +520,26 @@ e0047b	3D scoring & sounds
 
 95d824	Auto Path Planner
 fa64d1	Tap route → Blocks / Python
+2221c6|Driving straight, PID, odometry
+fcf0ab|Taiwan Competition Route
+498c70|Invitational → Qualifier → Championship
+2dbad1|A Python example that keeps a robot as straight as possible in a drag race; the idea is to keep correcting the drift. To understand it by playing first, see this site's "Control Lab". License: GPL-3.0.
+aa572b|Autonomous code published by a competition team, using odometry and PID — advanced. Easier to read after you try this site's "Control Lab". License: GPL-2.0.
+528caa|GitHub: vex-iq topic
+797dc7|A list of open-source projects tagged vex-iq by developers worldwide. Worth browsing now and then. Third-party content of varying quality.
+6767af|Taiwan Competitions and Local Resources
+927b1a|Taiwan Competition Route (compiled for this site)
+139572|The rough flow from invitational → qualifier → championship → world championship, plus an entry checklist.
+b7d63e|VEX Taiwan Open (VTO) Official Site
+6cc516|The official site for VEX competitions in Taiwan: schedule, registration notice, pre-event notices and award lists. Hosts: National Taipei University of Education and the Chinese Association for Computer and Technology Education.
+ce099c|A blog by a Taiwanese education company that shares season robot designs and strategy notes. Third-party content — use your own judgement.
+eb8763|Ask Questions, and For Coaches and Parents
+1a6b8d|VEX Forum: VEX IQ General Discussion
+1b496e|An English discussion forum for players and coaches worldwide (people ask about mechanisms, gear ratios and rules). It is a public site: ask a parent to join you, and do not share your real name, school or contact details. The final word on rules is the official manual and the official Q&A.
+2fdb87|VEX STEM Labs: Teacher Resources
+74ed1f|Resources the official site collects for teachers: pacing guides, materials list, a table of all builds, rubrics, checklists, a letter to parents and more (the Chinese is machine-translated). Also useful for coaches and parents.
+6a4e4a|VEX Library: IQ Course Types Guide
+c9dd28|Explains how STEM Labs, Activities and Activity Series differ, and where to start.
+11d52e|Reading Other People's Code: Watch the "License"
+361dab|Why can't I just copy and paste?
+55528a|Most of the open-source projects above use the GPL license: you may read them and learn the ideas, but if you put their code into your own project, your project must be published under the same license. This site's code is MIT-licensed, so we did not copy their code — the "Control Lab" was written from scratch. When you write your portfolio later, state clearly what you referenced and what its license is.

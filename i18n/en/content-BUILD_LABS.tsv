@@ -1,0 +1,180 @@
+f93a25	Rigid Triangle-Braced Frame
+404ddf	Build a rectangular frame and add a diagonal brace so pushing it by hand cannot skew it into a parallelogram.
+54b850	2×10 Beams ×2, 2×6 Beams ×2, Diagonal Beam ×1, Connector Pins (~12)
+d30c57	First build a rectangle using 4 beams and 4 single pins, then push the corner to feel how easily it skews.
+ff3022	Think: which two opposite corners should you connect with a diagonal beam to split the rectangle into two triangles?
+f719bf	Use at least 2 pins or double-sided bracing at each corner to remove play.
+4a6827	Tested pushing the frame before bracing and confirmed it skewed
+bd7de9	After adding the diagonal brace, pushing opposite corners with both hands does not deform it
+6542bd	No pins pop out or loosen when shaking the frame
+0cef2d	Load-Bearing Span Bridge
+c315f7	Build a VEX IQ beam bridge spanning at least 20 cm that holds the Brain + Battery in the center with less than 5 mm sag.
+02645c	2×12 or 2×16 Beams, vertical support beams, diagonal braces, pins, Brain + Battery (as test weight)
+a13552	Measure the span between the two bridge piers first (at least 20 cm).
+55a8bb	Flat beams bend easily under load—try standing beams upright on edge or building a triangular truss!
+5b3513	Place the Brain + Battery in the center and measure how many mm the middle sags.
+1dabbc	Measured bridge span
+497d34	Span must be at least 20 cm! Move the two piers farther apart and measure again.
+c97d2f	Center sag with Brain + Battery on top
+d93aa8	Sag exceeds 5 mm! Try orienting beams vertically on edge or adding triangular truss bracing underneath.
+c31f09	Holds Brain + Battery for 10 seconds without breaking or coming apart
+195e0a	Bridge deck is symmetric and does not tip sideways under load
+1eeee1	Uses at least two triangular truss sections to distribute weight
+5619a7	Low Center-of-Gravity Anti-Tip Chassis
+e862d6	Mount heavy parts (Brain, Battery) low and centered on the chassis so the robot tilts past 25° without tipping over.
+c7670a	Existing chassis, Brain, Battery, low mounting beams, pins, protractor or phone level app
+10b234	First mount the Brain high up, slowly lift one side of the chassis, and note the tipping angle.
+5116ff	Redesign the mount: lower the Battery and Brain near axle height and close to the center of the chassis.
+5da9f2	Measure the tipping angle again and compare the stability improvement!
+ae75ef	Tilt angle before tipping after redesign
+56b6ba	Tipping below 25° means CoG is still high or wheelbase is narrow! Lower the Brain/Battery further or widen the track.
+4fc734	Both Battery and Brain are mounted low near axle height
+a3b3f0	Weight is balanced left-to-right with similar tilt angles on both sides
+0a8ebe	Battery can still be removed easily for charging without beams blocking it
+d25f18	Wheel Circumference Calibration Lab
+573af1	Mount 200 mm VEX IQ wheels, mark the tire, roll 3 full turns by hand, and verify travel distance is close to 600 mm.
+f09a0b	Chassis or test axle frame, 200 mm Wheels ×2, tape measure or ruler, masking tape
+ab10a4	Put masking tape on the floor as a start line and a small mark on the tire edge to count revolutions.
+e60a48	Roll the robot slowly by hand for exactly 3 full wheel turns without slipping, mark the end, and measure.
+3577cd	Enter your measured distance below to compare against the 600 mm theoretical value!
+3d7cfd	Measured distance for 3 wheel revolutions
+6ed2ed	Off from 600 mm by more than 30 mm! Check if the tires are 200 mm, whether they slipped, or if tires are seated unevenly.
+1f5ea5	Marked the tire and counted 3 exact full revolutions
+8dd292	Both tires are firmly seated on rims with no slipping
+cb5c3c	Axles spin freely when pushed with no rubbing or grinding
+8b266d	1000 mm Straight-Line Drift Challenge
+a4e99e	Build a 2-motor differential drivetrain, program it to drive 1000 mm, and keep end drift within 50 mm.
+6e9f1b	2-motor chassis, Brain, Battery, ruler or tape (1000 mm straight line)
+a4ad45	Tape a 1000 mm straight line on the floor and align the robot's front to the start line.
+9aebd7	Run "drive forward for 1000 mm" in VEXcode (at 50% velocity) and measure sideways drift at the end.
+01bb1a	If it drifts to one side: check the slower side for rubbing beams, tight shaft collars, or bent axles!
+1f1bad	Sideways drift after driving 1000 mm
+1ade31	Drift exceeds 50 mm! Free-spin both wheels by hand to find friction, check tight collars, twisted frames, or mismatched tires.
+61fe8c	Left and right motors are configured properly in VEXcode Drivetrain (does not spin in place)
+9ebf08	Drift stays within 50 mm across 3 consecutive runs
+e6a283	Cables are tucked neatly and do not drag on the floor
+0b4454	Omni-Wheel Smooth Turning Chassis
+faa231	Build a front-drive + rear Omni-Wheel chassis and achieve a 360° point turn within 15° error.
+fd98e8	Standard Wheels ×2, Omni Wheels ×2, Smart Motors ×2, chassis frame
+165830	Why do 4 standard rubber tires scrub during turns? Rear sideways friction is too high! Swap the unpowered pair to Omni Wheels.
+6fbe71	Align the front to a floor reference line and run "turn right for 360 degrees".
+95dc13	Check how close it returns to the line, estimate error degrees, and fine-tune Track Width.
+3f2b75	Angle error after a 360° point turn
+43d2c5	Error exceeds 15°! Verify Track Width in VEXcode Devices matches your real robot and check that omni rollers spin freely.
+009f95	Every small roller on the Omni Wheels spins smoothly without jamming
+3fe5f6	Left and right point turns are smooth without chassis shudder or tire scrubbing
+cff655	Four consecutive 90° turns return roughly to the starting heading
+7af8e1	Double-Supported Anti-Flex Chassis (Competition Upgrade)
+1dc0b5	Upgrade cantilevered wheels to double-sided beam supports so axles never bend or pop out under load or hard stops.
+f6f700	Long Pitch Shafts, Shaft Collars / Rubber Collars, outer guard beams, Spacers
+cbffe7	Inspect your chassis: if an axle only pokes out of a motor through a wheel (cantilever), weight bends it downward!
+235a0d	Add a parallel outer guard beam so both ends of the axle are supported, using collars/spacers for spacing.
+6ba82b	Free-spin the wheel after assembly: leave ~1 mm clearance so beams don't pinch and add friction.
+67bb63	Every drive axle is supported on both sides (inner motor + outer guard beam)
+3c4857	Pressing firmly down on the chassis does not splay the wheels outward
+9f6494	With motors detached, wheels free-spin smoothly for at least 2 full turns
+5ad2fc	After 5 high-speed forward hard stops, wheels and collars do not slip out of place
+de3cc2	3:1 Reduction Gearbox (12T Driving 36T)
+5f985e	Sandwich a 12T and 36T gear between two beams; turning 12T 3 times should turn 36T 1 exact turn in reverse without skipping.
+2b2479	12T Gear ×1, 36T Gear ×1, Shafts ×2, 2×8 Beams ×2, standoffs, shaft collars
+9aafd6	Pitch math: 12T radius (0.5) + 36T radius (1.5) = axles exactly 2 pitches apart (1 empty hole between them)!
+282631	Clamp both axles between two parallel beams front and back so gears cannot separate and skip teeth.
+27bf74	Put small tape marks on both gears, turn the 12T gear 3 times, and count 36T turns and direction.
+6d12d0	Measured turns of 36T when 12T turns 3 times
+36d72a	Expected value is 1 turn (3 × 12 ÷ 36 = 1)! Check tooth counts and make sure gears aren't skipping.
+b8d92d	The two gears rotate in opposite directions
+70de08	Turning the input shaft by hand feels smooth with no clicking or binding
+318a68	Gearbox is boxed in on both sides so heavy torque cannot pry the gears apart
+cbb6ef	Idler Gear Direction Reversal (12T → 24T → 36T)
+ddce46	Mesh three gears in a line (24T middle idler) so the 1st and 3rd gears spin in the SAME direction while keeping 3:1 reduction.
+629779	12T ×1, 24T ×1, 36T ×1, Shafts ×3, 2×10 Beams ×2, shaft collars
+0fe99b	Mesh 12T, 24T, and 36T in a straight line (the middle 24T idler connects to no motor—it just transfers motion).
+18b570	Turn the 12T gear 3 times and observe the direction and turns of both the 24T and 36T gears.
+300d68	Key takeaway: an idler gear flips direction (CW → CCW → CW) without changing the overall gear ratio!
+520dec	Even with a 24T idler, the overall ratio stays 12:36 = 1:3, so 3 input turns should give 1 output turn!
+3cfa9a	When 12T turns clockwise, 36T also turns clockwise (same direction)
+e0e4bf	The middle 24T idler spins opposite to the input and output gears
+45e2b4	All three shafts are supported on both sides and turn smoothly without skipping
+05599f	9:1 Two-Stage Compound Reduction Gearbox
+11e40f	Chain two 12:36 stages on a shared middle shaft for 9:1 high torque: 9 input turns yield 1 exact output turn!
+400ffe	12T ×2, 36T ×2, Shafts ×3, 2×10 Beams ×2, shaft collars & lock pins
+77b7db	Key mechanism: on the middle shaft, LOCK stage-1 36T and stage-2 12T together so both rotate as one unit!
+b9eb9f	Offset the two layers: layer 1 meshes input 12T with middle 36T; layer 2 meshes middle 12T with output 36T.
+20533f	Turn the input shaft 9 times by hand, verify 1 output turn, and feel the massive output torque!
+c71c35	Measured output turns when input shaft turns 9 times
+612f42	9:1 compound reduction should output 1 turn for 9 input turns! Check that middle 36T and 12T are locked onto the same shaft.
+3df0bd	Middle-shaft 36T and 12T spin together with no independent slipping
+e83817	Resisting the output shaft by hand feels noticeably stronger than a single 3:1 stage
+95a400	The two-stage gearbox stays rigid with no flex or tooth skipping
+1c9869	High-Torque Lifting Arm (Lever & Gear Ratio)
+d64fa2	Build a motor-driven arm that lifts a load (sandbag or spare motor) and holds it in the air for 5 seconds without drooping.
+4828bf	Smart Motor ×1, 12T + 36T (or 60T) gear stage, arm beam, test load (sandbag / spare motor)
+ce3b47	Never direct-drive a heavy arm straight off the motor! Add a 12:36 or 12:60 reduction first to multiply torque.
+dd49a8	Keep the arm just long enough—longer lever arms make the motor work much harder.
+f4bae1	Set the arm motor stopping mode to "hold" in VEXcode and time how long it holds the lifted load.
+979525	Seconds the arm holds the load up without drooping
+9e4fda	Dropped before 5 seconds! Check that stopping = hold in code, increase gear reduction (e.g. 12:60), or shorten the arm.
+ab2939	Arm joint uses a gear reduction (not direct-driven on the motor shaft)
+f94c39	Full upward travel does not hit the frame or yank sensor cables
+50a3a1	Arm axle is supported on both sides so it does not twist under load
+f0a800	High-Grip Claw (Grab Securely, Release Cleanly)
+fc4aee	Design a claw that grabs a game object (sandbag/ball/cup) and holds it through a 360° spin and hard stop without dropping.
+c4628e	Smart Motor ×1, matching gear pair (dual-finger claw), beams, rubber bands or rubber grip parts
+1d56fc	Smooth plastic beams slip easily—add rubber parts or rubber bands to the contact surfaces for high friction!
+cc4f88	For symmetric dual fingers, mesh two identical gears so left and right fingers open and close together.
+3e05f4	Test "grab → spin 360° → hard stop → release" for at least 3 consecutive successes.
+457cae	Consecutive successful grab-and-release cycles without dropping
+c5c374	Fewer than 3 consecutive passes! Check contact friction and adjust claw closing angle so it grips firmly without jamming.
+526b0c	Claw contact surfaces have high-friction material (rubber parts / rubber bands)
+1bec74	Object stays securely held during a 360° spin and sudden stop
+1fdcef	Object releases cleanly when opened without sticking inside the claw
+5598ba	Rubber-Band Gravity-Assisted Lift Arm
+ac7f0e	Add VEX IQ rubber bands for gravity compensation so the arm lifts effortlessly and doesn't slam down when unpowered.
+3a9326	Existing lift arm, VEX IQ Rubber Bands ×2–4, anchor pins / standoffs
+6824a6	Watch the geometry: rubber bands should STRETCH as the arm lowers (storing energy) and pull UP as it lifts!
+5cec58	Check anchor points carefully—anchoring on the wrong side pulls the arm down instead of helping it up.
+1f2147	Tune the number of bands until the empty arm lowers cleanly without bouncing up, yet lifts much faster!
+056021	Rubber bands stretch when lowering the arm to counterbalance its weight
+35434d	When motor is unpowered (coast), the arm does not slam down onto the chassis
+3043ce	Arm still lowers all the way to pick up floor objects (not over-tensioned)
+3c6cf3	Rubber bands stay anchored securely across 10 full lift cycles
+53f9a0	Protected Sensor Mount (Bumper + Distance)
+87d297	Mount the Bumper Switch at the farthest front tip and recess the Distance Sensor safely behind it so wall bumps never damage it.
+96cb0b	Bumper Switch ×1, Distance Sensor ×1, short beams, corner connectors, Smart Cables ×2
+a02260	Safety rule: the Bumper is meant to hit walls, the Distance Sensor is NOT—always mount the Bumper protruding farther forward!
+e64449	Make sure the Distance Sensor's forward view is completely clear of wheels, beams, or claws.
+9d0f0c	Cable routing: secure sensor cables neatly along the frame away from spinning wheels and gears.
+94be0a	Pushing the front gently against a wall triggers the Bumper button first
+8f159a	In Brain Devices screen: Bumper switches to Pressed on contact and Distance reads accurately
+1f6005	Distance Sensor view is unobstructed with no false close readings
+edee38	All cables are secured and never touch wheels or gears while driving
+ce1bdf	Color / Optical Sensor Height Calibration
+acaf26	Mount the Color Sensor facing downward at 10–35 mm off the floor for stable multi-color readings.
+6e4e83	Color / Optical Sensor ×1, chassis mount beams, ruler, red/blue/white paper or tape
+371063	Too high lets ambient light interfere; too low scrapes the floor! Aim for 15–25 mm off the floor.
+3e0782	Open the Brain Devices screen to watch live readings as you roll over white, red, and blue tape.
+15664d	Pro tip: surround the sensor with dark beams as a light shroud to block ceiling glare!
+c69cd1	Color Sensor height above the floor
+4aace7	Recommended height is 10–35 mm (too low scrapes; too high catches glare). Adjust beam holes and re-measure!
+ab2821	Sensor never scrapes the floor when rolling across tile seams
+574dc2	Live Brain readings reliably distinguish white, red, and blue without flickering
+05427b	Cable routes upward and secured so it never dangles in front of the lens
+5f6ab4	Level Up Official Full-Bot Inspection
+f2e2e8	Inspect your real competition robot with a tape measure! Verify it fits inside 11" × 20" × 15" and meets all rules.
+510c35	Complete competition robot, tape measure (cm), VEX IQ Level Up inspection checklist
+f78fa4	Place the robot in its official starting configuration (arm and claw folded in).
+f6c51d	Measure max width (limit 11" ≈ 27.9 cm), length (limit 20" ≈ 50.8 cm), and height (limit 15" ≈ 38.1 cm).
+8b8130	Count every Smart Motor on the robot (even unplugged ones—limit 6) and enter all numbers below!
+f206d0	Measured width (limit 11" = 27.9 cm)
+2db205	Exceeds 27.9 cm (11") limit! Check protruding beams, axles, or claws on the sides and trim width.
+3a75ac	Measured length (limit 20" = 50.8 cm)
+c254be	Exceeds 50.8 cm (20") limit! Adjust starting folded pose or shorten front/rear overhangs.
+9f3609	Measured height (limit 15" = 38.1 cm)
+f70a3d	Exceeds 38.1 cm (15") limit! Make sure the arm is fully lowered in starting configuration.
+3dbf50	Total Smart Motors on robot (limit 6)
+175a6a	motors
+ebc3ca	Official rules allow at most 6 Smart Motors (including unplugged ones)—remove any extras!
+ad5e41	Uses official VEX IQ parts only (no non-VEX or 3D-printed parts)
+d7c50e	Exactly 1 Brain and 1 Controller, with the power button easy to reach
+401f8d	Battery is secured, no sharp protrusions, and wiring is neat off the floor
+e76b2c	Took a photo of the robot in its starting configuration for inspection record

@@ -1,0 +1,109 @@
+d7a41e|Robot path seen from above
+07d137|Forward (mm)
+44a372|Sideways offset (mm)
+5d4626|Straight-line path chart
+458379|Gyro heading error
+1ceea0|Time (s)
+535d44|Heading error (deg)
+9010b9|Heading error over time
+c81685|With correction (Kp = 
+b3d3b0|No correction
+2f07fc|No correction at all (for comparison)
+b9de01|No correction: it just keeps drifting.
+6eb6a6|⚠ Over-corrected: it keeps wobbling left and right! Kp is too big.
+bd1c2d|Nice! Very little offset, and no wobbling.
+530351|Max sideways offset
+bdc021|Heading error at the end
+c59a39|Wobbles
+c314ca|Offset with no correction
+07d3a8|Drift (robot naturally pulls to one side)
+0c76c4| °/s
+0abbb8|Kp (how hard it corrects)
+43064a|Turn correction on
+d14702|The robot is told to "drive straight" but slowly drifts anyway, because the left and right motors and wheels are never exactly the same. The fix is "feedback": use the Gyro to measure which way it is facing, work out the error, and adjust the left and right wheel speeds a little. This experiment uses the simplest method, 
+b92242|P control
+141805|: correction = Kp × error.
+c726ec|Correction on (untick it to see what happens without)
+c98e0d|Try it
+9742d2|Set Kp to 0: the robot just keeps drifting.
+61ab28|Slowly raise Kp: the offset gets smaller and smaller. Notice that "heading error at the end" is still a little off: P alone always leaves a small error.
+c9a19c|Now make Kp very large (over 9): wobbling appears! This is called "oscillation". The Gyro reading is a little delayed, so correcting too hard overshoots.
+cc328b|Raise the "drift" and try again: the bigger the drift, the bigger the error for the same Kp.
+084d6a|What this looks like in a program
+5f46eb|This is a concept sketch, not a program you can paste in: build it with Variable and Operator blocks, and flip the signs to match how your robot turns. Find a sensible Kp in the experiment first, then fine-tune on the real robot.
+f78c48|Kp (proportional)
+5280a7|Ki (integral)
+c95c9e|Kd (derivative)
+40b998|Heading (deg)
+6141ce|Response curve for a PID 90-degree turn
+9cd440|Robot heading
+23b9e9|Target 90° (green band = within ±2° error)
+0da931|Lots of overshoot: it shoots past and comes back. Try lowering Kp or adding a little Kd.
+64993e|It has not settled near the target within 4 seconds: Kp is too small (too slow) or it stops a bit short. Try adding a little Ki.
+982fd1|A little overshoot, but acceptable. A bit of Kd makes it steadier.
+2bd419|Fast and steady!
+52d187|Overshoot (past the target)
+3e51f3|Settling time
+c3095c|Final error
+a1007b|To make the robot stop quickly and accurately after "turning 90 degrees in place", we often use 
+9f6635| three knobs:
+c46407|P (proportional)
+1ae0da|: the farther from the target, the harder it pushes. Too big and it overshoots.
+509d13|I (integral)
+c537f4|: adds up "the small error that never gets fixed" and slowly pushes it to 0. Too big and it keeps pushing past the target.
+c6ebd5|D (derivative)
+30c447|: watches how fast the error is shrinking and brakes if it is too fast, reducing overshoot.
+a429ff|Small Kp
+d85173|Very large Kp
+e70dce|P only: Kp = 0.5 is very slow and stops about 10° short (the motor power is too small to move it); Kp = 6 overshoots and comes back.
+0db164|Keep Kp = 3 and slowly add Kd: less overshoot and it settles faster.
+4a6caf|With Kp = 0.5 and Kd = 0.1, slowly add Ki: the final error gets "accumulated" and pushed close to 0.
+9b9ee3|In competition most people use only P, or P + D, and that is enough. The point is to understand why it overshoots and how to tune it. On the real robot, tune by changing one thing, testing once and recording it, and write it in your engineering notebook.
+0d6910|Step
+e49704|Left wheel revolutions
+49191f|Right wheel revolutions
+2b90ee|Delete this step
+9ed5aa|Delete step 
+6dc392|
+b3bc95|Odometry path: ideal vs. with slip
+ac58ac|Ideal (no slip)
+587a3d|With slip, heading corrected by Gyro
+8f57c5|With slip, wheels only
+70d49a|End-point error
+55a016|Ideal heading change
+c49de0|Estimated heading change
+064ca9|With no slip, the estimate matches the ideal exactly. Try raising "slip".
+f1eac7|With the Gyro correcting the heading the error is much smaller; what is left is the small error in distance.
+e6837b|The error builds up step by step, so the end point is off. Tick "Correct heading with Gyro" and try again.
+386059|Slip / wheel-size error (random ± each step)
+dab232|Wheel circumference
+306130|Track width (distance between the wheel centres)
+8e978d|Correct heading with Gyro
+5f9af6|Odometry
+c8925e|: works out the robot's position and heading step by step from how far each of the two wheels has turned. There are just two formulas:
+6c823e|Forward distance = (left wheel distance + right wheel distance) ÷ 2
+78b72a|Turn angle (radians) = (right wheel distance − left wheel distance) ÷ track width
+2d30b6|Wheel distance = revolutions × circumference (remember the "Wheels and How Far You Go" lesson?)
+9c6c2b|Correct heading with Gyro (heading is not affected by slip)
+625d14|Straight line
+7e7e39|Arc (right wheel goes farther)
+c5538d|Add a step
+dbe62d|Try another roll of the dice
+56ad11|How many revolutions each wheel turns in each step (editable)
+2d9165|"Square": with 0% slip it returns to the start; raise it to 3–5% and the end point drifts away.
+0c86ac|Tick "Correct heading with Gyro": the error drops a lot. This is why competition teams often use wheels and a Gyro together.
+74903e|"Arc": the right wheel goes farther, so the robot curves to the left (matches the question bank item "which way does it turn if the right wheel goes farther").
+ae881e|Change the "track width": with the same revolutions, the turn angle changes. On the real robot, measure the track width carefully.
+1351e4|Think about it: why does the error grow the longer it runs? (Hint: each step's small error adds up.) Some teams use walls, white lines or the Distance Sensor to "re-align" every so often and reset the error to zero.
+06cd03|🧭 Drive Straight (P control)
+1cf3b4|🎚️ PID Turn
+89c988|🛞 Odometry
+1b98e9|🧪 Control Lab
+f71ab1|Advanced topic: how a robot drives straight, turns accurately and knows where it is. Learn the ideas with interactive experiments, no coding needed.
+83c0a8|These are simplified models: the numbers (speed, delay, slip) are assumed values, not your robot's real data. Understand the idea, then measure the parameters on the real robot.
+3bf8f9|What to do after this
+2a12da|Go back to "Practice": questions for two advanced skills, "Driving Straight and Feedback" and "Odometry and Accumulating Error", will appear. And remember to write your real-robot tests in the engineering notebook.
+c7e5a2|Go practice
+b48175|Back to Competition
+1bf1e1|Control Lab
+2f5964|Kp is a bit small: it still drifts quite a bit. Raise it a little more.
