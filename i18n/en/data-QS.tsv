@@ -729,3 +729,51 @@ be8dd9|Turn left 90°
 5aefbd|Turn right 90°
 f870d1|Turn 180°
 4c6ce8|With the same distance on both sides, turn angle = (right − left) ÷ track width = 0, so the heading does not change; the robot just moves forward.
+dd3794|The Gyro heading is 0–360° (it increases when turning right). The target is 350° and the reading is now 10°. What is the shortest way to turn?
+523cf3|Turn left 20°
+6d10b4|Turn right 20°
+ccb8d6|Turn right 340°
+39b9aa|Turn left 340°
+ccc4cc|Subtracting directly gives 350 − 10 = 340°, but anything over 180° needs −360°, which gives −20°. The minus sign means the heading should get smaller, i.e. turn left 20°. This is called "angle wrap-around"; if you skip it the robot spins the long way round.
+af2b10|The target heading is 350° and the current one is 10°. After converting the error to the range −180° to +180°, how many degrees is the shortest turn (positive number)?
+bdf82b|350 − 10 = 340°, which is more than 180°, so subtract 360° to get −20°; the size of the turn is 20°.
+76c314|How does the "heading lock" work in driver control?
+0a8065|When pressed it remembers the current heading as the target, then keeps using the Gyro to compute the error and correct the left and right wheels
+c1bf8d|It locks both motors so they cannot turn
+3eb876|It fixes the speed at 100%
+ce3056|It turns the Gyro off so it does not interfere
+0333d2|A heading lock is feedback: when you press lock, the current heading is stored as the target, then it keeps measuring and correcting so the robot stays straight even if it is pushed or drifts.
+e3470f|Why should a computed motor output (for example correction plus base speed) be limited to −100% to 100%?
+e7d713|Motor speed only has this range; going beyond it means nothing and also avoids odd values
+8a1753|Because 100% is the slowest speed
+0d1c0e|Because it saves power
+bb71e5|Because a variable can only store 100
+ffe872|The maximum speed percentage is ±100%. Clamping the result into that range stops a big error from producing a silly number.
+ca5fde|Why does each pass of a control loop pause for a short time (for example 0.02–0.05 s) at the end?
+aa7499|To give the sensor time to update and the motors time to react, so the correction is stable
+721b84|Because without waiting the program would crash
+572585|To make the robot go slower
+6b71f7|Because waiting makes the error zero
+75ecf2|If the loop runs too fast, it corrects again before the sensor and motors have reacted, and things get worse and worse. A fixed small interval makes control steadier and makes Kp and Kd easier to tune.
+ea186e|The robot is at (0, 0) and the target is at (300, 400) (in mm). How many mm is the straight-line distance?
+fed5c5|Distance = √(300² + 400²) = √(90000 + 160000) = 500 mm. This is a 3-4-5 right triangle scaled up by 100.
+d952b8|"Going to a target point" has to manage two kinds of error. Which two?
+42144e|Distance error (how far from the target) and heading error (whether it is aimed at the target)
+9819ca|Battery error and motor error
+215e7c|Time error and score error
+f4be82|Left wheel error and right wheel error
+88f0f0|Navigation usually has two parts: heading control aims the robot at the target, and distance control decides how fast to go and when to stop. That is why advanced teams use one controller for distance and another for heading.
+a6d752|When the robot gets close to the target, why should the forward speed shrink with the distance error?
+af8d5a|So it gets slower the closer it is and does not overshoot
+1a7bf2|Because the battery is almost empty
+a139ec|Because turning is slower
+8f1575|Because it makes the heading error bigger
+0ec3d4|When the distance error gets smaller, the P output gets smaller and the robot slows down by itself. Fast at the start and slow near the end lets it stop near the target.
+96ee4e|Comparing "turn to face it, then drive" with "turn while driving", which statement is right?
+a71961|Turn-then-drive gives a straighter, more predictable path but is slower; turning while driving is faster with a curved path
+15c45c|The two are always exactly the same
+c55c5d|Turning while driving is always more accurate
+f3f996|Turn-then-drive does not need to know the heading
+b3c1fc|Turn then drive: the path is "turn an angle + go straight", easy to predict and tune. Turning while driving: saves time but the path curves, so watch out for obstacles.
+2c3a68|Heading 0° is straight up, and the angle grows when turning right (like a compass). The robot is at (0, 0) and the target is straight down at (0, −300). What is the heading to the target in degrees?
+d25753|Straight up is 0°, right is 90°, straight down is 180° and left is 270°. The target is straight down, so it is 180°.

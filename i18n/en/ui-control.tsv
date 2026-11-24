@@ -107,3 +107,80 @@ c7e5a2|Go practice
 b48175|Back to Competition
 1bf1e1|Control Lab
 2f5964|Kp is a bit small: it still drifts quite a bit. Raise it a little more.
+0b143c|Heading compass: current and target
+6213a7|Current heading (Gyro): 
+672a72|Target heading: 
+1b7b1d|No turn needed
+f4ba6a|Turn right 
+5695b0|Turn left 
+c7cf08|Direct subtraction (target − current)
+d72ed9|After wrap-around (−180 to 180)
+65c18c|Shortest turn
+b74759|Shortest way to turn: 
+04f082|. ⚠ Direct subtraction would make the robot take the long way round!
+a5002c|Current heading
+7f93b1|Target heading
+14927f|The Gyro heading is 0–360°; going past 360° "wraps around" to 0°. If you use "target − current" directly as the error, a target of 350° and a current heading of 10° gives an error of 340° — and the robot turns the wrong way for a whole circle! The right way is to convert the error into the range −180° to +180°:
+f4dabd|350° ← 10° (turn back)
+d3a0f2|180° ← 0° (directly behind)
+640caa|Press "350° ← 10°": direct subtraction gives 340°, but the shortest turn is actually 20° to the left.
+f7fcd3|Slowly pull the two needles apart: be careful when the direct difference goes over 180°.
+e7bfa5|In the "Go to Point" experiment, turn off "Use angle wrap-around" and watch the robot spin a big circle.
+48f0bf|Path to the target point
+ff282f|Robot path
+d08712|Target point
+8e9e46|⚠ It did not arrive within 14 seconds: raise Kh (turning) or Kd (driving), or turn on "angle wrap-around".
+eb4ca7|No angle wrap-around: the robot turned a full circle before facing the target!
+163221|Almost there but a bit off.
+c28272|Reached the target!
+eeee70|Time taken
+d69545|Distance from target
+9b160c|Total degrees turned
+d59689|Target x
+5bcbb6|Target y
+1a79dd|Starting heading
+ab1683|Kh (how hard it turns)
+359cf0|Kd (forward speed ratio)
+cac5df|Use angle wrap-around
+a424a3|Once you know where you are (odometry), you can "go to a target point". Each moment, work out two things: which direction is the target, and how far? Then use two feedbacks — 
+e1cd7b|heading error
+9ad3d1| decides how to turn, 
+bccd8a|distance error
+a87ef5| decides how fast to go. When you get close the distance error shrinks, so the robot slows down by itself.
+80ebe9|Use angle wrap-around (turn it off to see what happens)
+c23364|Turn while driving
+e6fb2e|Turn first, then drive
+09491a|Target front-left (heading 10°)
+6286a5|Target directly behind
+8ff394|Default: the target is front-left and the robot faces 10°. With wrap-around handled correctly it only needs to turn a little left to set off.
+2cef0a|Turn off "Use angle wrap-around": the error becomes 340° and the robot turns right for a whole circle before facing the target.
+1c588d|Compare "Turn while driving" with "Turn first, then drive": the first is faster with a curved path; the second has a straight, predictable path but must stop and turn first.
+8ef603|Make Kh very large or very small and see how fast it aims. Raise Kd: it rushes faster and only slows down when near.
+085794|This is a concept sketch, not a program you can paste in. On a real robot x and y come from odometry (wheel revolutions, wheel circumference, track width) with the Gyro correcting the heading, and signs depend on your robot.
+9388c7|Heading-lock path
+79c351|Heading lock pressed
+a772de|No lock (for comparison)
+0a6d09|With lock: max sideways offset
+ab274e|Without lock: max sideways offset
+5f67be|With lock: heading error at the end
+7e2ac8|At 2 seconds the robot gets bumped (heading suddenly off by 
+f451de|°): the locked one turns back by itself, the unlocked one drifts away.
+74a598|Raise the "bump" and see.
+00b846|Drift
+b56bf9|Bump at 2 s (heading suddenly off)
+e9951e|In driver control it is hard to keep a straight line just by pushing the joystick. Many teams add a "
+6fd6b7|heading lock
+0de056|": at the moment you press the button, the current heading is remembered as the target; afterwards whenever it drifts, the program uses the Gyro to turn the robot back. This is the feedback you learned earlier, used in driver control.
+d1c791|A concept sketch. The real blocks are built from Variable, If and Operator blocks; remember button events and Gyro calibration. Upload your driver-control file and this site will also tell you whether it uses the Gyro.
+ce8698|Three easy-to-forget details
+66c791|Clamp
+14c088|: keep the computed speed within −100% to 100%; going beyond has no meaning.
+191e8f|Loop period
+f068b0|: wait 0.02–0.05 s at the end of each loop so the sensor updates and the motors can react; the correction is then steadier.
+6319f1|Calibrate
+607275|: calibrate the Gyro at the start and wait for it to finish; the robot must stay still while calibrating.
+4c1e0c|🔄 Angle Wrap-around
+6cdc7b|📍 Go to Point
+a04dc1|🔒 Driver Heading Lock
+0e12e5|Advanced topic: how a robot drives straight, turns accurately, knows where it is, and goes to a target spot. Learn the ideas with interactive experiments, no coding needed.
+56a4e1|Go back to "Practice": questions for three advanced skills — "Driving Straight and Feedback", "Odometry and Accumulating Error" and "Going to a Target Point" — will appear. And remember to write your real-robot tests in the engineering notebook.

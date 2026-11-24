@@ -311,6 +311,8 @@
     if (spunList.length >= 3 && !facts.stopping) findings.push(F('t-hold', 'tip', '手臂、爪子可以設定「stopping: hold」', '預設放開後馬達會自由滑動；設成 hold 可以把手臂或爪子「鎖住」不掉下來。', ['在 when started 最前面，加「set 馬達 stopping to hold」。']));
     const drivePair = table.filter((r) => /button/.test(r.trigger) && r.actions.length >= 2 && r.actions.every((a) => /^spin/.test(a)));
     if (drivePair.length >= 4) findings.push(F('t-axis', 'tip', '有 ' + drivePair.length + ' 個按鈕在控制車子前進轉彎', '這樣很像一般遙控車。其實可以直接用搖桿（axis）控制：搖桿推多少，馬達就轉多快，更順手，程式也短很多。', ['在 Sensing 類別找「controller axis position」積木。', '用它的值去設定左右馬達速度（tank 或 arcade 控制）。', '這是進階玩法，可以之後再嘗試。']));
+    const usesGyro = Object.keys(p.stats.types).some((k) => /gyro|inertial|heading|rotation/i.test(k));
+    if (!usesGyro && spunList.length >= 2 && table.some((r) => /button|axis/.test(r.trigger))) findings.push(F('t-lock', 'tip', '可以加「方向鎖定」，讓遙控直走更穩', '這份程式沒有用到 Gyro。遙控時機器人常會慢慢偏。很多隊伍會加一個按鈕：按下時用 Gyro 記住目前朝向，之後自動把機器人轉回那個方向（回授），直走就穩多了。', ['按下鎖定按鈕時，把 Gyro 朝向存進變數當目標。', '在「一直重複」裡，用「目標 − 目前朝向」算誤差，乘上 Kp，加到左右輪速度差。', '到「比賽專區 → 控制實驗室 → 遙控方向鎖定」先看原理。']));
     if (!findings.some((f) => f.level === 'error')) findings.push(F('t-ok', 'tip', '結構檢查沒發現明顯問題', '下一步是用真的機器人，把每個按鈕都按一次，看機器人是不是照「控制對照表」動。', ['下載到機器人，一個按鈕一個按鈕測。', '用下方的「存成工程筆記」，會產生一份可以勾選的測試表。']));
     return { kind: 'teleop', findings, table, facts: { motors: spunList, devices: devNames(p), scripts: p.scripts.length } };
   }

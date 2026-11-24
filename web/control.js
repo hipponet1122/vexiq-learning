@@ -66,6 +66,7 @@
     const hist = [0]; const path = [[0, 0]], err = [[0, 0]];
     let maxOff = 0, flips = 0, last = 0;
     for (let i = 1; i <= n; i++) {
+      if (P.kick && i === Math.round(2 / dt)) th += P.kick; // 第 2 秒被撞一下，朝向突然偏了
       const meas = hist[Math.max(0, hist.length - 1 - DELAY)];
       const u = P.on ? clamp(P.kp * (0 - meas), -40, 40) : 0;
       th += (P.drift + G * u) * dt;
@@ -252,20 +253,169 @@
         h('p', { class: 'sub' }, '想一想：為什麼走越久、誤差越大？（提示：每一步的小誤差會累積。）有些隊伍會用牆壁、白線或距離感測器，每隔一段就「重新對位」把誤差歸零。')));
   }
 
-  VX.ctl = { simStraight, simPid, odo }; // 給自動測試用
+
+  /* ================= 角度繞回、走到座標、方向鎖定 =================
+     朝向的約定（跟 VEXcode 的 Gyro 一樣）：0–360°，向右（順時針）轉會變大。畫圖時 0° 是正上方，90° 是右邊。 */
+  const wrap180 = (a) => ((((a + 180) % 360) + 360) % 360) - 180;
+  const norm360 = (a) => ((a % 360) + 360) % 360;
+
+  function labWrap() {
+    const S = { cur: 10, tar: 350 };
+    const box = h('div'), res = h('div', { class: 'ctlres' });
+    function dial() {
+      const W = 220, C = 110, Rr = 86;
+      const svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + W, class: 'ctlchart ctldial', role: 'img', 'aria-label': '朝向羅盤：目前與目標' });
+      svg.append(sv('circle', { cx: C, cy: C, r: Rr, fill: 'var(--card)', stroke: 'var(--line)', 'stroke-width': 2 }));
+      [[0, '0°'], [90, '90°'], [180, '180°'], [270, '270°']].forEach(([a, t]) => {
+        const x = C + (Rr + 12) * Math.sin(a / R2D), y = C - (Rr + 12) * Math.cos(a / R2D);
+        svg.append(sv('text', { x, y: y + 3, 'text-anchor': 'middle', class: 'ctltick' }, t));
+      });
+      const needle = (deg, col, w) => svg.append(sv('line', { x1: C, y1: C, x2: C + Rr * Math.sin(deg / R2D), y2: C - Rr * Math.cos(deg / R2D), stroke: col, 'stroke-width': w, 'stroke-linecap': 'round' }));
+      needle(S.tar, '#f97316', 4); needle(S.cur, '#0875e2', 4);
+      svg.append(sv('circle', { cx: C, cy: C, r: 5, fill: '#1b2430' }));
+      return svg;
+    }
+    function draw() {
+      const raw = S.tar - S.cur, e = wrap180(raw);
+      box.replaceChildren(dial(), legend([['#0875e2', '現在的朝向（Gyro）：' + S.cur + '°'], ['#f97316', '目標朝向：' + S.tar + '°']]));
+      const dir = e === 0 ? '不用轉' : e > 0 ? '向右轉 ' + e + '°' : '向左轉 ' + (-e) + '°';
+      res.replaceChildren(h('div', { class: 'ctlstats' },
+        h('div', null, h('b', null, raw), '°', h('small', null, '直接相減（目標 − 現在）')),
+        h('div', null, h('b', null, e), '°', h('small', null, '角度繞回後（−180～180）')),
+        h('div', null, h('b', null, Math.abs(e)), '°', h('small', null, '最短要轉'))),
+        h('p', { class: 'ctlverdict' }, '最短的轉法：' + dir + (Math.abs(raw) > 180 ? '。⚠ 直接相減會讓機器人繞遠路！' : '。')));
+    }
+    const sC = slider('現在的朝向', 0, 359, 1, S.cur, '°', (v) => { S.cur = v; draw(); });
+    const sT = slider('目標朝向', 0, 359, 1, S.tar, '°', (v) => { S.tar = v; draw(); });
+    const ex = (name, c, t) => h('button', { type: 'button', class: 'btn sm', onclick: () => { S.cur = c; S.tar = t; sC.set(c); sT.set(t); draw(); } }, name);
+    draw();
+    return h('div', null,
+      h('p', null, 'Gyro 的朝向是 0～360°，轉到 360° 會「繞回」0°。如果直接用「目標 − 現在」當誤差，目標 350°、現在 10° 時誤差是 340°——機器人會往錯的方向轉一大圈！正確做法是把誤差換算到 −180° ～ +180°：'),
+      h('pre', { class: 'ctlpre' }, 'error = target − current\nif error > 180:  error = error − 360\nif error < −180: error = error + 360'),
+      h('div', { class: 'panel ctlctrl' }, sC, sT, h('div', { class: 'row gap' }, ex('350° ← 10°（要往回轉）', 10, 350), ex('90° ← 80°', 80, 90), ex('10° ← 350°', 350, 10), ex('180° ← 0°（正後方）', 0, 180))),
+      res, h('div', { class: 'ctlcharts' }, box),
+      h('div', { class: 'panel' }, h('h3', null, '試試看'),
+        h('ol', null,
+          h('li', null, '按「350° ← 10°」：直接相減是 340°，但最短其實是向左轉 20°。'),
+          h('li', null, '把兩根針慢慢拉開：直接相減超過 180° 的時候，就要小心。'),
+          h('li', null, '到「走到座標」實驗，把「使用角度繞回處理」關掉，看機器人怎麼繞大圈。'))));
+  }
+
+  // 走到座標：x 向右、y 向上，朝向 0° 是正上方（順時針變大）
+  function simGoto(P) {
+    const dt = 0.02, T = 14, VMAX = 300, WMAX = 180, VMIN = 35;
+    let x = P.x0 || 0, y = P.y0 || 0, hd = norm360(P.h0);
+    const pts = [[x, y]]; let t = 0, spun = 0, reached = false, maxH = 0;
+    while (t < T) {
+      const dx = P.tx - x, dy = P.ty - y, dist = Math.hypot(dx, dy);
+      if (dist < 8) { reached = true; break; }
+      const target = norm360(Math.atan2(dx, dy) * R2D);
+      const herr = P.wrap ? wrap180(target - hd) : target - hd; // 沒做角度繞回：直接相減（可能是 ±340° 這種大數字）
+      maxH = Math.max(maxH, Math.abs(herr));
+      const w = clamp(P.kh * herr, -WMAX, WMAX);
+      let v = clamp(P.kd * dist, 0, VMAX);
+      v = P.mode === 'turn' ? (Math.abs(herr) < 8 ? Math.max(v, VMIN) : 0) : Math.max(v * Math.max(0, Math.cos(herr / R2D)), Math.cos(herr / R2D) > 0 ? VMIN : 0);
+      hd = norm360(hd + w * dt); spun += Math.abs(w * dt);
+      x += v * Math.sin(hd / R2D) * dt; y += v * Math.cos(hd / R2D) * dt;
+      t += dt; pts.push([x, y]);
+    }
+    return { pts, time: t, reached, end: Math.hypot(P.tx - x, P.ty - y), spun, maxH };
+  }
+
+  function labGoto() {
+    const P = { tx: -100, ty: 500, h0: 10, kh: 2, kd: 1, mode: 'blend', wrap: true, x0: 0, y0: 0 };
+    const box = h('div'), res = h('div', { class: 'ctlres' });
+    function draw() {
+      const r = simGoto(P);
+      const cross = [{ pts: [[P.tx - 25, P.ty], [P.tx + 25, P.ty]], color: '#f97316', w: 3 }, { pts: [[P.tx, P.ty - 25], [P.tx, P.ty + 25]], color: '#f97316', w: 3 }];
+      const xs = r.pts.map((p) => p[0]).concat([P.tx, 0]), ys = r.pts.map((p) => p[1]).concat([P.ty, 0]);
+      const pad = 80, xmin = Math.min(...xs) - pad, xmax = Math.max(...xs) + pad, ymin = Math.min(...ys) - pad, ymax = Math.max(...ys) + pad;
+      box.replaceChildren(chart([{ pts: r.pts, color: '#0875e2' }].concat(cross), { w: 460, h: 320, xmin, xmax, ymin, ymax, equal: true, xlab: 'x (mm)', ylab: 'y (mm)', label: '走到指定座標的路徑' }),
+        legend([['#0875e2', '機器人走過的路'], ['#f97316', '目標點']]));
+      const v = !r.reached ? '⚠ 14 秒內沒有到達：試著把 Kh（轉向）或 Kd（前進）調大，或打開「角度繞回」。' : !P.wrap && r.spun > 300 ? '沒有角度繞回：機器人轉了一大圈才對準目標！' : r.end > 20 ? '快到了但有點偏。' : '到達目標！';
+      res.replaceChildren(h('div', { class: 'ctlstats' },
+        h('div', null, h('b', null, r.time.toFixed(1)), ' 秒', h('small', null, '花的時間')),
+        h('div', null, h('b', null, Math.round(r.end)), ' mm', h('small', null, '離目標的距離')),
+        h('div', null, h('b', null, Math.round(r.spun)), '°', h('small', null, '總共轉了幾度'))),
+        h('p', { class: 'ctlverdict' }, v));
+    }
+    const sx = slider('目標 x', -600, 600, 25, P.tx, ' mm', (v) => { P.tx = v; draw(); });
+    const sy = slider('目標 y', -300, 800, 25, P.ty, ' mm', (v) => { P.ty = v; draw(); });
+    const sh = slider('一開始的朝向', 0, 359, 1, P.h0, '°', (v) => { P.h0 = v; draw(); });
+    const sKh = slider('Kh（轉向有多用力）', 0.5, 6, 0.1, P.kh, '', (v) => { P.kh = v; draw(); });
+    const sKd = slider('Kd（前進速度比例）', 0.2, 3, 0.1, P.kd, '', (v) => { P.kd = v; draw(); });
+    const cb = h('input', { type: 'checkbox' }); cb.checked = true; cb.setAttribute('aria-label', '使用角度繞回處理');
+    cb.addEventListener('change', () => { P.wrap = cb.checked; draw(); });
+    const modeBtn = (k, name) => h('button', { type: 'button', class: 'btn sm', onclick: () => { P.mode = k; draw(); } }, name);
+    draw();
+    return h('div', null,
+      h('p', null, '知道自己在哪（里程計）之後，就能「走到指定座標」。每一刻算兩件事：目標在哪個方向？還有多遠？再用兩組回授——', h('b', null, '朝向誤差'), '決定怎麼轉，', h('b', null, '距離誤差'), '決定走多快。靠近目標時距離誤差變小，機器人就會自然變慢。'),
+      h('div', { class: 'panel ctlctrl' }, sx, sy, sh, sKh, sKd,
+        h('label', { class: 'check' }, cb, h('span', null, '使用角度繞回處理（關掉看看會怎樣）')),
+        h('div', { class: 'row gap' }, modeBtn('blend', '邊走邊轉'), modeBtn('turn', '先轉再走'),
+          h('button', { type: 'button', class: 'btn sm', onclick: () => { P.tx = -100; P.ty = 500; P.h0 = 10; sx.set(-100); sy.set(500); sh.set(10); draw(); } }, '目標在左前方（朝向 10°）'),
+          h('button', { type: 'button', class: 'btn sm', onclick: () => { P.tx = 0; P.ty = -300; P.h0 = 0; sx.set(0); sy.set(-300); sh.set(0); draw(); } }, '目標在正後方'))),
+      res, h('div', { class: 'ctlcharts' }, box),
+      h('div', { class: 'panel' }, h('h3', null, '試試看'),
+        h('ol', null,
+          h('li', null, '預設：目標在左前方、機器人朝向 10°。正確處理時只要向左轉一點就能出發。'),
+          h('li', null, '把「使用角度繞回處理」關掉：誤差變成 340°，機器人往右轉一大圈才對準。'),
+          h('li', null, '比較「邊走邊轉」和「先轉再走」：前者比較快、路線是弧形；後者路線直、好預測，但要先停下來轉。'),
+          h('li', null, '把 Kh 調得很大或很小，看看對準的快慢。把 Kd 調大：衝得比較快，靠近時才會減速。'))),
+      h('div', { class: 'panel' }, h('h3', null, '這在程式裡長什麼樣子'),
+        h('pre', { class: 'ctlpre' }, 'forever\n  dx = target x − x ;  dy = target y − y\n  distance = √(dx² + dy²)\n  heading error = wrap(angle to target − Gyro heading)\n  turn = Kh × heading error\n  speed = Kd × distance\n  left = speed + turn ;  right = speed − turn   (limit to ±100)\n  update x, y from wheel odometry\n  wait 0.02 seconds'),
+        h('p', { class: 'sub' }, '概念示意，不是能直接貼上的程式。真機上的 x、y 要靠里程計（輪子圈數、輪周、輪距）並用 Gyro 校正朝向，正負號要依機器人調整。')));
+  }
+
+  function labLock() {
+    const P = { drift: 2, kp: 3, kick: 15, on: true };
+    const box = h('div'), res = h('div', { class: 'ctlres' });
+    function draw() {
+      const a = simStraight({ drift: P.drift, kp: P.kp, on: true, kick: P.kick }), b = simStraight({ drift: P.drift, kp: 0, on: false, kick: P.kick });
+      const lim = Math.max(150, Math.ceil(Math.max(a.maxOff, b.maxOff) / 50) * 50);
+      box.replaceChildren(
+        h('div', { class: 'ctlcharts' },
+          h('div', null, h('h4', null, '從上面看機器人走的路'), chart([{ pts: b.path, color: '#d33a3a', dash: '6 4' }, { pts: a.path, color: '#0875e2' }], { w: 420, h: 220, xmin: 0, xmax: 1800, ymin: -lim, ymax: lim, xlab: '前進 (mm)', ylab: '橫向偏移 (mm)', hline: [0], label: '方向鎖定的路徑' })),
+          h('div', null, h('h4', null, 'Gyro 朝向誤差'), chart([{ pts: b.err, color: '#d33a3a', dash: '6 4' }, { pts: a.err, color: '#0875e2' }], { w: 420, h: 220, xmin: 0, xmax: 6, ymin: -30, ymax: 30, xlab: '時間 (秒)', ylab: '朝向誤差 (度)', hline: [0], label: '朝向誤差隨時間變化' }))),
+        legend([['#0875e2', '按下方向鎖定'], ['#d33a3a', '沒有鎖定（對照）', true]]));
+      res.replaceChildren(h('div', { class: 'ctlstats' },
+        h('div', null, h('b', null, Math.round(a.maxOff)), ' mm', h('small', null, '有鎖定：最大橫向偏移')),
+        h('div', null, h('b', null, Math.round(b.maxOff)), ' mm', h('small', null, '沒鎖定：最大橫向偏移')),
+        h('div', null, h('b', null, (Math.round(a.endErr * 10) / 10)), '°', h('small', null, '有鎖定：結束時朝向誤差'))),
+        h('p', { class: 'ctlverdict' }, P.kick ? '第 2 秒機器人被撞了一下（朝向突然偏 ' + P.kick + '°）：有鎖定的會自己轉回來，沒鎖定的就一路歪下去。' : '把「被撞一下」調大看看。'));
+    }
+    const sd = slider('漂移', 0, 6, 0.5, P.drift, ' °/秒', (v) => { P.drift = v; draw(); });
+    const sk = slider('第 2 秒被撞一下（朝向突然偏）', 0, 30, 1, P.kick, '°', (v) => { P.kick = v; draw(); });
+    const sp = slider('Kp（修正有多用力）', 0.5, 8, 0.5, P.kp, '', (v) => { P.kp = v; draw(); });
+    draw();
+    return h('div', null,
+      h('p', null, '遙控駕駛時，推著搖桿也很難一直保持直線。很多隊伍會加一個「', h('b', null, '方向鎖定'), '」：按下按鈕的那一刻，記住目前朝向當目標；之後只要偏了，程式就用 Gyro 自動把機器人轉回來。這就是前面學的回授，用在遙控上。'),
+      h('div', { class: 'panel ctlctrl' }, sd, sk, sp),
+      res, box,
+      h('div', { class: 'panel' }, h('h3', null, '這在程式裡長什麼樣子'),
+        h('pre', { class: 'ctlpre' }, 'when button pressed:  target = Gyro heading ;  lock = on\nwhen button released:  lock = off\nforever\n  if lock is on:\n    correction = Kp × wrap(target − Gyro heading)\n  else:\n    correction = 0\n  left = forward − correction ;  right = forward + correction   (limit to ±100)\n  wait 0.05 seconds'),
+        h('p', { class: 'sub' }, '概念示意。實際的積木要用「變數」「如果」「運算」拼出來；按鈕事件、Gyro 校準都要記得做。上傳你的遙控存檔，本站也會提醒你有沒有用到 Gyro。')),
+      h('div', { class: 'panel' }, h('h3', null, '三個容易忘的小細節'),
+        h('ul', null,
+          h('li', null, h('b', null, '限幅'), '：算出來的速度要限制在 −100% ～ 100%，超過沒有意義。'),
+          h('li', null, h('b', null, '迴圈週期'), '：每圈最後等 0.02～0.05 秒，讓感測器更新、馬達有時間反應，修正才穩。'),
+          h('li', null, h('b', null, '校準'), '：程式一開始要校準 Gyro 並等它完成，校準時機器人要靜止不動。'))));
+  }
+
+  VX.ctl = { simStraight, simPid, odo, simGoto, wrap180 }; // 給自動測試用
 
   /* ================= 頁面 ================= */
-  const TABS = [['p', '🧭 走直線（P 控制）', labStraight], ['pid', '🎚️ PID 轉向', labPid], ['odo', '🛞 里程計', labOdo]];
+  const TABS = [['p', '🧭 走直線（P 控制）', labStraight], ['pid', '🎚️ PID 轉向', labPid], ['odo', '🛞 里程計', labOdo], ['wrap', '🔄 角度繞回', labWrap], ['goto', '📍 走到座標', labGoto], ['lock', '🔒 遙控方向鎖定', labLock]];
   VX.routes.control = (tab) => {
     const cur = TABS.find((t) => t[0] === tab) || TABS[0];
     const nav = h('div', { class: 'row gap', style: 'margin:10px 0' }, TABS.map(([k, n]) => h('a', { class: 'btn sm' + (k === cur[0] ? ' primary' : ''), href: '#/control/' + k }, n)));
     VX.app.replaceChildren(VX.shell(h('div', { class: 'ctl' },
       h('div', { class: 'panel' }, h('h2', null, '🧪 控制實驗室'),
-        h('p', null, '進階主題：機器人怎麼「走得直」「轉得準」「知道自己在哪」。這裡用互動小實驗看懂概念，不用寫程式。'),
+        h('p', null, '進階主題：機器人怎麼「走得直」「轉得準」「知道自己在哪」「走到指定位置」。這裡用互動小實驗看懂概念，不用寫程式。'),
         h('div', { class: 'callout warn' }, '這些是簡化的模型：數字（速度、延遲、打滑）是假設值，不是你機器人的真實數據。概念要理解，參數要在真機上測。')),
       nav, cur[2](),
       h('div', { class: 'panel' }, h('h3', null, '學完做什麼'),
-        h('p', null, '回到「練習」，會出現「走直線與回授」和「里程計與誤差累積」兩個進階技能的題目。也別忘了把真機的測試寫進工程筆記。'),
+        h('p', null, '回到「練習」，會出現「走直線與回授」「里程計與誤差累積」「走到指定座標」三個進階技能的題目。也別忘了把真機的測試寫進工程筆記。'),
         h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/practice' }, '去練習'), h('a', { class: 'btn', href: '#/notebook' }, '工程筆記'), h('a', { class: 'btn', href: '#/compete' }, '回比賽專區')))),
     { title: '控制實驗室', icon: '🧪' }));
   };

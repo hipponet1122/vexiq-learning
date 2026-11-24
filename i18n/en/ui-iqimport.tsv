@@ -262,3 +262,8 @@ b1a838|): motors
 523224|Compare the gap between the "simulator" and the "real robot" and record the numbers.
 53778e|Press every button once to confirm the robot moves as the controls table says.
 b992d6|Saved 2 notes ✔
+f23d30|Add a "heading lock" to make driver-control straight driving steadier
+df339f|This program does not use the Gyro. In driver control the robot often slowly drifts. Many teams add a button: when pressed, it remembers the current heading with the Gyro and then automatically turns the robot back to that heading (feedback), which makes driving straight much steadier.
+7247bc|When the lock button is pressed, store the Gyro heading in a variable as the target.
+f396c5|Inside a "forever" loop, compute the error as "target − current heading", multiply by Kp, and add it to the difference between the left and right wheel speeds.
+eda295|See the idea first in "Competition → Control Lab → Driver Heading Lock".

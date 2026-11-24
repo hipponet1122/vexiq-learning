@@ -528,6 +528,67 @@
     const camBtn = h('button', { type: 'button', class: 'btn sm', onclick: () => { camMode = camMode === 'orbit' ? 'chase' : 'orbit'; camBtn.textContent = camMode === 'orbit' ? '🏎️ 切換車尾視角' : '🎥 切換上帝視角'; } }, '🏎️ 切換車尾視角');
     const sndBtn = h('button', { type: 'button', class: 'btn sm', onclick: () => { soundOn = !soundOn; sndBtn.textContent = soundOn ? '🔊 音效：開' : '🔇 音效：關'; } }, '🔊 音效：開');
 
+    /* ---- 算分挑戰：把隨機場景放進 3D 場地，看圖算分（沿用本站「計分練習」的規則）---- */
+    function challengePanel() {
+      const rec = st.scoreDrill || (st.scoreDrill = { ok: 0, total: 0, streak: 0 });
+      let diff = 'easy', cur = null, done = false;
+      const rnd = (n) => Math.floor(Math.random() * n);
+      const DOT = { red: '🔴', blue: '🔵', yellow: '🟡' };
+      const validFor = (g, c) => (g.col === 'yellow' ? c === 'yellow' : (c === g.col || c === 'yellow'));
+      const inp = h('input', { type: 'text', inputmode: 'numeric', placeholder: '輸入總分', style: 'width:120px;margin:0', 'aria-label': '總分' });
+      const fb = h('div'), info = h('p', { class: 'sub' }, '按「出題」，場地上會隨機擺好沙包。數一數、算一算，輸入總分！');
+      const statEl = h('span', { class: 'sub' }, '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題');
+      function place() {
+        clearInterval(matchIv); matchIv = 0; matchState = 'free';
+        resetField();
+        const pool = bags.slice();
+        const take = (want) => { let i = pool.findIndex((b) => b.col === want); if (i < 0) i = 0; return pool.splice(i, 1)[0]; };
+        const lines = [], valids = GOALS.map(() => 0); let ans = 0;
+        GOALS.forEach((g, gi) => {
+          if (diff === 'easy' && gi > 2) return; if (diff === 'med' && gi > 3) return;
+          const cnt = diff === 'easy' ? rnd(3) + (gi === 0 ? 1 : 0) : rnd(3);
+          for (let k = 0; k < cnt && pool.length; k++) {
+            let want = g.col;
+            if (diff !== 'easy') {
+              if (rnd(3) === 0) want = 'yellow';
+              else if (rnd(diff === 'hard' ? 4 : 5) === 0) want = g.col === 'blue' ? 'red' : g.col === 'red' ? 'blue' : (rnd(2) ? 'red' : 'blue');
+            }
+            const b = take(want);
+            b.goal = g.id;
+            b.x = g.x + ((k % 3) - 1) * 0.58; b.z = g.z + (Math.floor(k / 3) - 0.3) * 0.52; b.y = g.h + 0.36;
+            b.mesh.position.set(b.x, b.y, b.z);
+            if (validFor(g, b.col)) { valids[gi]++; }
+          }
+          if (valids[gi]) ans += valids[gi] * g.pts;
+          const total = bags.filter((x) => x.goal === g.id).length;
+          if (total) lines.push(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：' + valids[gi] + ' 個有效 = ' + valids[gi] * g.pts + ' 分' + (total > valids[gi] ? '（另有 ' + (total - valids[gi]) + ' 個顏色不對不計分）' : ''));
+        });
+        if (!ans) { // 至少要有分數可算：把一個符合顏色的沙包放進地板球門
+          const g = GOALS[0], b = take('blue'); b.goal = g.id; b.x = g.x; b.z = g.z; b.y = g.h + 0.36; b.mesh.position.set(b.x, b.y, b.z);
+          ans = g.pts; lines.length = 0; lines.push(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：1 個有效 = ' + g.pts + ' 分');
+        }
+        cur = { ans, lines }; done = false; fb.replaceChildren(); inp.value = '';
+        phaseEl.textContent = '🎯 算分挑戰：數一數各球門裡的沙包，算出總分！'; updateHud();
+        info.textContent = '規則：沙包要「跟球門同色」或是「黃色」才算分，L4 只收黃色。可以拖曳旋轉場地、縮放來看清楚。';
+      }
+      function check() {
+        if (!cur || done) { if (!cur) toast('先按「出題」喔！'); return; }
+        const v = parseInt(inp.value.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/[^\d-]/g, ''), 10);
+        if (isNaN(v)) { inp.focus(); return; }
+        done = true; const ok = v === cur.ans;
+        rec.total++; if (ok) { rec.ok++; rec.streak++; if (window.VXFX && rec.streak % 3 === 0) window.VXFX.confetti(); } else rec.streak = 0;
+        VX.saveState();
+        fb.replaceChildren(h('div', { class: 'callout' + (ok ? '' : ' warn') }, h('b', null, ok ? '✅ 完全正確！總分是 ' + cur.ans + ' 分！' : '❌ 差一點，正確總分是 ' + cur.ans + ' 分（你填 ' + v + ' 分）'),
+          h('ul', { style: 'margin:6px 0 0 18px' }, cur.lines.map((ln) => h('li', null, ln)))), h('button', { type: 'button', class: 'btn primary sm', onclick: place }, '下一題 ▶'));
+        statEl.textContent = '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題';
+      }
+      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
+      const dBtns = [['easy', '簡單'], ['med', '中等（含錯色與黃色）'], ['hard', '困難（全 5 層＋錯色）']].map(([k, lb]) => { const b = h('button', { type: 'button', class: 'btn sm' + (diff === k ? ' primary' : ''), onclick: () => { diff = k; dBtns.forEach((x) => x.b.classList.toggle('primary', x.k === k)); place(); } }, lb); return { k, b }; });
+      return h('div', { class: 'panel' }, h('h3', null, '🎯 算分挑戰（3D）'), info,
+        h('div', { class: 'row gap', style: 'margin:8px 0;align-items:center' }, dBtns.map((x) => x.b), h('button', { type: 'button', class: 'btn primary sm', onclick: place }, '🎲 出題')),
+        h('div', { class: 'row gap', style: 'align-items:center' }, inp, h('button', { type: 'button', class: 'btn primary sm', onclick: check }, '批改'), statEl), fb);
+    }
+
     resetField();
     VX.app.replaceChildren(shell(h('div', null,
       h('div', { class: 'panel' },
@@ -545,7 +606,7 @@
         stageWrap,
         h('div', { class: 'row gap', style: 'justify-content:center;align-items:center;margin-top:12px;flex-wrap:wrap' },
           padBtn('◀ 左轉', 'l'), padBtn('▲ 前進', 'f'), padBtn('▼ 後退', 'b'), padBtn('▶ 右轉', 'r'), actBtn),
-        h('p', { class: 'sub', style: 'text-align:center;margin-top:8px' }, '電腦可用鍵盤 WASD／方向鍵駕駛、空白鍵抓取與投球；iPad 可直接按按鈕操作、手指拖曳旋轉 3D 場地！'))), { title: '3D 練習場', icon: '🏟️' }));
+        h('p', { class: 'sub', style: 'text-align:center;margin-top:8px' }, '電腦可用鍵盤 WASD／方向鍵駕駛、空白鍵抓取與投球；iPad 可直接按按鈕操作、手指拖曳旋轉 3D 場地！')), challengePanel()), { title: '3D 練習場', icon: '🏟️' }));
 
     let rafId = 0, lastW = 0, lastH = 0;
     function animate() {

@@ -12,7 +12,7 @@ const run = (code, ch) => { const w = S.makeWorld(ch || null); const r = S.simul
 
 group('題庫結構');
 const { QS, SKILLS } = data;
-t('題數 163、技能 28', () => { assert.strictEqual(QS.length, 163); assert.strictEqual(SKILLS.length, 28); });
+t('題數 173、技能 29', () => { assert.strictEqual(QS.length, 173); assert.strictEqual(SKILLS.length, 29); });
 t('題號不重複、技能都存在', () => {
   const ids = new Set(), sk = new Set(SKILLS.map((s) => s.id));
   for (const q of QS) { assert(!ids.has(q.id), '重複 ' + q.id); ids.add(q.id); assert(sk.has(q.s), q.id + ' 技能不存在'); }
@@ -185,6 +185,24 @@ t('進階技能 E5、E6 各有 6～7 題，且解答算式正確', () => {
   assert.strictEqual(90 - 78, 12); assert.strictEqual(2 * 5, 10); assert.strictEqual(2.5 * 200, 500); assert.strictEqual((200 + 300) / 2, 250);
 });
 
+t('角度繞回：誤差換算到 −180～180', () => { const w = CT.wrap180; assert.strictEqual(w(340), -20); assert.strictEqual(w(-340), 20); assert.strictEqual(w(20), 20); assert.strictEqual(w(350 - 10), -20); assert.strictEqual(w(10 - 350), 20); assert.strictEqual(Math.abs(w(180)), 180); });
+const G0 = { tx: -100, ty: 500, h0: 10, kh: 2, kd: 1, mode: 'blend', wrap: true, x0: 0, y0: 0 };
+t('走到座標：兩種做法都能到達目標', () => { ['blend', 'turn'].forEach((m) => { const r = CT.simGoto({ ...G0, mode: m }); assert(r.reached && r.end < 10, m + ' ' + r.end); }); });
+t('走到座標：沒做角度繞回會繞大圈（轉很多、很慢或到不了）', () => {
+  const a = CT.simGoto(G0), b = CT.simGoto({ ...G0, wrap: false });
+  assert(b.spun > a.spun * 5, '轉角 ' + a.spun + ' vs ' + b.spun); assert(!b.reached || b.time > a.time * 1.4, '時間 ' + a.time + ' vs ' + b.time);
+});
+t('走到座標：目標在正後方也到得了；Kh 太小到不了', () => { assert(CT.simGoto({ ...G0, tx: 0, ty: -300, h0: 0 }).reached); assert(!CT.simGoto({ ...G0, kh: 0.5 }).reached); });
+t('方向鎖定：被撞偏 15° 後，有鎖定會轉回來，沒鎖定一路歪', () => {
+  const a = CT.simStraight({ drift: 2, kp: 3, on: true, kick: 15 }), b = CT.simStraight({ drift: 2, kp: 0, on: false, kick: 15 });
+  assert(Math.abs(a.endErr) < 2, '有鎖定末誤差 ' + a.endErr); assert(Math.abs(b.endErr) > 20, '沒鎖定 ' + b.endErr); assert(b.maxOff > a.maxOff * 5);
+});
+t('進階技能 E5／E7 的新題答案正確', () => {
+  assert.strictEqual(num('E5-9'), '20'); assert.strictEqual(num('E7-1'), '500'); assert.strictEqual(num('E7-5'), '180');
+  assert.strictEqual(Math.hypot(300, 400), 500); assert.strictEqual(CT.wrap180(350 - 10), -20);
+  assert(QS.filter((q) => q.s === 'E7').length >= 5);
+});
+
 group('程式碼轉換');
 t('Python 與 C++ 都有 drive 動作', () => {
   const p = S.parseDsl(['何時開始', '驅動 [向前] 為 (200) [毫米]']);
@@ -233,6 +251,10 @@ t('判成遙控程式', () => assert.strictEqual(IQ.detectKind(IQ.parseIq(iq(TEL
 t('寫得好的遙控程式：沒有「一定要改」的問題，且有對照表', () => { const a = tele(TELE_OK, ['Arm']); assert(!a.findings.some((f) => f.level === 'error'), ids(a).join(',')); assert(a.table.length >= 1); });
 t('只檢查一次按鈕、沒有 stop：抓到兩個錯誤', () => { const a = tele(TELE_BAD, ['Arm']); assert(ids(a).includes('t-noloop'), ids(a).join(',')); assert(ids(a).includes('t-nostop'), ids(a).join(',')); });
 t('用到沒設定的裝置：抓到', () => assert(ids(tele(TELE_DEV, ['Arm'])).includes('t-baddev')));
+const chain = (a, b) => a.replace(/<\/block>$/, '<next>' + b + '</next></block>');
+const TELE2 = (extra) => `<xml><block type="iq_events_when_started"><next><block type="iq_control_forever"><statement name="SUBSTACK"><block type="iq_control_if_then_else"><value name="CONDITION">${pressed('ButtonRUp')}</value><statement name="SUBSTACK">${chain(motor('iq_motion_spin', 'Left'), motor('iq_motion_spin', 'Right'))}</statement><statement name="SUBSTACK2">${chain(motor('iq_motion_stop_motor', 'Left'), motor('iq_motion_stop_motor', 'Right'))}</statement>${extra ? '<next>' + extra + '</next>' : ''}</block></statement></block></next></block></xml>`;
+t('遙控程式有兩顆以上馬達、沒用 Gyro：提示可以加方向鎖定（只是建議，不算錯誤）', () => { const a = tele(TELE2(), ['Left', 'Right']); assert(ids(a).includes('t-lock'), ids(a).join(',')); assert(!a.findings.some((f) => f.level === 'error'), ids(a).join(',')); assert.strictEqual(a.findings.find((f) => f.id === 't-lock').level, 'tip'); });
+t('有用到 Gyro 的遙控程式：不再提示方向鎖定', () => { const a = tele(TELE2('<block type="iq_sensing_gyro_heading"></block>'), ['Left', 'Right']); assert(!ids(a).includes('t-lock'), ids(a).join(',')); });
 t('空的工作區：抓到', () => assert(ids(IQ.analyzeTeleop(IQ.parseIq(iq('<xml></xml>'), 't'))).includes('t-empty')));
 t('缺 MOTOR 欄位的積木不會把 null 當成馬達名稱', () => {
   const x = '<xml><block type="iq_events_when_started"><next><block type="iq_motion_spin"></block></next></block></xml>';

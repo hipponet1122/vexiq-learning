@@ -8,13 +8,13 @@ A website for upper-elementary to middle-school students to teach themselves **V
 > The interface is available in Traditional Chinese (Taiwan) and English. Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
 ## Features
-- **Adaptive practice**: 6 domains, 28 skills, 163 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
+- **Adaptive practice**: 6 domains, 29 skills, 173 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
 - **Anti-frustration loop**: on a wrong answer the learner gets a hint and a second try; two misses in a skill pop up a 30-second cheat sheet; each round ends with a "practice similar questions" option. In the simulator, repeated failures reveal challenge hints step by step and suggest a follow-up quiz after a pass.
 - **Web simulator** modeled on VEXcode IQ Blocks (English blocks with Chinese tooltips, drag and drop, sensors, My Blocks, undo/redo, Python/C++ code view, Brain screen).
 - **Upload VEXcode files** (`.iqblocks`): simulate autonomous/driver-control programs, step-by-step comparison, hints and engineering notebook drafts.
 - **Engineering notebook**: 7 lessons, 7 page types, self-check lists, parent comments, printable portfolio.
-- **Challenges, build lessons with a parts catalog, competition zone** (season rules summary, score planner, skills-run log, English–Chinese term cards, interview practice).
-- **Control Lab** (advanced): interactive experiments for driving straight with P control, PID turning, and odometry with accumulating error — written from scratch (see the license note in Resources). Plus a **Taiwan competition route** page (VEX Taiwan Open example flow and an entry checklist).
+- **Challenges, build lessons with a parts catalog, competition zone** (season rules summary, score planner, a scoring drill with a by-level mode, a 3D scoring challenge, skills-run log, English–Chinese term cards, interview practice).
+- **Control Lab** (advanced): interactive experiments for driving straight with P control, PID turning, odometry with accumulating error, angle wrap-around, going to a target point, and a driver-control heading lock — written from scratch (see the license note in Resources). Plus a **Taiwan competition route** page (VEX Taiwan Open example flow and an entry checklist).
 - **Guidance**: daily task, starter path, badges and streaks, parent guide and weekly report.
 - **Three roles**: learner, parent (admin), coach (**read-only**, sees only assigned learners).
 - **Bilingual interface**: switch between Traditional Chinese and English with the "中 / EN" button; questions, lessons, challenges and messages are all translated.

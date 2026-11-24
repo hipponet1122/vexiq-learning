@@ -858,8 +858,9 @@
     const COL_HEX = { blue: '#3b82f6', red: '#ef4444', yellow: '#eab308' };
     const COL_BG = { blue: 'rgba(59,130,246,.14)', red: 'rgba(239,68,68,.14)', yellow: 'rgba(234,179,8,.18)' };
     const COL_ZH = { blue: '藍', red: '紅', yellow: '黃' };
+    const DOT = { blue: '🔵', red: '🔴', yellow: '🟡' };
     const rnd = (n) => Math.floor(Math.random() * n);
-    let diff = 'easy', cur = null, solved = false;
+    let diff = 'easy', cur = null, solved = false, byGoal = false;
 
     const gen = () => {
       const bags = GOALS.map((g, idx) => {
@@ -876,17 +877,18 @@
       });
       if (bags.every((a) => !a.length)) bags[0].push('blue', 'blue');
       let ans = 0;
-      const lines = [];
+      const lines = [], valids = GOALS.map(() => 0);
       GOALS.forEach((g, i) => {
         const arr = bags[i];
         if (!arr.length) return;
         const valid = arr.filter((c) => (g.col === 'yellow' ? c === 'yellow' : (c === g.col || c === 'yellow')));
         const invalid = arr.length - valid.length;
         const sub = valid.length * g.pts;
+        valids[i] = valid.length;
         ans += sub;
-        lines.push(g.name + '（' + g.colZh + '／' + g.pts + '分）：' + valid.length + ' 個有效 = ' + sub + ' 分' + (invalid ? '（另有 ' + invalid + ' 個錯色不計分）' : ''));
+        lines.push(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：' + valid.length + ' 個有效 = ' + sub + ' 分' + (invalid ? '（另有 ' + invalid + ' 個錯色不計分）' : ''));
       });
-      cur = { bags, ans, lines };
+      cur = { bags, ans, lines, valids };
       solved = false;
       render();
     };
@@ -912,7 +914,28 @@
     const render = () => {
       const inp = h('input', { type: 'text', inputmode: 'numeric', placeholder: '輸入總分', style: 'width:120px;margin:0' });
       const fb = h('div');
+      const toInt = (v) => parseInt(String(v).replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/[^\d-]/g, ''), 10);
+      const goalInputs = GOALS.map((g) => h('input', { type: 'text', inputmode: 'numeric', placeholder: '0', style: 'width:64px;margin:0', 'aria-label': g.name + '有效沙包數' }));
+      const checkByGoal = () => {
+        if (solved) return;
+        const mine = goalInputs.map((i) => (i.value.trim() === '' ? 0 : toInt(i.value)));
+        if (mine.some((v) => isNaN(v))) { const bad = goalInputs.find((i, k) => isNaN(mine[k])); if (bad) bad.focus(); return; }
+        solved = true;
+        const okEach = GOALS.map((g, i) => mine[i] === cur.valids[i]);
+        const ok = okEach.every(Boolean);
+        const total = mine.reduce((a, v, i) => a + v * GOALS[i].pts, 0);
+        rec.total++;
+        if (ok) { rec.ok++; rec.streak++; if (window.VXFX && rec.streak % 3 === 0) window.VXFX.confetti(); } else rec.streak = 0;
+        VX.saveState();
+        fb.replaceChildren(
+          h('div', { class: 'callout' + (ok ? '' : ' warn') },
+            h('b', null, ok ? '✅ 每一層都對！總分是 ' + cur.ans + ' 分！' : '❌ 有幾層數錯了（你的總分是 ' + total + ' 分，正確是 ' + cur.ans + ' 分）'),
+            h('ul', { style: 'margin:6px 0 0 18px' }, GOALS.map((g, i) => h('li', null, (okEach[i] ? '✔ ' : '✘ ') + g.name + '：你填 ' + mine[i] + ' 個，正確是 ' + cur.valids[i] + ' 個有效（' + DOT[g.col] + ' 或 🟡 才算' + (g.col === 'yellow' ? '，只收黃色' : '') + '）')))),
+          h('button', { type: 'button', class: 'btn primary sm', onclick: gen }, '下一題 ▶'));
+        statEl.textContent = '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題';
+      };
       const check = () => {
+        if (byGoal) return checkByGoal();
         if (solved) return;
         const norm = inp.value.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/[^\d-]/g, '');
         const v = parseInt(norm, 10);
@@ -931,6 +954,7 @@
         statEl.textContent = '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題';
       };
       inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); });
+      goalInputs.forEach((i) => i.addEventListener('keydown', (e) => { if (e.key === 'Enter') check(); }));
       const statEl = h('span', { class: 'sub' }, '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題');
       wrap.replaceChildren(
         h('h3', null, '🎮 互動視覺化 Level Up 計分練習'),
@@ -940,8 +964,12 @@
             h('button', { type: 'button', class: 'btn sm' + (diff === k ? ' primary' : ''), onclick: () => { diff = k; gen(); } }, lb)),
           h('button', { type: 'button', class: 'btn sm', onclick: gen }, '🔄 換一題')),
         h('div', { style: 'margin:8px 0' }, html(drawSvg())),
-        h('div', { class: 'row gap', style: 'align-items:center' },
-          inp, h('button', { type: 'button', class: 'btn primary sm', onclick: check }, '批改'), statEl),
+        h('div', { class: 'row gap', style: 'margin-bottom:8px;align-items:center' },
+          h('button', { type: 'button', class: 'btn sm' + (byGoal ? '' : ' primary'), onclick: () => { byGoal = false; render(); } }, '只填總分'),
+          h('button', { type: 'button', class: 'btn sm' + (byGoal ? ' primary' : ''), onclick: () => { byGoal = true; render(); } }, '分項填寫（每層各填有效沙包數）')),
+        byGoal ? h('div', { class: 'ctlrows' }, GOALS.map((g, i) => h('div', { class: 'row gap', style: 'align-items:center' }, h('span', { style: 'min-width:120px' }, g.name + '（' + DOT[g.col] + '／' + g.pts + ' 分）有效'), goalInputs[i], h('span', null, '個')))) : null,
+        h('div', { class: 'row gap', style: 'align-items:center;margin-top:8px' },
+          byGoal ? null : inp, h('button', { type: 'button', class: 'btn primary sm', onclick: check }, '批改'), statEl),
         fb);
     };
     gen();

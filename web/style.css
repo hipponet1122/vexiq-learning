@@ -510,3 +510,5 @@ a:focus-visible, button:focus-visible, summary:focus-visible, [tabindex]:focus-v
 .twic { font-size: 1.8rem; line-height: 1; }
 .twwhen { color: var(--mute); font-size: .85rem; margin: 2px 0 4px; }
 .twstep p { margin: 4px 0; }
+
+.ctldial { max-width: 260px; margin: 0 auto; }
