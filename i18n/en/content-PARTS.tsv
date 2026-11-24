@@ -18,3 +18,82 @@ e4f028|Measures how far away the object ahead is.
 5d0ce8|Mechanisms pushed by air (needs pneumatic parts).
 12bfec|Beams, pins, axles, gears, wheels
 463e91|The basic parts of structure and drive: beams make the frame, pins connect, axles carry rotation, gears change speed and force, wheels do the moving (including omni wheels).
+d28629|Brain (2nd Generation)
+26164f|The robot's brain where programs are downloaded and run. Gen 2 features 12 Smart Ports (1–12), a color screen, 4 navigation buttons (Left/Right/Check/Cancel), USB-C port, battery slot, and a built-in Inertial Sensor (IMU).
+db7e6c|The port number in VEXcode Devices must match the exact physical port; if the screen flashes red or a motor doesn't respond, check the Brain's Devices menu first.
+088095|Essential for manual driving and teamwork matches. Features two joysticks (Axis A/B on left, Axis C/D on right) plus 8 buttons: front E (Up/Down), F (Up/Down), and shoulder L (Up/Down), R (Up/Down).
+73e783|Pair with the Brain via tether cable or wireless menu on first use; always check controller battery before a match and wait for a solid green/blue link light.
+dcbd39|The power core for wheels, arms, and claws. Built-in encoders measure exact degrees/turns, and it also monitors current and temperature.
+7a77f8|Set arm and claw motors to "hold" stopping mode so they don't sag when you release the button; avoid stalling motors against hard stops or they will overheat and slow down.
+095071|VEX IQ Battery & Charger
+a10bfe|Gen 2 uses a Li-Ion battery charged via USB-C to power the Brain and all motors. Low battery makes motors slower and throws off autonomous routines.
+e4bd2b|Charge fully before autonomous practice or matches; mount the battery low and near the center of the chassis for stability.
+f4839c|Physical microswitch that reports "pressed" when bumped by a wall or arm. Great for backing away from walls, wall-squaring, or arm limit protection.
+7e283f|Mount it protruding 1 hole past the frame so it triggers before the chassis hits the wall.
+24301d|Detects finger taps on top and glows in multiple colors. Great as a one-tap start button or status light showing which program step is running.
+aa394e|Assign a color to each stage (e.g., blue = ready, green = running, red = error) to make debugging super easy!
+61a795|Distance Sensor (2nd Gen)
+796f2b|Uses laser light to measure distance to objects ahead in millimeters (mm)—more accurate than Gen 1 ultrasonic and can also estimate object size.
+6c1303|Keep it clear of your own claws or beams in front, or it will keep measuring your own robot!
+92c668|Combines color detection, ambient light, and proximity with a built-in LED lamp—ideal for sorting bean bags, spotting field lines, or detecting held objects.
+1da6ef|Venue lighting varies; turn on the built-in LED lamp (set Optical light to 100%) at program start for steady color readings.
+835fe3|Color Sensor (1st Gen)
+baee8b|Detects color and grayscale of nearby objects or floor lines (common in Gen 1 kits; mostly replaced by Optical in Gen 2).
+3c83bb|Short effective range (best within 2–3 cm); mount it close to the floor or target object.
+127417|Gyro / Built-in Inertial Sensor (IMU)
+c9df6a|Measures how many degrees the robot turned and its heading (0–360°). Gen 2 Brain has an IMU built right in for straight driving and accurate 90° turns.
+809ff8|Keep the robot completely still during the 2-second calibration, or heading will drift through the whole autonomous run!
+b5e143|AI Vision Sensor
+c8a245|Camera sensor that detects color signatures, color codes, or built-in AI models in real time so the robot can aim and track targets automatically.
+502b84|Popular in advanced competitions; avoid direct overhead glare on the lens and re-calibrate color signatures at the competition venue.
+a4abe4|Smart Cable
+b86c8d|Dedicated cables connecting the Brain to motors and sensors, available in 100mm, 200mm, 300mm, 400mm, and 600mm lengths. Locking clips click into place when fully seated.
+5a57a9|Always press the clip tab before unplugging—yanking breaks the latch and causes mid-match disconnects! Secure slack cables inside beams so wheels and gears never snag them.
+fbb62b|USB-C Data / Charging Cable
+57a04d|Connects your computer/tablet to the Brain to download programs, and charges Gen 2 batteries and controllers.
+fca76a|Some cheap charging cables lack data wires—if your computer can't see the Brain, swap in a known data-capable USB-C cable!
+242b4a|Radio & Pairing (Radio / Tether)
+cdd2eb|Gen 2 Brain and Controller have built-in dual-band wireless pairing right from the Brain menu; Gen 1 requires matching radio modules (Bluetooth or 900MHz) in both.
+c775d7|Dozens of robots run simultaneously at tournaments—pair your own controller cleanly and label both units with your team number!
+6d1eb8|Rubber Bands (#32 / #64)
+821348|The ultimate "hidden teammate" in VEX IQ! Legal #32 and #64 bands have 4 big uses: (1) counterweight arms against gravity so motors work less; (2) spring-deploy folded mechanisms at match start; (3) boost intake/claw grip with flexible give; (4) tension latches and intakes.
+135b99|Swap in fresh bands before matches (old ones stretch out); hook onto double pins or standoffs so they don't slip; always verify legal sizes in the current Game Manual.
+981a75|Pneumatic Kit
+c2ea55|Stores compressed air in a tank and uses programmed solenoid valves to fire air cylinders instantly—fast clamping, launching, or lifting without using up motor limits!
+5632d1|Advanced competition add-on! Pressure drops with each actuation—pump up to target pressure before every match and listen for air leaks at fittings.
+dfcb6e|Beams & Plates
+703b05|The skeleton of your robot. Common 1× and 2× widths (numbers count holes—e.g. a 2×12 beam is 2 holes wide by 12 long). Standing 2× beams on edge resists bending far better than laying them flat.
+ea8c01|Always add diagonal triangle bracing to frames so they can't skew into parallelograms, and count holes symmetrically so your robot drives straight.
+29b093|Connector Pins & Pin Tool
+371781|Locks beams together: single pins (1×1) allow pivoting joints, double/long pins lock rigidly, and corner connectors turn 90°. Use a Pin Tool to remove pins without hurting fingers.
+c5c543|A single pin at a corner lets beams spin—use at least 2 pins for a rigid joint! Never bite pins out with your teeth; pry gently with a Pin Tool.
+106d50|Standoffs
+147698|Rigid spacers that hold two beams or plates a fixed distance apart—great for towers, wheel guards, and rubber band anchor posts.
+b4f9e9|Adding extra standoffs between left and right chassis rails dramatically boosts stiffness during wall impacts.
+8d63c0|Shafts & Shaft Collars
+7e5ad8|Square shafts transfer motor rotation to wheels and gears (plastic shafts for light loads, metal shafts for high torque); rubber Shaft Collars keep shafts from sliding out.
+54aad9|Support every rotating shaft at both ends (two-point support) so motors aren't bent sideways; leave a paper-thin gap on collars so they don't rub against beams and slow the motor!
+33cedd|Gears (12T–60T)
+bf1b17|Trade speed for torque: small driving large = slower & stronger (e.g. 12T→36T gives 3× torque for lifting arms); large driving small = faster & lighter (great for fast intake rollers).
+8ee3f9|Two meshed gears spin in opposite directions! Add an idler gear in between—or use chain—when you want both shafts spinning the same way.
+ea9277|Sprockets, Chain & Tank Tread
+968284|Transfers power across long distances where gears would be too heavy, and keeps driver and driven shafts spinning in the SAME direction! Tank tread also builds conveyor intakes.
+89913d|Too loose causes skipping; too tight wastes motor power—adjust beam spacing or add a tensioner so it's snug without sagging.
+6886af|Wheels (Rubber / Omni / Balloon)
+2c04e0|Common 200mm circumference wheels travel 200mm per turn. Rubber wheels grip strongly; Omni Wheels have perimeter rollers for silky-smooth turning; wide/balloon wheels work great as intake rollers.
+0a31d9|A 2-motor drive often pairs front rubber wheels with rear Omni Wheels for crisp turns; wipe dusty tires with a damp cloth before practice to restore grip!
+4b0e22|Education Kit (2nd Gen — Starter Kit)
+42599b|The best first box for beginners and classroom self-study! Includes Gen 2 Brain, Controller, Battery & charger, 4 Smart Motors, Bumper/Touch LED/Distance/Optical sensors, basic Smart Cables, beams, pins, gears, and wheels.
+9a897a|Enough to build the official Hero Bot and complete 90%+ of this site's lessons, 16 Build Labs, and coding challenges! Master chassis, gear ratios, and sensors with this kit first.
+978597|Competition Kit (2nd Gen — Advanced Kit)
+9aab3c|Built for VEX IQ Robotics Competition (Taiwan Open, Worlds, etc.)! Adds more motors (6 total), longer beams, larger gears, chain & tread, extra Omni Wheels, rubber bands, more cable lengths, and storage bins.
+ba7b28|Upgrade to the Competition Kit when your strategy needs more simultaneous mechanisms (e.g. drive + dual lift arms + roller intake + launcher).
+adb411|Advanced Add-Ons (Pneumatics / AI Vision / Metal Shafts / Cable Packs)
+c32f30|Popular add-ons for intermediate/advanced teams: (1) Pneumatic Kit (fast actuation without extra motors); (2) AI Vision camera (auto-targeting); (3) Metal shafts (high-torque arms that won't twist); (4) Long Smart Cable & #32/#64 rubber band refill packs.
+d47b3e|Before buying, check the current Game Manual for part legality and motor limits (VEX IQ competitions typically cap robots at 6 Smart Motors).
+8d4475|VEX IQ Battery and Charging
+714a28|The 2nd-generation battery plugs into the Brain and powers the Brain and all motors. Charge it with a USB-C cable (the cable must be plugged into power), and the battery lights flash while charging. The battery has 4 indicator lights: 1 to 4 lights mean about 0–25%, 25–50%, 50–75% and 75–100% charge. A low battery slows the motors and makes autonomous programs less accurate.
+14d52d|Charge fully before autonomous practice and before competing. When not in use, squeeze the latch at the end of the battery and gently slide it out of the Brain. Mount the battery low and near the centre of the chassis so the robot is steadier and less likely to tip.
+fc8d07|when started → the program starts here; use the Brain screen print block to show sensor values and help with debugging.
+5b6bf6|when Controller button [L Up] [pressed] controls the arm; read (Controller A position) inside forever for joystick driving.
+ed97a8|wait until <Bumper pressed?> or if <Bumper pressed?> then

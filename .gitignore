@@ -1,4 +1,6 @@
-# 機密／個資：永遠不進版控
+# 機密／個資與本機營運目錄：永遠不進版控
+local/
+web/models/
 seed_users.json
 初始帳密.txt
 .env

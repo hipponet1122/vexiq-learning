@@ -6,7 +6,7 @@ import re
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).resolve().parent.parent
 TZ = datetime.timezone(datetime.timedelta(hours=8))  # Asia/Taipei
 
 

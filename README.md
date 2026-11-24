@@ -8,14 +8,15 @@ A website for upper-elementary to middle-school students to teach themselves **V
 > The interface is available in Traditional Chinese (Taiwan) and English. Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
 ## Features
-- **Adaptive practice**: 6 domains, 29 skills, 173 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
+- **Adaptive practice**: 6 domains, 29 skills, 175 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
 - **Anti-frustration loop**: on a wrong answer the learner gets a hint and a second try; two misses in a skill pop up a 30-second cheat sheet; each round ends with a "practice similar questions" option. In the simulator, repeated failures reveal challenge hints step by step and suggest a follow-up quiz after a pass.
 - **Web simulator** modeled on VEXcode IQ Blocks (English blocks with Chinese tooltips, drag and drop, sensors, My Blocks, undo/redo, Python/C++ code view, Brain screen).
 - **Upload VEXcode files** (`.iqblocks`): simulate autonomous/driver-control programs, step-by-step comparison, hints and engineering notebook drafts.
 - **Engineering notebook**: 7 lessons, 7 page types, self-check lists, parent comments, printable portfolio.
 - **Challenges, build lessons with a parts catalog, competition zone** (season rules summary, score planner, a scoring drill with a by-level mode, a 3D scoring challenge, skills-run log, English–Chinese term cards, interview practice).
 - **Control Lab** (advanced): interactive experiments for driving straight with P control, PID turning, odometry with accumulating error, angle wrap-around, going to a target point, and a driver-control heading lock — written from scratch (see the license note in Resources). Plus a **Taiwan competition route** page (VEX Taiwan Open example flow and an entry checklist).
-- **Guidance**: daily task, starter path, badges and streaks, parent guide and weekly report.
+- **Guidance & Auto Daily Study Plan**: automatic daily schedule on sign-in (`#/plan`, 15 / 30 / 45 / 60 min presets) tailored to mastered and weak skills, step-by-step cross-page guide bar, 5-pillar adaptive navigation (phone / iPad / desktop), badges, streak, parent guide, and weekly report.
+- **Hardware & Kits Encyclopedia (`#/build/parts`)**: 25 VEX IQ components and kits (Brain, Controller, motors, sensors, Smart Cables, #32/#64 rubber bands, pneumatics, Starter vs. Competition kits, 1st Gen vs. 2nd Gen comparison) plus an interactive Three.js 3D CAD viewer (`web/part3d.js`) with auto-contrast studio lighting.
 - **Three roles**: learner, parent (admin), coach (**read-only**, sees only assigned learners).
 - **Bilingual interface**: switch between Traditional Chinese and English with the "中 / EN" button; questions, lessons, challenges and messages are all translated.
 - **Phone / tablet friendly**: bottom tab bar on phones, a Blocks / Field switch in the simulator, layouts tuned for iPad portrait and landscape, and gentle animations (off when "reduce motion" is on).
@@ -30,28 +31,28 @@ web/data.js      skill map and question bank     web/content.js  lessons, challe
 web/app.js       routing, login, practice, parent pages   web/sim.js  simulator
 web/iqimport.js  .iqblocks import                web/guide.js    guidance, badges
 web/modules.js   notebook, challenges, build, competition, resources   web/extras.js  weekly report, portfolio, question review
-web/about.js     about page and footer           web/blocktext.js  block text zh→en            build_info.py  writes web/version.json
+web/about.js     about page and footer           web/blocktext.js  block text zh→en            tools/build_info.py  writes web/version.json
 ```
 
 ## Run locally
 ```bash
 pip install -r requirements.txt
-python3 make_seed.py                     # creates the starter accounts (learner / parent) and a one-time password file
-python3 build_info.py                    # writes version info (optional)
+python3 tools/make_seed.py               # creates starter accounts (learner / parent) and a one-time password file
+python3 tools/build_info.py              # writes version info (optional)
 DATA_DIR=./data python3 -m uvicorn server:app --port 8599
 ```
-Open http://localhost:8599/. The starter passwords are in `初始帳密.txt` (change them after logging in and delete that file).
+Open http://localhost:8599/. The starter passwords are in `local/secrets/初始帳密.txt` (change them after logging in and delete that file).
 
 ## Self-host (Docker)
 ```bash
-python3 make_seed.py && python3 build_info.py
+python3 tools/make_seed.py && python3 tools/build_info.py
 docker compose up -d --build            # binds 127.0.0.1:8518 by default, data in ./data
 ```
 Put it behind a reverse proxy (Nginx / Caddy / Cloudflare Tunnel) with **HTTPS** before exposing it, and back up `data/` (`vexiq.sqlite`).
 Environment variables: `VEXIQ_PORT`, `VEXIQ_DATA` (data folder), and `TRUST_CF_IP` (set to `1` behind a Cloudflare Tunnel so `CF-Connecting-IP` is used for login rate limiting). The container drops privileges to the owner of `/data` (`docker-entrypoint.sh`) and does not run as root. After logging in, parents can add learners and coaches on the parent page.
 
 ## For contributors
-- Want to help? See [`CONTRIBUTING.md`](docs/CONTRIBUTING.md), [`ROADMAP.md`](docs/ROADMAP.md), [`MAINTAINERS.md`](docs/MAINTAINERS.md), or look for issues labeled `good first issue`.
+- Want to help? See [`CONTRIBUTING.md`](docs/CONTRIBUTING.md), [`PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md), [`ROADMAP.md`](docs/ROADMAP.md), [`MAINTAINERS.md`](docs/MAINTAINERS.md), or look for issues labeled `good first issue`.
 - Editing questions: `web/data.js` (block syntax: `[dropdown]` `(number)` `<condition>`; two leading spaces = one indent level).
 - New season: update `SEASON` in `web/content.js` and the season questions in `web/data.js`. **Write in your own words and link to the official source.**
 - Releasing: update `VERSION` and `CHANGELOG.md`.

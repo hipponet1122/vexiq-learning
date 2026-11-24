@@ -3,6 +3,7 @@
   'use strict';
   const VX = window.VX;
   const { h, shell, blocksEl, toast } = VX;
+  const T = (s, o) => { let r = (window.VXI18N && window.VXI18N.tr) ? window.VXI18N.tr(s) : s; if (o) Object.keys(o).forEach((k) => { r = r.split('{' + k + '}').join(o[k]); }); return r; };
 
   function viewPathPlanner() {
     const COLS = 6, ROWS = 4, CELL = 200, W = COLS * CELL, H = ROWS * CELL;
@@ -120,7 +121,7 @@
       draw(plan);
       summaryEl.replaceChildren(
         h('b', null, '路線統計：'),
-        '共 ' + pts.length + ' 個點 · 總長 ' + plan.totalDist + ' mm · 累計轉彎 ' + plan.totalTurn + '° · 預估耗時約 ' + plan.estSec + ' 秒（50% 速度）');
+        T('共 {p} 個點 · 總長 {d} mm · 累計轉彎 {t}° · 預估耗時約 {s} 秒（50% 速度）', { p: pts.length, d: plan.totalDist, t: plan.totalTurn, s: plan.estSec }));
       blocksBox.replaceChildren(blocksEl(plan.dsl));
       pyBox.textContent = plan.py;
     }

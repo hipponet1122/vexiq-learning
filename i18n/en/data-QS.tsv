@@ -777,3 +777,15 @@ f3f996|Turn-then-drive does not need to know the heading
 b3c1fc|Turn then drive: the path is "turn an angle + go straight", easy to predict and tune. Turning while driving: saves time but the path curves, so watch out for obstacles.
 2c3a68|Heading 0° is straight up, and the angle grows when turning right (like a compass). The robot is at (0, 0) and the target is straight down at (0, −300). What is the heading to the target in degrees?
 d25753|Straight up is 0°, right is 90°, straight down is 180° and left is 270°. The target is straight down, so it is 180°.
+4fd390|After the match, a yellow bean bag sits steadily on an L2 goal, but the robot's arm is still pressing on it. Does this bean bag score?
+520874|No: a bean bag must not touch a robot
+fd136c|Yes: it is on an L2 goal
+f73293|It scores half
+97c3d8|It depends on the colour of the bean bag
+9241d2|The official scoring conditions (SC3–SC5) all require that "the bean bag does not touch a robot". So after the last trip, move the robot off the bean bag; once time is up the robot may not move any more.
+02aad1|A blue bean bag has a small part sticking out past the boundary of the blue Floor Goal. Does this bean bag score?
+e1b04a|No: a Floor Goal requires the bean bag to be entirely inside
+26ce3d|Yes: the colour is right
+129710|It scores as L1
+c68773|It scores half
+737eef|A Floor Goal (SC3) requires the bean bag to be "entirely" inside the goal; if even a little sticks out past the boundary it does not score.

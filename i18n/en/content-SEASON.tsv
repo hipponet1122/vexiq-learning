@@ -44,3 +44,11 @@ e37187|Teamwork has two robots → you can divide the work (one fast on low leve
 5c2559|The 60-second autonomous skills run has no driving → the route must be fixed and run the same every time. Reliability beats flashiness: get "one scoring action" working every time, then add more.
 4c575f|The two skills scores are added → driving practice builds mechanisms and operating skill, autonomous practice builds accuracy; practice both.
 27ee9e|Motors
+9431b8|There are 2 on the field. A gray horizontal surface on top of a tower, with no colour.
+9b967c|Two teams form an alliance, one robot each, and score as much as they can in 1 minute. There is <b>no autonomous period</b>; it is all driver control, and the two drivers swap controllers halfway through the match (at about 30 seconds).
+b62782|One team, one robot, 1 minute that runs <b>on its own code only</b>, with no controller. This is the event where you most need to practise your programming!
+68c224|A bean bag must not touch any robot to score (the same for the Floor Goal, L1–L3 and L4).
+226d8a|Floor Goal: the bean bag must be "entirely" inside the goal; if even a small part sticks out past the boundary it does not score.
+c42a85|L1–L3 and L4: the bean bag must touch that level's surface, or sit on a bean bag that touches the surface; an L1–L3 bean bag also must not touch anything outside the field.
+142696|A bean bag touching a robot does not score
+a7a5af|Scores are checked after the match ends and everything has come to rest. If a bean bag is still touching a robot (for example the arm is still pressing on it), that bean bag does not score, so after the last trip move the robot off the bean bag (after time runs out the robot may not move any more). (Manual SC3–SC5)

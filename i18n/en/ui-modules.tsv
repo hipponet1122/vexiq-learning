@@ -557,3 +557,103 @@ b6a234|Total only
 e01a48| pts) valid
 087637|bags
 64fdb5| or 🟡 score
+520f57|🟡 yellow only
+64a0a0|🧩 Parts & Kits Encyclopedia
+728a5e|Left Joystick (Axis A up/down, Axis B left/right)
+acc324|Primary driving stick: in Split Arcade mode, Axis A drives forward/reverse; in Tank mode, it drives the left wheels.
+fad097|Right Joystick (Axis D up/down, Axis C left/right)
+785ca0|In Split Arcade mode, Axis C turns left/right for rock-steady straight driving! In Tank mode, it drives the right wheels.
+89b0f1|Shoulder Buttons (L Up/Down, R Up/Down)
+135812|The 4 easiest buttons for your index fingers! Usually mapped to arm lift and claw open/close so thumbs never leave the sticks.
+51684d|Front Buttons (E Up/Down, F Up/Down)
+586c99|Thumb buttons ideal for precision slow mode, auto-reset positions, or pneumatic triggers.
+537e9d|Power Button & Link LED
+3fda4f|Hold to power on/off; solid green means linked to the Brain. Flashing red means low battery—recharge via USB-C.
+a38dc2|Turn on the Brain first, then the Controller, and confirm both show the link icon.
+4c12ac|12 Smart Ports (Ports 1–12)
+7bc722|6 ports on each side—motors and sensors plug into any port, as long as VEXcode Devices matches the exact port number!
+5aca69|Tip: Plug left drive into Port 1 and right drive into Port 6 for tidy, tangle-free routing.
+755ea2|Color Screen & 4 Navigation Buttons
+ee12f4|Left/Right selects program slots, Check (✓) runs the program, and Cancel (✕) stops or goes back.
+2b565c|Built-in Inertial Sensor (IMU)
+15d084|Built directly into the Gen 2 Brain—no port needed! Measures turn angles and heading accurately.
+d544a1|calibrate BrainInertial (keep robot completely still during calibration)
+d0b131|USB-C Port & Battery Slot
+f81664|USB-C connects to a computer to download code; slide the battery in from the side until it clicks. The Brain needs power to download.
+a4da1e|If your computer can't detect the Brain, try a different data-capable USB-C cable.
+e3894e|🔍 Interactive Explorer: Controller & Brain
+e922c5|🎮 Controller Buttons
+e2fc1c|🧠 Brain (2nd Gen)
+3dfb1e|🧰 All Parts
+78789f|🧠 Core Electronics
+9ca655|📡 Sensors
+eb3b33|🔌 Cables & Radio
+7f601c|🌀 Rubber Bands & Pneumatics
+3ffa07|🧱 Structure & Drivetrain
+ff33b5|📦 Starter & Advanced Kits
+fdd253|Search parts, cables, rubber bands, kits…
+9f15b5|Search parts and kits
+0639ed|All Kits
+446b85|📦 Starter Kit
+4c2304|🏆 Advanced / Comp
+fabe98|Showing 
+9b104c| hardware & kit items
+2aa4a6|Advanced / Comp
+828bd8|Starter Kit
+72cc86|No matching parts found—try another keyword or tap "All Parts".
+03fcfe|Interactive guide to the Brain, Controller, sensors, Smart Cables, rubber bands, and Starter vs. Advanced kits—learn what every part does and how to care for it!
+ca533c|📚 Complete Parts, Cables & Kits Guide
+dd1e3f|Parts & Kits Encyclopedia
+3bc2e8|Choose a part to view in 3D
+c00c4d|⏸ Pause Spin
+2c146c|▶ Auto Spin
+290326|🧊 3D Interactive Part Viewer (Drag to Orbit 360°)
+b8b812|＋ Zoom In
+f95d19|－ Zoom Out
+fdbab5|↺ Reset View
+22434a|👆 Drag with finger or mouse to rotate 360°; tap any part card below to switch 3D models (illustrative 3D model, not official CAD).
+9e1bdd|View in 3D Viewer
+e77803|🧊 View in 3D
+d2c6c6|🔍 Interactive Buttons & Ports Guide (Syncs 3D CAD Above)
+0be741|🌗 BG: Auto Contrast
+f9f2b2|☀️ BG: Light Studio
+2b0f15|🌙 BG: Dark Studio
+01046b|🧊 Official VEX IQ 3D CAD Part Viewer
+d5edb1|👆 Drag with finger or mouse to orbit official 3D CAD models 360°; background automatically adapts for high contrast.
+17489b|🧊 View Official 3D CAD
+9ea09c|🔄 VEX IQ 1st Gen vs. 2nd Gen Hardware Comparison
+cc8065|Schools and clubs often mix 1st and 2nd Gen kits — beams, pins, gears, and Smart Motors work on both; main differences are the Brain and sensors:
+f1ae5c|Feature
+fd1577|1st Generation
+50a520|2nd Generation
+cb922a|Brain Display
+afc57b|Monochrome gray-green LCD
+2bd4a6|Color high-contrast LCD (icon menu)
+d6ec87|Gyro / IMU
+080bec|Requires external Gyro Sensor (uses 1 port)
+87e6f0|Built-in Inertial Sensor (no port used)
+9193e3|Radio & Port
+ec495d|Plug-in blue Smart Radio cartridge, Micro-USB
+40787a|Built-in dual-band wireless, USB-C + microSD
+535c71|Battery
+07aad8|NiMH battery (dedicated cradle charger)
+865876|Li-Ion battery (USB-C charging)
+45cefa|Distance / Color
+16a5aa|Ultrasonic Distance, 1st Gen Color
+3aca29|Laser Distance (more accurate), Optical (with LED lamp)
+1023b7|Official references: 
+84bcbc|Understanding IQ 1st Gen vs 2nd Gen ↗
+369ef7|VEXos Firmware Changelog ↗
+6b7eea|Left stick
+42ca31|Right stick
+5f76e9|Shoulder buttons
+aa936a|Front buttons
+e3cc79|12 Smart Ports
+c545e4|Built-in inertial sensor
+345145|1 pt each
+37ca6c|3 pts each
+a33564|6 pts each
+5b2bbf|12 pts each
+4f49a4|16 pts each
+8d6352| touching a robot, not scored)
+cc580f|Count the total score from the field! Rule: a bean bag scores if it matches the goal colour or is yellow, and L4 only takes yellow; a bean bag with a 🤖 red dashed ring is still touching a robot and does not score.

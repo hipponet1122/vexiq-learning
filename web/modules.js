@@ -9,6 +9,8 @@
   const paint = (c, title, icon) => $().replaceChildren(shell(c, { title, icon }));
   VX.paint = paint;
   const html = (s) => h('div', { html: s });
+  // 零件／按鍵的「程式怎麼用」一行：整句翻譯後顯示（元素本身標 data-notrans，避免逐字翻壞積木名稱）
+  const trCode = (s) => (window.VXI18N && window.VXI18N.tr ? window.VXI18N.tr(s) : s);
 
   /* ============ 挑戰題庫 ============ */
   function fieldSvg(ch, showPath) {
@@ -321,8 +323,8 @@
       const hasP = Array.isArray(rec.photos) && rec.photos.length > 0;
       return (hasM || hasC || hasP || (rec.note && rec.note.trim())) ? 'try' : 'idle';
     };
-    const nav = h('div', { class: 'row gap', style: 'margin:0 0 12px' },
-      [['', '🛠️ 動手組裝挑戰（' + BUILD_LABS.length + ' 關）'], ['lessons', '📘 機構原理圖解'], ['parts', '🔩 零件圖鑑']].map(([k, n]) =>
+    const nav = h('div', { class: 'row gap', style: 'margin:0 0 12px;flex-wrap:wrap' },
+      [['', '🛠️ 動手組裝挑戰（' + BUILD_LABS.length + ' 關）'], ['parts', '🧩 零件與套件百科'], ['lessons', '📘 機構原理圖解']].filter(([k]) => k !== '' || (VX.user && VX.user.role === 'learner')).map(([k, n]) =>
         h('a', { class: 'btn sm' + (((a || '') === k || (a === 'lab' && k === '')) ? ' primary' : ''), href: '#/build' + (k ? '/' + k : '') }, n)));
 
     if (a === 'lessons') {
@@ -332,9 +334,157 @@
           h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/practice/' + x.skill }, '練習題：' + VX.SK[x.skill].name), h('a', { class: 'btn', href: '#/build' }, '🛠️ 去挑戰實體組裝'))))), '機構原理圖解', '📘');
     }
     if (a === 'parts') {
-      return paint(h('div', null, nav,
-        h('p', { class: 'sub' }, 'VEX IQ 第二代常見零件與感測器對照表。'),
-        h('div', { class: 'grid2' }, PARTS.map((p) => h('div', { class: 'card' }, h('h3', null, p.ic + ' ' + p.n), h('p', { class: 'sub' }, p.z))))), '零件圖鑑', '🔩');
+      const CTRL_HOTSPOTS = [
+        { k: 'ab', name: '左搖桿（軸 A 上下／軸 B 左右）', desc: '最常用的駕駛控制：在 Split Arcade 模式裡，推軸 A 控制前進與後退；在 Tank 模式裡控制左輪。', code: '(Controller A position)' },
+        { k: 'cd', name: '右搖桿（軸 D 上下／軸 C 左右）', desc: '在 Split Arcade 模式裡，推軸 C 控制左右轉彎，直線最穩！在 Tank 模式裡控制右輪。', code: '(Controller C position)' },
+        { k: 'lr', name: '肩部按鍵（L Up／L Down、R Up／R Down）', desc: '食指最容易按到的四顆鍵！比賽時通常用來控制「手臂升降」與「夾爪開合」，雙手不用離開搖桿。', code: 'when Controller button [L Up] [pressed]' },
+        { k: 'ef', name: '正面按鍵（E Up／E Down、F Up／F Down）', desc: '大拇指按鍵，適合放「慢速精準模式」、「自動歸位」或「氣動開關」等進階功能。', code: 'if <Controller E Up pressed?> then' },
+        { k: 'pwr', name: '電源鍵與配對狀態燈', desc: '長按開關機；綠燈穩定代表已連上 Brain。若一直閃紅燈表示電量不足，請用 USB-C 充電。', code: '先開 Brain 再開遙控器，確認兩邊都出現連線圖示。' },
+      ];
+      const BRAIN_HOTSPOTS = [
+        { k: 'ports', name: '12 個 Smart Ports（埠 1～12）', desc: '左右兩側各有 6 個插孔，馬達與感測器都可以任意插，但 VEXcode 裡的埠號必須跟實際插的孔完全一致！', code: '建議：左輪接 Port 1、右輪接 Port 6，線材好整理不易打結。' },
+        { k: 'screen', name: '彩色螢幕與 4 顆操作鍵', desc: '左／右鍵選程式 Slot，勾選鍵（✓）執行程式，取消鍵（✕）停止程式或返回上一層。', code: 'print (Distance object distance in mm)' },
+        { k: 'imu', name: '內建慣性感測器（IMU 陀螺儀）', desc: '第 2 代主機直接內建在機身裡，不用多佔一個埠！能精準測量轉彎角度與車頭方向。', code: 'calibrate BrainInertial（校準時車子要完全不動）' },
+        { k: 'usbc', name: 'USB-C 下載埠與電池槽', desc: 'USB-C 接電腦下載程式；電池從側邊推入直到聽到「喀」聲鎖緊。下載程式時主機需有電。', code: '若電腦讀不到 Brain，先換一條具資料傳輸功能的 USB-C 線。' },
+      ];
+
+      // 按鈕上的短名稱（獨立字串，英文介面才翻得到）
+      const HOTSPOT_SHORT = { ab: '左搖桿', cd: '右搖桿', lr: '肩部按鍵', ef: '正面按鍵', ports: '12 個 Smart Ports', imu: '內建慣性感測器' };
+      let devTab = 'ctrl';
+      let pickedKey = 'ab';
+      const devBox = h('div', { class: 'panel hw-explorer' });
+      const drawDev = () => {
+        const list = devTab === 'ctrl' ? CTRL_HOTSPOTS : BRAIN_HOTSPOTS;
+        const cur = list.find((x) => x.k === pickedKey) || list[0];
+        devBox.replaceChildren(
+          h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px' },
+            h('h2', { style: 'margin:0' }, '🔍 互動按鍵與埠位說明（同步切換上方原廠 3D 模型）'),
+            h('div', { class: 'row gap', style: 'margin:0' },
+              h('button', { type: 'button', class: 'btn sm' + (devTab === 'ctrl' ? ' primary' : ''), onclick: () => { devTab = 'ctrl'; pickedKey = 'ab'; drawDev(); select3dPart('controller', false); } }, '🎮 遙控器按鍵'),
+              h('button', { type: 'button', class: 'btn sm' + (devTab === 'brain' ? ' primary' : ''), onclick: () => { devTab = 'brain'; pickedKey = 'ports'; drawDev(); select3dPart('brain', false); } }, '🧠 Brain 主機'))),
+          h('div', { class: 'row gap', style: 'flex-wrap:wrap;margin:0 0 10px' }, list.map((it) =>
+            h('button', { type: 'button', class: 'btn sm' + (it.k === cur.k ? ' primary' : ''), onclick: () => { pickedKey = it.k; drawDev(); select3dPart(devTab === 'ctrl' ? 'controller' : 'brain', false); } }, HOTSPOT_SHORT[it.k] || it.name))),
+          h('div', { class: 'callout', style: 'margin:0' },
+            h('b', null, cur.name),
+            h('p', { style: 'margin:6px 0' }, cur.desc),
+            h('div', { class: 'sub' }, '💻 ', h('code', { 'data-notrans': '1' }, trCode(cur.code)))));
+      };
+      drawDev();
+
+      const PART_CATS = [
+        ['all', '🧰 全部零件'],
+        ['core', '🧠 核心電控'],
+        ['sensor', '📡 感測器'],
+        ['cable', '🔌 線材與連接'],
+        ['elastic', '🌀 橡皮筋與氣動'],
+        ['mech', '🧱 結構與傳動'],
+        ['kit', '📦 基礎／進階套件'],
+      ];
+      let pCat = 'all', pKit = 'all', pQuery = '';
+      let active3dId = 'brain';
+      const stageHost = h('div', { class: 'part3d-host' });
+      const stageTitle = h('h3', { style: 'margin:0' });
+      const stageDesc = h('p', { class: 'sub', style: 'margin:6px 0 8px' });
+      const stageSel = h('select', { 'aria-label': '選擇要 3D 檢視的零件' },
+        PARTS.map((p) => h('option', { value: p.id }, p.ic + ' ' + p.n)));
+      let viewer3d = null;
+      const autoBtn = h('button', { type: 'button', class: 'btn sm', onclick: () => {
+        if (!viewer3d) return;
+        const on = viewer3d.toggleAuto();
+        autoBtn.textContent = on ? '⏸ 暫停旋轉' : '▶ 自動旋轉';
+      } }, '⏸ 暫停旋轉');
+      const bgBtn = h('button', { type: 'button', class: 'btn sm', onclick: () => {
+        if (!viewer3d) return;
+        const m = viewer3d.cycleBg();
+        bgBtn.textContent = m === 'auto' ? '🌗 背景：自動對比' : m === 'light' ? '☀️ 背景：淺色棚' : '🌙 背景：深色棚';
+      } }, '🌗 背景：自動對比');
+      const select3dPart = (id, scroll) => {
+        const p = PARTS.find((x) => x.id === id) || PARTS[0];
+        active3dId = p.id;
+        stageSel.value = p.id;
+        stageTitle.textContent = p.ic + ' ' + p.n;
+        stageDesc.textContent = p.z;
+        if (viewer3d) viewer3d.setPart(p.id);
+        if (scroll) stagePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+      stageSel.addEventListener('change', () => select3dPart(stageSel.value, false));
+      const stagePanel = h('div', { class: 'panel part3d-panel' },
+        h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px' },
+          h('h2', { style: 'margin:0' }, '🧊 VEX IQ 原廠 3D CAD 零件檢視器'),
+          stageSel),
+        h('div', { class: 'part3d-layout' },
+          stageHost,
+          h('div', { class: 'part3d-info' },
+            stageTitle, stageDesc,
+            h('div', { class: 'row gap', style: 'flex-wrap:wrap;margin-top:8px' },
+              h('button', { type: 'button', class: 'btn sm', onclick: () => viewer3d && viewer3d.zoomIn() }, '＋ 放大'),
+              h('button', { type: 'button', class: 'btn sm', onclick: () => viewer3d && viewer3d.zoomOut() }, '－ 縮小'),
+              autoBtn,
+              bgBtn,
+              h('button', { type: 'button', class: 'btn ghost sm', onclick: () => viewer3d && viewer3d.reset() }, '↺ 重置視角')),
+            h('div', { class: 'sub', style: 'margin-top:8px' }, '👆 手指或滑鼠拖曳可 360° 旋轉原廠 CAD 3D 模型；背景會依元件深淺自動切換高對比色。'))));
+
+      const listBox = h('div', { class: 'parts-grid' });
+      const countEl = h('div', { class: 'sub', style: 'margin:6px 0 10px' });
+      const catBar = h('div', { class: 'row gap', style: 'flex-wrap:wrap;margin:0 0 8px' });
+      const kitBar = h('div', { class: 'row gap', style: 'flex-wrap:wrap;margin:0 0 8px' });
+      const qInp = h('input', { type: 'text', placeholder: '搜尋零件、線材、橡皮筋、套件…', 'aria-label': '搜尋零件與套件' });
+
+      const drawParts = () => {
+        catBar.replaceChildren(...PART_CATS.map(([id, label]) =>
+          h('button', { type: 'button', class: 'btn sm' + (pCat === id ? ' primary' : ''), onclick: () => { pCat = id; drawParts(); } }, label)));
+        kitBar.replaceChildren(...[['all', '全部套件'], ['basic', '📦 基礎套件'], ['adv', '🏆 進階／競賽']].map(([id, label]) =>
+          h('button', { type: 'button', class: 'btn sm' + (pKit === id ? ' primary' : ' ghost'), onclick: () => { pKit = id; drawParts(); } }, label)));
+        const kw = pQuery.trim().toLowerCase();
+        const filtered = PARTS.filter((p) => {
+          if (pCat !== 'all' && p.cat !== pCat) return false;
+          if (pKit !== 'all' && p.kit !== pKit) return false;
+          if (kw && !(p.n + ' ' + p.z + ' ' + (p.tip || '') + ' ' + (p.code || '')).toLowerCase().includes(kw)) return false;
+          return true;
+        });
+        countEl.textContent = '顯示 ' + filtered.length + ' / ' + PARTS.length + ' 項硬體與套件說明';
+        listBox.replaceChildren(...(filtered.length
+          ? filtered.map((p) => h('div', { class: 'card part-card' },
+            h('div', { class: 'row', style: 'justify-content:space-between;align-items:flex-start;gap:6px' },
+              h('h3', { style: 'margin:0' }, p.ic + ' ' + p.n),
+              p.kit ? h('span', { class: 'tag ' + (p.kit === 'adv' ? 'try' : 'done') }, p.kit === 'adv' ? '進階／競賽' : '基礎套件') : null),
+            h('p', { class: 'part-desc' }, p.z),
+            p.tip ? h('div', { class: 'part-tip' }, '💡 ', p.tip) : null,
+            p.code ? h('div', { class: 'part-code' }, '💻 ', h('code', { 'data-notrans': '1' }, trCode(p.code))) : null,
+            h('div', { class: 'row', style: 'margin-top:auto;padding-top:6px' },
+              h('button', { type: 'button', class: 'btn primary sm', onclick: () => select3dPart(p.id, true) }, '🧊 原廠 3D 模型檢視'))))
+          : [h('div', { class: 'panel center' }, '找不到符合條件的零件，試試換個關鍵字或點「全部零件」。')]));
+      };
+      qInp.addEventListener('input', () => { pQuery = qInp.value; drawParts(); });
+      drawParts();
+
+      const genCompare = h('div', { class: 'panel' },
+        h('h3', { style: 'margin-top:0' }, '🔄 VEX IQ 第 1 代 vs 第 2 代硬體差異對照'),
+        h('p', { class: 'sub' }, '補習班或學校可能同時有第 1 代與第 2 代零件——大部分梁、銷、齒輪與智慧馬達兩代完全通用，主要差別在主機與感測器：'),
+        h('table', { class: 'tbl' },
+          h('tr', null, h('th', null, '項目'), h('th', null, '第 1 代（1st Gen）'), h('th', null, '第 2 代（2nd Gen）')),
+          h('tr', null, h('td', null, h('b', null, 'Brain 主機螢幕')), h('td', null, '單色灰綠液晶面板'), h('td', null, '彩色高對比液晶面板（支援圖示選單）')),
+          h('tr', null, h('td', null, h('b', null, '陀螺儀（IMU）')), h('td', null, '需外接獨立 Gyro 感測器（佔 1 個埠）'), h('td', null, '主機直接內建慣性感測器（不佔埠）')),
+          h('tr', null, h('td', null, h('b', null, '無線電與下載埠')), h('td', null, '側邊外插藍色 Smart Radio 模組、Micro-USB'), h('td', null, '主機內建雙頻無線、USB-C 埠＋microSD 槽')),
+          h('tr', null, h('td', null, h('b', null, '電池')), h('td', null, '鎳氫電池（NiMH，專用座充）'), h('td', null, '鋰離子電池（Li-Ion，USB-C 充電）')),
+          h('tr', null, h('td', null, h('b', null, '距離／顏色感測')), h('td', null, '超音波 Distance、第 1 代 Color'), h('td', null, '雷射 Distance（更準）、Optical（含補光燈）'))),
+        h('div', { class: 'sub', style: 'margin-top:8px' }, '官方參考：',
+          h('a', { href: 'https://kb.vex.com/hc/zh-tw/articles/7267344764308-%E4%BA%86%E8%A7%A3%E6%99%BA%E5%95%86-%E7%AC%AC%E4%B8%80%E4%BB%A3-%E8%88%87-%E7%AC%AC%E4%BA%8C%E4%BB%A3', target: '_blank', rel: 'noopener noreferrer' }, '了解 VEX IQ 第 1 代與第 2 代 ↗'), '　·　',
+          h('a', { href: 'https://kb.vex.com/hc/zh-tw/articles/360055332931-VEXos-IQ-%E7%AC%AC%E4%B8%80%E4%BB%A3-%E9%9F%8C%E9%AB%94%E6%9B%B4%E6%96%B0%E6%97%A5%E8%AA%8C', target: '_blank', rel: 'noopener noreferrer' }, 'VEXos 韌體更新日誌 ↗')));
+
+      paint(h('div', null, nav,
+        h('p', { class: 'sub' }, '從主機、遙控器、感測器、智慧線材、橡皮筋，到基礎與進階學習套件完整圖解，幫助你認識手邊每一個零件怎麼用、怎麼保養！'),
+        stagePanel,
+        devBox,
+        genCompare,
+        h('div', { class: 'panel' },
+          h('h3', { style: 'margin-top:0' }, '📚 完整零件、線材與套件一覽'),
+          catBar, kitBar, qInp, countEl, h('div', { class: 'parts-wrap' }, listBox))), '零件與套件百科', '🧩');
+      if (VX.part3d && VX.part3d.mount) {
+        viewer3d = VX.part3d.mount(stageHost, active3dId);
+        select3dPart(active3dId, false);
+      }
+      return;
     }
 
     if (a === 'lab' && b) {
@@ -859,6 +1009,7 @@
     const COL_BG = { blue: 'rgba(59,130,246,.14)', red: 'rgba(239,68,68,.14)', yellow: 'rgba(234,179,8,.18)' };
     const COL_ZH = { blue: '藍', red: '紅', yellow: '黃' };
     const DOT = { blue: '🔵', red: '🔴', yellow: '🟡' };
+    const PTS_EACH = { 1: '1 分／個', 3: '3 分／個', 6: '6 分／個', 12: '12 分／個', 16: '16 分／個' }; // 整句固定字串，英文才不會把「分」當成分鐘
     const rnd = (n) => Math.floor(Math.random() * n);
     let diff = 'easy', cur = null, solved = false, byGoal = false;
 
@@ -876,19 +1027,23 @@
         return arr;
       });
       if (bags.every((a) => !a.length)) bags[0].push('blue', 'blue');
+      // 沙包還碰著機器人就不算分（手冊 SC3～SC5）；簡單題不出現
+      const touch = bags.map((arr) => arr.map(() => diff !== 'easy' && rnd(diff === 'hard' ? 5 : 7) === 0));
       let ans = 0;
       const lines = [], valids = GOALS.map(() => 0);
       GOALS.forEach((g, i) => {
         const arr = bags[i];
         if (!arr.length) return;
-        const valid = arr.filter((c) => (g.col === 'yellow' ? c === 'yellow' : (c === g.col || c === 'yellow')));
-        const invalid = arr.length - valid.length;
+        const colorOk = (c) => (g.col === 'yellow' ? c === 'yellow' : (c === g.col || c === 'yellow'));
+        const valid = arr.filter((c, bi) => colorOk(c) && !touch[i][bi]);
+        const invalid = arr.filter((c) => !colorOk(c)).length;               // 顏色不對
+        const touching = arr.filter((c, bi) => colorOk(c) && touch[i][bi]).length; // 顏色對，但碰到機器人
         const sub = valid.length * g.pts;
         valids[i] = valid.length;
         ans += sub;
-        lines.push(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：' + valid.length + ' 個有效 = ' + sub + ' 分' + (invalid ? '（另有 ' + invalid + ' 個錯色不計分）' : ''));
+        lines.push(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：' + valid.length + ' 個有效 = ' + sub + ' 分' + (invalid ? '（另有 ' + invalid + ' 個錯色不計分）' : '') + (touching ? '（另有 ' + touching + ' 個碰到機器人不計分）' : ''));
       });
-      cur = { bags, ans, lines, valids };
+      cur = { bags, touch, ans, lines, valids };
       solved = false;
       render();
     };
@@ -898,12 +1053,13 @@
       GOALS.forEach((g, i) => {
         const stroke = COL_HEX[g.col], fill = COL_BG[g.col];
         inner += `<rect x="${g.x}" y="${g.y}" width="${g.w}" height="${g.h}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="2.5"/>`;
-        inner += `<text x="${g.x + g.w / 2}" y="${g.y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="${stroke}">${g.name}(${g.colZh})</text>`;
-        inner += `<text x="${g.x + g.w / 2}" y="${g.y - 3}" text-anchor="middle" font-size="10" fill="#64748b">${g.pts} 分/個</text>`;
+        inner += `<text x="${g.x + g.w / 2}" y="${g.y - 14}" text-anchor="middle" font-size="11" font-weight="700" fill="${stroke}">${g.name} ${DOT[g.col]}</text>`;
+        inner += `<text x="${g.x + g.w / 2}" y="${g.y - 3}" text-anchor="middle" font-size="10" fill="#64748b">${PTS_EACH[g.pts]}</text>`;
         cur.bags[i].forEach((c, bi) => {
           const cx = g.x + 18 + (bi % 2) * 34;
           const cy = g.y + g.h - 16 - Math.floor(bi / 2) * 26;
           inner += `<circle cx="${cx}" cy="${cy}" r="11" fill="${COL_HEX[c]}" stroke="#fff" stroke-width="2"/>`;
+          if (cur.touch && cur.touch[i][bi]) inner += `<circle cx="${cx}" cy="${cy}" r="13.5" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="3 2"/><text x="${cx + 10}" y="${cy - 9}" font-size="11">🤖</text>`;
           inner += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">${COL_ZH[c]}</text>`;
         });
       });
@@ -930,7 +1086,7 @@
         fb.replaceChildren(
           h('div', { class: 'callout' + (ok ? '' : ' warn') },
             h('b', null, ok ? '✅ 每一層都對！總分是 ' + cur.ans + ' 分！' : '❌ 有幾層數錯了（你的總分是 ' + total + ' 分，正確是 ' + cur.ans + ' 分）'),
-            h('ul', { style: 'margin:6px 0 0 18px' }, GOALS.map((g, i) => h('li', null, (okEach[i] ? '✔ ' : '✘ ') + g.name + '：你填 ' + mine[i] + ' 個，正確是 ' + cur.valids[i] + ' 個有效（' + DOT[g.col] + ' 或 🟡 才算' + (g.col === 'yellow' ? '，只收黃色' : '') + '）')))),
+            h('ul', { style: 'margin:6px 0 0 18px' }, GOALS.map((g, i) => h('li', null, (okEach[i] ? '✔ ' : '✘ ') + g.name + '：你填 ' + mine[i] + ' 個，正確是 ' + cur.valids[i] + ' 個有效（' + (g.col === 'yellow' ? '只收 🟡 黃色' : DOT[g.col] + ' 或 🟡 才算') + '）')))),
           h('button', { type: 'button', class: 'btn primary sm', onclick: gen }, '下一題 ▶'));
         statEl.textContent = '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題';
       };
@@ -958,7 +1114,7 @@
       const statEl = h('span', { class: 'sub' }, '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題');
       wrap.replaceChildren(
         h('h3', null, '🎮 互動視覺化 Level Up 計分練習'),
-        h('p', { class: 'sub' }, '看圖算出這個場地的總分！規則：同色或黃色沙包才算分，L4 只收黃色。'),
+        h('p', { class: 'sub' }, '看圖算出這個場地的總分！規則：同色或黃色沙包才算分，L4 只收黃色；有 🤖 紅色虛線圈的沙包還碰著機器人，不算分。'),
         h('div', { class: 'row gap', style: 'margin-bottom:8px;align-items:center' },
           [['easy', '簡單'], ['med', '中等（含錯色與黃色）'], ['hard', '困難（全 5 層＋陷阱）']].map(([k, lb]) =>
             h('button', { type: 'button', class: 'btn sm' + (diff === k ? ' primary' : ''), onclick: () => { diff = k; gen(); } }, lb)),

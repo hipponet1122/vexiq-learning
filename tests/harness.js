@@ -28,18 +28,19 @@ function parseXml(text) {
 
 function load() {
   const noop = () => {};
-  const VX = { h: noop, shell: noop, blocksEl: noop, oneBlock: noop, toast: noop, api: async () => ({}), routes: {}, user: null };
+  const VX = { h: noop, shell: noop, blocksEl: noop, oneBlock: noop, toast: noop, api: async () => ({}), routes: {}, user: null, todayStr: () => '2026-11-24' };
   const win = { VX, innerWidth: 1000, innerHeight: 800, addEventListener: noop, location: { hash: '' } };
   const sandbox = { window: win, console, DOMParser: function () { this.parseFromString = parseXml; }, document: { addEventListener: noop, body: {} }, setTimeout, clearTimeout, performance, Math, JSON };
   win.window = win; sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
   const run = (f, tail) => vm.runInContext(fs.readFileSync(path.join(ROOT, 'web', f), 'utf8') + (tail || ''), sandbox, { filename: f });
   run('data.js', ';window.__data={QS,SKILLS,DOMAINS};');
-  run('content.js', ';window.__content={CHALLENGES,SEASON,BUILD_LAB_CATS,BUILD_LABS};');
+  run('content.js', ';window.__content={CHALLENGES,SEASON,BUILD_LAB_CATS,BUILD_LABS,PARTS};');
   run('blocktext.js');
   run('sim.js');
   run('iqimport.js');
   run('control.js');
+  run('guide.js');
   return { VX, VXEN: win.VXEN, data: win.__data, content: win.__content };
 }
 module.exports = { load, ROOT };

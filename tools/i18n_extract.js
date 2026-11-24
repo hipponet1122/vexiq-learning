@@ -38,9 +38,9 @@ win.VXEN.localize(d.QS); win.VXEN.localizeDeep(d.SKILLS); win.VXEN.localizeDeep(
 const SKIP = new Set(['code', 'starter', 'path']);
 const DSL = /^\s*(何時開始|重複|永遠|而|如果|別的|否則|驅動|旋轉|等待|停止|將|在螢幕|播放|校準|重設|設定|等到|休息|我的積木)/;
 function walk(area, o, key) {
-  if (typeof o === 'string') { if (!(key && SKIP.has(key))) add(area, o); return; }
+  if (typeof o === 'string') { if (!(key && SKIP.has(key) && !(area === 'content-PARTS' && key === 'code'))) add(area, o); return; }
   if (Array.isArray(o)) { o.forEach((v) => walk(area, v, key)); return; }
-  if (o && typeof o === 'object') for (const k of Object.keys(o)) { if (SKIP.has(k)) continue; walk(area, o[k], k); }
+  if (o && typeof o === 'object') for (const k of Object.keys(o)) { if (SKIP.has(k) && !(area === 'content-PARTS' && k === 'code')) continue; walk(area, o[k], k); } // 零件的 code 欄位是說明文字，不是積木
 }
 for (const [k, v] of Object.entries(d)) walk('data-' + k, v);
 for (const [k, v] of Object.entries(c)) walk('content-' + k, v);

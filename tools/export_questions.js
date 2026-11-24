@@ -2,7 +2,7 @@
 /* 匯出題庫給教練／老師審題：一個手機也好讀的網頁（可列印）＋一份 CSV（可用試算表填意見）。
    用法：node tools/export_questions.js            全部領域
         node tools/export_questions.js D F        只匯出領域 D 與 F
-   產出：審題清單.html、審題清單.csv（已加入 .gitignore，不進版控） */
+   產出：local/exports/審題清單.html、local/exports/審題清單.csv（已加入 .gitignore，不進版控） */
 const fs = require('fs');
 const path = require('path');
 const { load, ROOT } = require('../tests/harness');
@@ -31,7 +31,9 @@ const rows = [['題號', '領域', '技能', '難度', '題型', '題目', '選�
 pick.forEach((q) => rows.push([q.id, DM[q.s[0]].name, SK[q.s].name, q.l, TYPE[q.t], q.q,
   q.t === 'mc' ? q.opts.map((o, i) => L(i) + '. ' + o).join('\n') : q.t === 'bug' ? enCode(q.code).join('\n') : q.t === 'ord' ? '（依序點選）' : '',
   answerText(q), q.why, '']));
-fs.writeFileSync(path.join(ROOT, '審題清單.csv'), '﻿' + rows.map((r) => r.map(csvCell).join(',')).join('\r\n'), 'utf8');
+const OUT_DIR = path.join(ROOT, 'local', 'exports');
+fs.mkdirSync(OUT_DIR, { recursive: true });
+fs.writeFileSync(path.join(OUT_DIR, '審題清單.csv'), '﻿' + rows.map((r) => r.map(csvCell).join(',')).join('\r\n'), 'utf8');
 
 // ---- HTML ----
 let html = '', lastSkill = '', lastDom = '';
@@ -57,5 +59,5 @@ pre{background:#f3f6fa;padding:8px 10px;border-radius:8px;overflow:auto;font-siz
 @media print{.q{border-color:#999}}</style></head><body>
 <h1>${title}</h1><p class="muted">共 ${pick.length} 題${want.length ? '（領域 ' + want.join('、') + '）' : ''}。積木以 VEXcode 英文字樣顯示。請看「正解」和「解釋」對不對、孩子看不看得懂，把意見直接回覆給 Elvis 即可，不需要會 GitHub。規則與計分請對照官方 Game Manual 最新版。</p>
 ${html}</body></html>`;
-fs.writeFileSync(path.join(ROOT, '審題清單.html'), doc, 'utf8');
-console.log(`已匯出 ${pick.length} 題 → 審題清單.html、審題清單.csv`);
+fs.writeFileSync(path.join(OUT_DIR, '審題清單.html'), doc, 'utf8');
+console.log(`已匯出 ${pick.length} 題 → local/exports/審題清單.html、local/exports/審題清單.csv`);

@@ -477,6 +477,8 @@ async def upload_photo(request: Request):
     u = current_user(request)
     if not u:
         return err("未登入", 401)
+    if u["role"] == "coach":
+        return err("教練帳號為唯讀，無法上傳照片", 403)
     d = await body_json(request)
     if not isinstance(d, dict) or not isinstance(d.get("data"), str):
         return err("照片格式錯誤")

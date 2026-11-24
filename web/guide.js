@@ -5,6 +5,8 @@
   const VX = window.VX;
   const { h } = VX;
   const todayStr = () => VX.todayStr();
+  // 帶數字的句子：先整句翻譯（模板字串），再把 {n} 換成數字，英文介面才不會殘留中文片段
+  const T = (s, o) => { let r = (window.VXI18N && window.VXI18N.tr) ? window.VXI18N.tr(s) : s; if (o) Object.keys(o).forEach((k) => { r = r.split('{' + k + '}').join(o[k]); }); return r; };
 
   /* ---------- 紀錄「今天做了什麼」 ---------- */
   VX.act = function (kind, skill) {
@@ -25,7 +27,7 @@
   const STAGES = [
     { id: 'basic', name: '第 1 階段：基礎——讓機器人照你的話做', skills: ['A1', 'A2', 'A3', 'A4', 'C1', 'C2', 'C3', 'C4', 'C5'], goal: '認識零件，會用積木讓機器人前進、轉彎、重複。' },
     { id: 'sense', name: '第 2 階段：機構與感測器', skills: ['B1', 'B2', 'B3', 'B4', 'B5', 'D1', 'D2', 'D3', 'D4', 'D5', 'E1', 'E2', 'E3'], goal: '懂機構原理，會用感測器和條件判斷，會用變數和自訂積木。' },
-    { id: 'comp', name: '第 3 階段：策略與比賽', skills: ['E4', 'F1', 'F2', 'F3'], goal: '會除錯、會算分、會規劃一場比賽的 60 秒。' },
+    { id: 'comp', name: '第 3 階段：策略、進階控制與比賽', skills: ['E4', 'E5', 'E6', 'E7', 'F1', 'F2', 'F3'], goal: '會除錯、懂進階控制與算分，能規劃一場比賽的 60 秒。' },
   ];
   const stageAvg = (state, s) => s.skills.reduce((a, id) => a + pOf(state, id), 0) / s.skills.length;
   function currentStage(state) { for (const s of STAGES) if (stageAvg(state, s) < 0.65) return s; return STAGES[STAGES.length - 1]; }
@@ -83,20 +85,249 @@
   };
   const startProgress = (state) => { const sts = START.map((s) => stepState(state, s)); return { done: sts.filter((x) => x === 'done' || x === 'skipped').length, total: START.length, next: START.find((s, i) => sts[i] === 'todo') || null }; };
 
-  /* ---------- 今天的任務 ---------- */
-  function todayPlan(state) {
-    const a = ((state.act || {})[todayStr()]) || {};
-    const practiced = (state.days && state.days[todayStr()]) || 0;
-    const rec = recommendSkills(state, 2);
+  function recommendBuildLab(state) {
+    if (typeof BUILD_LABS === 'undefined' || !Array.isArray(BUILD_LABS)) return null;
+    const done = state.buildLabs || {};
+    return BUILD_LABS.find((b) => !(done[b.id] && done[b.id].done)) || null;
+  }
+
+  /* ---------- 自動學習課表引擎（依已學與已完成動態排課）---------- */
+  const PLAN_PRESETS = [
+    { min: 15, label: '15 分鐘', tag: '輕鬆', tip: '平日功課多時用：快速暖身＋1 個核心課題，維持連續練習手感。' },
+    { min: 30, label: '30 分鐘', tag: '推薦', tip: '最符合單次黃金專注力：複習暖身 → 學新觀念 → 動手實作 → 整理回顧。' },
+    { min: 45, label: '45 分鐘', tag: '進階', tip: '多練一個技能加上完整動手實作，每週 3 次進步最有感。' },
+    { min: 60, label: '60 分鐘', tag: '週末特訓', tip: '適合週末或賽前集訓，含中途 3～5 分鐘喝水休息提醒。' },
+  ];
+
+  function buildScheduleSteps(state, mins, opts) {
+    opts = opts || {};
+    const m = PLAN_PRESETS.some((p) => p.min === mins) ? mins : 30;
+    const rec = recommendSkills(state, 4);
+    const staleMastered = SKILLS.filter((s) => pOf(state, s.id) >= 0.8 && daysSince(state, s.id) > 7)
+      .sort((a, b) => daysSince(state, b.id) - daysSince(state, a.id));
+    const fallbackSkills = SKILLS.slice().sort((a, b) => pOf(state, a.id) - pOf(state, b.id) || daysSince(state, b.id) - daysSince(state, a.id));
     const chal = recommendChallenge(state);
     const realTest = needsRealTest(state);
-    const tasks = [];
-    tasks.push({ id: 't1', icon: '✏️', t: '做練習題', time: '約 8 分鐘', detail: '網站會從你最需要練的地方出題（約 10 題）。', done: practiced >= 8, go: ['#/practice', '開始練習'] });
-    if (rec.length) tasks.push({ id: 't2', icon: '🎯', t: '重點加強：' + rec[0].name, time: '約 5 分鐘', detail: rec[0].why, done: !!(a.skills && a.skills.includes(rec[0].id)), go: ['#/practice/' + rec[0].id, '練這個技能（5 題）'] });
-    if (realTest) tasks.push({ id: 't3', icon: '🤖', t: '用真的機器人驗證「' + realTest.title + '」', time: '約 15 分鐘', detail: '你已經在模擬器通過了，現在放到機器人上跑跑看，再寫一頁測試紀錄。', done: !!(a.challenge || a.note), go: ['#/challenge/' + realTest.id, '去挑戰頁'] });
-    else if (chal) tasks.push({ id: 't3', icon: '🏁', t: chal.ready ? '挑戰：' + chal.c.title : '先補強再挑戰：' + chal.need[0], time: '約 10 分鐘', detail: chal.ready ? chal.c.goal_t : '「' + chal.c.title + '」需要先會「' + chal.need.join('、') + '」，先把它練起來。', done: !!(a.sim || a.challenge), go: chal.ready ? ['#/sim/' + chal.c.id, '到模擬器試試看'] : ['#/practice/' + SKILLS.find((s) => s.name === chal.need[0]).id, '先練這個技能'] });
-    else tasks.push({ id: 't3', icon: '📓', t: '寫一頁工程筆記', time: '約 10 分鐘', detail: '把今天學到的、遇到的困難寫下來。', done: !!a.note, go: ['#/notebook', '去寫筆記'] });
-    return { tasks, doneN: tasks.filter((t) => t.done).length };
+    const lab = recommendBuildLab(state);
+    const aToday = ((state.act || {})[todayStr()]) || {};
+    const baseN = opts.basePracticed != null ? opts.basePracticed : 0;
+    const steps = [];
+    let seq = 1;
+    const sid = () => 's' + (seq++);
+
+    // 1. 暖身複習（優先挑超過 7 天沒練的已精通技能；否則自適應綜合暖身）
+    if (staleMastered.length && !opts.extra) {
+      const stSk = staleMastered[0];
+      const dAgo = Math.round(daysSince(state, stSk.id));
+      steps.push({
+        id: sid(), kind: 'warmup', icon: '🔥', title: '暖身複習：' + stSk.name, mins: 5,
+        why: '這個技能已經 ' + dAgo + ' 天沒複習了，做 5 題保持記憶不生鏽。',
+        gain: [stSk.id], go: ['#/practice/' + stSk.id + '/5', '開始複習（5 題）'],
+        check: { type: 'skill', id: stSk.id },
+      });
+    } else {
+      const qn = m >= 60 ? 8 : 5;
+      steps.push({
+        id: sid(), kind: 'warmup', icon: '✏️', title: '暖身練習：綜合題 ' + qn + ' 題', mins: m >= 60 ? 8 : 5,
+        why: '網站會從你目前最適合的範圍出題，先喚醒手感。',
+        gain: rec.slice(0, 2).map((x) => x.id),
+        go: ['#/practice/all/' + qn, '開始暖身（' + qn + ' 題）'],
+        check: { type: 'practiced', need: baseN + qn },
+      });
+    }
+
+    // 2. 核心課題 A（最優先未精通技能：看重點課文＋5 題實戰）
+    const s1 = rec[0] || fallbackSkills[0];
+    if (s1) {
+      const p1 = Math.round(pOf(state, s1.id) * 100);
+      steps.push({
+        id: sid(), kind: 'skill', icon: '🎯', title: '核心學習：' + s1.name, mins: 10,
+        why: rec[0] ? rec[0].why : '你已經精通全部技能！複習一下維持 100% 實力。',
+        gain: [s1.id], lesson: '#/skill/' + s1.id,
+        go: ['#/practice/' + s1.id + '/5', '練習這個技能（5 題）'],
+        subNote: '目前熟練度 ' + p1 + '%，建議先花 2 分鐘看重點課文再寫題目。',
+        check: { type: 'skill', id: s1.id },
+      });
+    }
+
+    // 3. 動手實作挑戰（30 分鐘以上加入）
+    if (m >= 30) {
+      if (realTest) {
+        steps.push({
+          id: sid(), kind: 'real', icon: '🤖', title: '真機驗證：' + realTest.title, mins: m >= 60 ? 12 : 10,
+          why: '你已經在模擬器通過了，現在放到真的機器人上跑跑看，觀察實測誤差。',
+          gain: realTest.skills || [], go: ['#/challenge/' + realTest.id, '打開挑戰頁'],
+          check: { type: 'realCh', id: realTest.id },
+        });
+      } else if (chal && chal.ready) {
+        steps.push({
+          id: sid(), kind: 'challenge', icon: '🖥️', title: '動手寫程式：' + chal.c.title, mins: m >= 60 ? 12 : 10,
+          why: chal.c.goal_t + '（把剛剛學的觀念實際跑在模擬器上！）',
+          gain: chal.c.skills || [], go: ['#/sim/' + chal.c.id, '打開模擬器挑戰'],
+          check: { type: 'simCh', id: chal.c.id },
+        });
+      } else if (chal && !chal.ready) {
+        const needSk = SKILLS.find((x) => x.name === chal.need[0]);
+        if (needSk) {
+          steps.push({
+            id: sid(), kind: 'skill', icon: '🧩', title: '前置補強：' + needSk.name, mins: 10,
+            why: '要挑戰「' + chal.c.title + '」需要先會「' + chal.need.join('、') + '」，先把它打穩！',
+            gain: [needSk.id], lesson: '#/skill/' + needSk.id,
+            go: ['#/practice/' + needSk.id + '/5', '先練這個技能（5 題）'],
+            check: { type: 'skill', id: needSk.id },
+          });
+        }
+      } else if (lab) {
+        steps.push({
+          id: sid(), kind: 'build', icon: '🔧', title: '實體組裝：' + lab.title, mins: 10,
+          why: '親手組裝機構並記錄量測結果，把課本原理變成真實手感。',
+          gain: lab.skill ? [lab.skill] : [], go: ['#/build', '去實體組裝挑戰'],
+          check: { type: 'buildLab', id: lab.id },
+        });
+      } else {
+        steps.push({
+          id: sid(), kind: 'arena', icon: '🏟️', title: '3D 場地實戰與算分', mins: 10,
+          why: '在 3D Level Up 練習場練習 60 秒節奏或做幾題 3D 算分挑戰。',
+          gain: ['F1', 'F2'], go: ['#/arena3d', '打開 3D 練習場'],
+          check: { type: 'manual' },
+        });
+      }
+    }
+
+    // 4. 第二個核心技能（45 分鐘以上加入）
+    if (m >= 45) {
+      const s2 = rec.find((x) => !s1 || x.id !== s1.id) || fallbackSkills.find((x) => !s1 || x.id !== s1.id);
+      if (s2) {
+        const p2 = Math.round(pOf(state, s2.id) * 100);
+        steps.push({
+          id: sid(), kind: 'skill', icon: '🚀', title: '進階練習：' + s2.name, mins: 10,
+          why: s2.why || '趁專注力正好，再推進一個新技能（目前 ' + p2 + '%）。',
+          gain: [s2.id], lesson: '#/skill/' + s2.id,
+          go: ['#/practice/' + s2.id + '/5', '練習這個技能（5 題）'],
+          breakBefore: m >= 60,
+          check: { type: 'skill', id: s2.id },
+        });
+      }
+    }
+
+    // 5. 專題實作（60 分鐘特訓加入：控制實驗室 / 實體組裝 / 3D 場地）
+    if (m >= 60) {
+      const stg = currentStage(state);
+      const hasAdv = ['E5', 'E6', 'E7'].some((id) => SKID[id] && unlocked(state, id));
+      if (stg.id === 'comp' || hasAdv) {
+        steps.push({
+          id: sid(), kind: 'control', icon: '🎛️', title: '控制實驗室：動手調參實驗', mins: 10,
+          why: '用互動圖表實際調整 PID、里程計或方向鎖定，親眼看機器人路線怎麼變！',
+          gain: ['E5', 'E6', 'E7'].filter((id) => SKID[id]),
+          go: ['#/control', '打開控制實驗室'],
+          check: { type: 'manual' },
+        });
+      } else if (lab) {
+        steps.push({
+          id: sid(), kind: 'build', icon: '🔧', title: '實體組裝：' + lab.title, mins: 10,
+          why: '換個方式動手做機構實驗，休息一下眼睛也能加深印象。',
+          gain: lab.skill ? [lab.skill] : [], go: ['#/build', '去實體組裝挑戰'],
+          check: { type: 'buildLab', id: lab.id },
+        });
+      } else {
+        steps.push({
+          id: sid(), kind: 'arena', icon: '🏟️', title: '3D 場地算分挑戰', mins: 10,
+          why: '練習從不同視角快速判斷球門與沙包得分，為比賽暖身。',
+          gain: ['F1', 'F2'], go: ['#/arena3d', '打開 3D 練習場'],
+          check: { type: 'manual' },
+        });
+      }
+    }
+
+    // 6. 整理輸出／比賽準備（30 分鐘以上加入）
+    if (m >= 30) {
+      if (!aToday.note) {
+        steps.push({
+          id: sid(), kind: 'note', icon: '📓', title: '整理收尾：寫一頁工程筆記', mins: m >= 60 ? 10 : 5,
+          why: '把今天學到的觀念、寫的程式或卡關原因記下來，比賽評審最重視這個！',
+          gain: [], gainText: '工程筆記與問題分析',
+          go: ['#/notebook', '去寫工程筆記'],
+          check: { type: 'note' },
+        });
+      } else {
+        steps.push({
+          id: sid(), kind: 'compete', icon: '🏆', title: '比賽暖身：計分與英文術語', mins: m >= 60 ? 10 : 5,
+          why: '今天已經寫過筆記了！來練幾張比賽英文術語卡或 Level Up 算分。',
+          gain: ['F1', 'F3'], go: ['#/compete', '打開比賽專區'],
+          check: { type: 'manual' },
+        });
+      }
+    }
+
+    return steps;
+  }
+
+  function getDailyPlan(state, forceMin, forceNew, extra) {
+    const today = todayStr();
+    const cur = state.dailyPlan;
+    const wantMin = forceMin || state.planMin || (cur && cur.min) || 30;
+    if (!forceNew && cur && cur.date === today && Array.isArray(cur.steps) && cur.steps.length && (!forceMin || cur.min === forceMin)) {
+      return cur;
+    }
+    const practiced = (state.days && state.days[today]) || 0;
+    const round = extra && cur && cur.date === today ? (cur.round || 1) + 1 : 1;
+    const steps = buildScheduleSteps(state, wantMin, { basePracticed: extra ? practiced : 0, extra: !!extra });
+    const plan = { date: today, min: wantMin, round, done: {}, skip: {}, steps };
+    state.planMin = wantMin;
+    state.dailyPlan = plan;
+    return plan;
+  }
+
+  function isStepDone(state, step, plan) {
+    if (plan && plan.done && plan.done[step.id]) return true;
+    const a = ((state.act || {})[todayStr()]) || {};
+    const practiced = (state.days && state.days[todayStr()]) || 0;
+    const c = step.check || {};
+    if (c.type === 'practiced') return practiced >= (c.need || 5);
+    if (c.type === 'skill') return !!(a.skills && a.skills.includes(c.id));
+    if (c.type === 'simCh') return !!(state.ch && state.ch[c.id] && (state.ch[c.id].sim || state.ch[c.id].done)) || !!a.simok;
+    if (c.type === 'realCh') return !!(state.ch && state.ch[c.id] && state.ch[c.id].done) || !!a.challenge;
+    if (c.type === 'buildLab') return !!(state.buildLabs && state.buildLabs[c.id] && state.buildLabs[c.id].done);
+    if (c.type === 'note') return !!a.note;
+    return false;
+  }
+
+  function summarizePlan(state, plan) {
+    const steps = plan.steps || [];
+    const items = steps.map((s) => {
+      const done = isStepDone(state, s, plan);
+      const skipped = !done && !!(plan.skip && plan.skip[s.id]);
+      return Object.assign({}, s, { done, skipped });
+    });
+    const doneN = items.filter((x) => x.done || x.skipped).length;
+    const totalMin = items.reduce((sum, x) => sum + (x.mins || 0), 0);
+    const remainMin = items.filter((x) => !x.done && !x.skipped).reduce((sum, x) => sum + (x.mins || 0), 0);
+    const nextIdx = items.findIndex((x) => !x.done && !x.skipped);
+    const gainIds = [];
+    const gainExtras = [];
+    items.forEach((x) => {
+      (x.gain || []).forEach((id) => { if (SKID[id] && !gainIds.includes(id)) gainIds.push(id); });
+      if (x.gainText && !gainExtras.includes(x.gainText)) gainExtras.push(x.gainText);
+    });
+    return {
+      plan, items, doneN, totalN: items.length,
+      allDone: items.length > 0 && doneN >= items.length,
+      totalMin, remainMin,
+      nextIdx, nextStep: nextIdx >= 0 ? items[nextIdx] : null,
+      gainSkills: gainIds.map((id) => SKID[id]),
+      gainExtras,
+    };
+  }
+
+  /* ---------- 今天的任務（向下相容舊介面） ---------- */
+  function todayPlan(state) {
+    const plan = getDailyPlan(state);
+    const sum = summarizePlan(state, plan);
+    const tasks = sum.items.map((x) => ({
+      id: x.id, icon: x.icon, t: x.title, time: T('約 {n} 分鐘', { n: x.mins }),
+      detail: x.why, done: x.done || x.skipped, go: x.go,
+    }));
+    return { tasks, doneN: sum.doneN, summary: sum };
   }
 
   /* ---------- 成就徽章與連續天數 ---------- */
@@ -151,7 +382,211 @@
 
   /* ---------- 首頁卡片 ---------- */
   VX.guide = {};
+  VX.guide.planPresets = PLAN_PRESETS;
+  VX.guide.buildSchedule = buildScheduleSteps;
+  VX.guide.getDailyPlan = getDailyPlan;
+  VX.guide.summarizePlan = summarizePlan;
   VX.guide.plan = (state) => ({ stage: currentStage(state), start: startProgress(state), today: todayPlan(state), skills: recommendSkills(state, 3), challenge: recommendChallenge(state) });
+
+  function skillGainChips(sum, st) {
+    const DOM = VX.DOM || {};
+    const chips = sum.gainSkills.map((sk) => {
+      const dm = DOM[sk.d] || {};
+      const pct = Math.round(pOf(st, sk.id) * 100);
+      return h('a', {
+        class: 'plan-chip',
+        href: '#/skill/' + sk.id,
+        style: dm.color ? 'background:' + dm.color + ';border-color:' + dm.stroke : null,
+      }, sk.name + '（' + pct + '%）');
+    });
+    sum.gainExtras.forEach((txt) => chips.push(h('span', { class: 'plan-chip extra' }, '✨ ' + txt)));
+    return chips;
+  }
+
+  /* ---------- 今日學習課表專頁（#/plan）---------- */
+  function viewPlan() {
+    const st = VX.st, user = VX.user;
+    if (!st || !user) { location.hash = '#/login'; return; }
+    if (!st.done) {
+      VX.app.replaceChildren(VX.shell(h('div', { class: 'panel center' },
+        h('div', { class: 'big' }, '🧭'),
+        h('h2', null, '先做定位測驗，才能為你量身排課！'),
+        h('p', { class: 'sub' }, '大約 10 分鐘。系統知道你已經學會哪些技能後，每次登入都會自動幫你排好專屬的今日學習課表。'),
+        h('a', { class: 'btn primary big', href: '#/placement' }, '開始定位測驗 ▶')
+      ), { title: '今日課表', icon: '📅' }));
+      return;
+    }
+
+    const plan = getDailyPlan(st);
+    const sum = summarizePlan(st, plan);
+    const preset = PLAN_PRESETS.find((x) => x.min === plan.min) || PLAN_PRESETS[1];
+    const masteredN = nMastered(st);
+    const stage = currentStage(st);
+
+    const setMins = (mins) => {
+      getDailyPlan(st, mins, true, false);
+      VX.saveState();
+      viewPlan();
+    };
+    const markStep = (stepId, val) => {
+      plan.done = plan.done || {};
+      if (val) { plan.done[stepId] = true; if (plan.skip) delete plan.skip[stepId]; }
+      else delete plan.done[stepId];
+      VX.saveState();
+      const after = summarizePlan(st, plan);
+      if (val && after.allDone && window.VXFX) setTimeout(() => window.VXFX.confetti(), 200);
+      viewPlan();
+    };
+    const skipStep = (stepId, val) => {
+      plan.skip = plan.skip || {};
+      if (val) plan.skip[stepId] = true; else delete plan.skip[stepId];
+      VX.saveState();
+      viewPlan();
+    };
+    const addBonusRound = () => {
+      getDailyPlan(st, 15, true, true);
+      VX.saveState();
+      VX.toast('✨ 已為你安排加碼 15 分鐘課表！');
+      viewPlan();
+    };
+
+    // 1. 時間選擇器
+    const durBtns = PLAN_PRESETS.map((pr) => h('button', {
+      type: 'button',
+      class: 'plan-dur' + (pr.min === plan.min ? ' on' : ''),
+      onclick: () => { if (pr.min !== plan.min) setMins(pr.min); },
+    }, h('b', null, pr.label), h('span', { class: 'plan-dtag' }, pr.tag)));
+
+    const timeCard = h('div', { class: 'panel plan-time' },
+      h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap' },
+        h('div', null,
+          h('h2', { style: 'margin:0' }, '📅 ' + (user.display || user.name) + ' 的今日學習課表',
+            plan.round > 1 ? h('span', { class: 'tag', style: 'margin-left:8px;background:#e0f2fe;color:#0369a1' }, '加碼第 ' + plan.round + ' 輪') : null,
+            streakOf(st) ? h('span', { class: 'tag', style: 'margin-left:8px;background:#ffe9d6;color:#c2410c' }, '🔥 連續 ' + streakOf(st) + ' 天') : null),
+          h('div', { class: 'sub', style: 'margin-top:4px' }, '今天想花多少時間學習？點一下就能即時調整課表：')),
+        h('button', { type: 'button', class: 'btn ghost sm', onclick: () => { getDailyPlan(st, plan.min, true, false); VX.saveState(); VX.toast('已依最新進度重新排課'); viewPlan(); } }, '🔄 重新排課')),
+      h('div', { class: 'plan-durs' }, durBtns),
+      h('div', { class: 'sub', style: 'margin-top:6px' }, '💡 ', preset.tip));
+
+    // 2. 今日總表與說明（時間、學習內容、可獲得技能）
+    const overview = h('div', { class: 'panel plan-overview' },
+      h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:8px' },
+        h('h3', { style: 'margin:0' }, '📋 今日課表總覽'),
+        h('div', { class: 'big2' }, sum.doneN + ' / ' + sum.totalN + ' 站')),
+      bar(sum.totalN ? sum.doneN / sum.totalN : 0),
+      h('div', { class: 'plan-meta-grid' },
+        h('div', { class: 'plan-meta-box' },
+          h('small', null, '⏱️ 預計學習時間'),
+          h('b', null, T('約 {n} 分鐘', { n: sum.totalMin })),
+          h('div', { class: 'sub' }, sum.allDone ? '今天排定的進度已完成！' : T('剩餘約 {n} 分鐘', { n: sum.remainMin }))),
+        h('div', { class: 'plan-meta-box' },
+          h('small', null, '🧭 目前程度依據'),
+          h('b', null, '已精通 ' + masteredN + ' / ' + SKILLS.length + ' 技能'),
+          h('div', { class: 'sub' }, T(stage.name).split(/[：:]/)[0] + T('・自動避開已熟練內容'))),
+        h('div', { class: 'plan-meta-box' },
+          h('small', null, '📚 今日學習內容'),
+          h('b', null, sum.items.map((x) => x.icon).join(' ') + ' ' + T('共 {n} 個步驟', { n: sum.totalN })),
+          h('div', { class: 'sub' }, '照順序一步一步完成，不用自己煩惱順序'))),
+      h('div', { class: 'plan-gains' },
+        h('div', { class: 'sub', style: 'margin-bottom:6px;font-weight:700' }, '🏆 完成今日課表可以獲得／提升的技能：'),
+        h('div', { class: 'plan-chips' }, skillGainChips(sum, st))));
+
+    // 3. 焦點步驟（進行中）或 完成慶祝卡
+    let focusBox;
+    if (sum.allDone) {
+      focusBox = h('div', { class: 'panel plan-donebox center' },
+        h('div', { class: 'big' }, '🎉'),
+        h('h2', { style: 'margin:6px 0' }, '太棒了！今天的學習課表全部完成！'),
+        h('p', { class: 'sub' }, T('你完成了 {a} 個學習步驟（約 {b} 分鐘）。可以先休息一下，如果還想多練，下面隨時可以繼續！', { a: sum.totalN, b: sum.totalMin })),
+        h('div', { class: 'row gap', style: 'justify-content:center;flex-wrap:wrap;margin-top:12px' },
+          h('button', { type: 'button', class: 'btn primary', onclick: addBonusRound }, '➕ 再加練 15 分鐘'),
+          h('a', { class: 'btn', href: '#/practice' }, '✏️ 自由練習題'),
+          h('a', { class: 'btn', href: '#/sim' }, '🖥️ 模擬器自由玩'),
+          h('a', { class: 'btn', href: '#/arena3d' }, '🏟️ 3D 練習場'),
+          h('a', { class: 'btn ghost', href: '#/' }, '🏠 回首頁')));
+    } else {
+      const nx = sum.nextStep;
+      const stepNo = sum.nextIdx + 1;
+      focusBox = h('div', { class: 'panel plan-focus' },
+        h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:8px' },
+          h('span', { class: 'tag', style: 'background:var(--accent);color:#fff' }, '👉 現在進行：第 ' + stepNo + ' / ' + sum.totalN + ' 站'),
+          h('span', { class: 'tag' }, T('⏱️ 約 {n} 分鐘', { n: nx.mins }))),
+        h('h2', { style: 'margin:8px 0 4px' }, nx.icon + ' ' + nx.title),
+        h('p', { style: 'margin:4px 0 8px' }, nx.why),
+        nx.subNote ? h('div', { class: 'sub', style: 'margin-bottom:8px' }, '💡 ' + nx.subNote) : null,
+        h('div', { class: 'row gap', style: 'flex-wrap:wrap;margin-top:10px' },
+          goBtn(nx.go, 'btn primary'),
+          nx.lesson ? h('a', { class: 'btn', href: nx.lesson }, '📖 先看重點課文') : null,
+          h('button', { type: 'button', class: 'btn green', onclick: () => markStep(nx.id, true) }, '✔ 我完成了，換下一步'),
+          h('button', { type: 'button', class: 'btn ghost sm', onclick: () => skipStep(nx.id, true) }, '先略過這站')));
+    }
+
+    // 4. 完整步驟流程表
+    const stepNodes = [];
+    sum.items.forEach((it, idx) => {
+      if (it.breakBefore) {
+        stepNodes.push(h('div', { class: 'plan-break' }, '☕ 中途休息提醒：已經完成前半段了！站起來喝口水、看遠方 3～5 分鐘再繼續後半段。'));
+      }
+      const isCur = idx === sum.nextIdx;
+      const stCls = it.done ? 'done' : it.skipped ? 'skip' : isCur ? 'cur' : 'todo';
+      const stBadge = it.done
+        ? h('span', { class: 'tag done' }, '已完成')
+        : it.skipped
+          ? h('span', { class: 'tag' }, '已略過')
+          : isCur
+            ? h('span', { class: 'tag', style: 'background:var(--accent);color:#fff' }, '進行中')
+            : h('span', { class: 'tag' }, '待進行');
+      stepNodes.push(h('div', { class: 'plan-step ' + stCls },
+        h('div', { class: 'plan-num' }, it.done ? '✅' : it.skipped ? '⏭' : String(idx + 1)),
+        h('div', { class: 'plan-body' },
+          h('div', { class: 'row', style: 'justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap' },
+            h('b', null, it.icon + ' ' + it.title),
+            h('div', { class: 'row', style: 'gap:6px;margin:0' }, h('span', { class: 'tag' }, T('約 {n} 分鐘', { n: it.mins })), stBadge)),
+          h('div', { class: 'sub', style: 'margin:4px 0 6px' }, it.why),
+          h('div', { class: 'row gap', style: 'margin:4px 0 0;flex-wrap:wrap' },
+            !it.done && !it.skipped ? goBtn(it.go, 'btn ' + (isCur ? 'primary ' : '') + 'sm') : null,
+            !it.done && !it.skipped && it.lesson ? h('a', { class: 'btn sm', href: it.lesson }, '📖 看課文') : null,
+            !it.done && !it.skipped ? h('button', { type: 'button', class: 'btn ghost sm', onclick: () => markStep(it.id, true) }, '✔ 標記完成') : null,
+            it.done && plan.done && plan.done[it.id] ? h('button', { type: 'button', class: 'btn ghost sm', onclick: () => markStep(it.id, false) }, '取消完成') : null,
+            it.skipped ? h('button', { type: 'button', class: 'btn ghost sm', onclick: () => skipStep(it.id, false) }, '恢復這站') : null))));
+    });
+
+    const listCard = h('div', { class: 'panel' },
+      h('h3', { style: 'margin-top:0' }, '🗺️ 一步一步學習流程'),
+      h('div', { class: 'plan-steps' }, stepNodes));
+
+    VX.app.replaceChildren(VX.shell(h('div', { class: 'plan-page' }, timeCard, overview, focusBox, listCard), { title: '今日學習課表', icon: '📅' }));
+  }
+
+  /* ---------- 跨頁浮動課表導引條（讓孩子照流程走不迷路）---------- */
+  VX.guide.planBar = function (curRoute) {
+    const st = VX.st, user = VX.user;
+    if (!st || !user || user.role !== 'learner' || !st.done) return null;
+    if (!curRoute || curRoute === 'plan' || curRoute === 'login' || curRoute === 'placement' || curRoute === 'about' || curRoute === 'me') return null;
+    let hidden = false;
+    try { hidden = sessionStorage.getItem('vx_planbar_hide') === todayStr(); } catch (e) { /* ignore */ }
+    if (hidden) return null;
+    const plan = getDailyPlan(st);
+    const sum = summarizePlan(st, plan);
+    if (sum.allDone) return null;
+    const nx = sum.nextStep;
+    const stepNo = sum.nextIdx + 1;
+    const barEl = h('div', { class: 'planbar' },
+      h('div', { class: 'planbar-txt' },
+        h('b', null, '📅 今日課表 第 ' + stepNo + '/' + sum.totalN + ' 站：'),
+        h('span', null, nx.icon + ' ' + nx.title + T('（約 {n} 分鐘）', { n: nx.mins }))),
+      h('div', { class: 'planbar-act' },
+        h('button', { type: 'button', class: 'btn green sm', onclick: () => {
+          plan.done = plan.done || {}; plan.done[nx.id] = true; VX.saveState();
+          const after = summarizePlan(st, plan);
+          if (after.allDone) { VX.toast('🎉 今日課表全部完成！'); location.hash = '#/plan'; }
+          else { VX.toast('✅ 完成第 ' + stepNo + ' 站！前往下一站'); location.hash = '#/plan'; }
+        } }, '✔ 完成這站'),
+        h('a', { class: 'btn sm', href: '#/plan' }, '回課表總表'),
+        h('button', { type: 'button', class: 'pwx', title: '今天先隱藏導引條', onclick: () => { try { sessionStorage.setItem('vx_planbar_hide', todayStr()); } catch (e) { /* ignore */ } barEl.remove(); } }, '✕')));
+    return barEl;
+  };
+
   VX.guide.homeCard = function () {
     const st = VX.st, user = VX.user;
     const wrap = h('div');
@@ -160,12 +595,20 @@
         h('div', { class: 'panel' }, h('b', null, '還不確定怎麼用？'), h('p', { class: 'sub' }, '先看「起步任務」：一共 7 個小步驟，每一步都告訴你做什麼、為什麼、怎麼做。'), h('a', { class: 'btn', href: '#/start' }, '看起步任務'), ' ', h('a', { class: 'btn', href: '#/guide' }, '網站怎麼用')));
       return wrap;
     }
-    const p = VX.guide.plan(st), t = p.today;
-    // 今天要做的事
+    const p = VX.guide.plan(st), t = p.today, sum = t.summary;
+    // 今日自動學習課表摘要卡
     wrap.append(h('div', { class: 'panel todaycard' },
-      h('div', { class: 'row', style: 'justify-content:space-between;align-items:flex-start;gap:8px' }, h('div', null, h('h2', { style: 'margin:0' }, '📅 今天要做的事', streakOf(st) ? h('span', { class: 'tag', style: 'margin-left:8px;background:#ffe9d6;color:#c2410c' }, '🔥 連續 ' + streakOf(st) + ' 天') : null), h('div', { class: 'sub' }, '嗨，' + (user.display || user.name) + '！照順序做，大約 20 分鐘就夠了。每週 3～4 次，比一次練很久有效。')), h('div', { class: 'big2' }, t.doneN + ' / ' + t.tasks.length)),
+      h('div', { class: 'row', style: 'justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap' },
+        h('div', null,
+          h('h2', { style: 'margin:0' }, T('📅 今日學習課表（約 {n} 分鐘）', { n: sum.totalMin }), streakOf(st) ? h('span', { class: 'tag', style: 'margin-left:8px;background:#ffe9d6;color:#c2410c' }, '🔥 連續 ' + streakOf(st) + ' 天') : null),
+          h('div', { class: 'sub' }, '嗨，' + (user.display || user.name) + '！系統已依你的進度自動排好今日步驟，也能自由切換 15／30／45／60 分鐘。')),
+        h('div', { class: 'big2' }, t.doneN + ' / ' + t.tasks.length)),
+      bar(sum.totalN ? sum.doneN / sum.totalN : 0),
+      sum.gainSkills.length ? h('div', { class: 'plan-chips', style: 'margin:8px 0' }, skillGainChips(sum, st)) : null,
       t.tasks.map((k, i) => h('div', { class: 'task' + (k.done ? ' done' : '') }, h('div', { class: 'tn' }, k.done ? '✅' : k.icon), h('div', { class: 'tb' }, h('b', null, (i + 1) + '. ' + k.t), h('span', { class: 'tag' }, k.time), h('div', { class: 'sub', style: 'margin:2px 0 6px' }, k.detail)), h('div', null, k.done ? h('span', { class: 'tag done' }, '今天完成了') : goBtn(k.go, 'btn primary sm')))),
-      t.doneN === t.tasks.length ? h('div', { class: 'callout' }, '🎉 今天的任務都完成了！休息一下，明天再來。想多練的話可以去「挑戰」或「模擬器」自由玩。') : h('div', { class: 'sub' }, '只有 10 分鐘？只做第 1 項就好。')));
+      h('div', { class: 'row gap', style: 'margin-top:10px;flex-wrap:wrap' },
+        h('a', { class: 'btn primary', href: '#/plan' }, sum.allDone ? '🎉 看今日成果／加練 15 分鐘' : '📅 開啟課表一步步學習 ▶'),
+        h('span', { class: 'sub', style: 'align-self:center' }, sum.allDone ? '今天的課表都完成了！想多練隨時可以加碼。' : '想換 15／30／45／60 分鐘課表，點左邊就能調整。'))));
     // 起步任務
     if (p.start.next) {
       const nx = p.start.next;
@@ -367,6 +810,7 @@
       switchAud, h('div', { class: 'gd-tabs', role: 'tablist' }, btns), sections), { title: '網站怎麼用', icon: '🧭' }));
   }
 
+  VX.routes.plan = () => viewPlan();
   VX.routes.start = () => viewStart();
   VX.routes.guide = (who, sec) => viewGuide(who, sec);
 

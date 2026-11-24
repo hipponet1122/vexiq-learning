@@ -12,7 +12,7 @@ const run = (code, ch) => { const w = S.makeWorld(ch || null); const r = S.simul
 
 group('題庫結構');
 const { QS, SKILLS } = data;
-t('題數 173、技能 29', () => { assert.strictEqual(QS.length, 173); assert.strictEqual(SKILLS.length, 29); });
+t('題數 175、技能 29', () => { assert.strictEqual(QS.length, 175); assert.strictEqual(SKILLS.length, 29); });
 t('題號不重複、技能都存在', () => {
   const ids = new Set(), sk = new Set(SKILLS.map((s) => s.id));
   for (const q of QS) { assert(!ids.has(q.id), '重複 ' + q.id); ids.add(q.id); assert(sk.has(q.s), q.id + ' 技能不存在'); }
@@ -362,6 +362,61 @@ t('實體組裝挑戰（BUILD_LABS）：16 關結構完整、技能與量測上�
     assert(lab.steps.length >= 3 && lab.checks.length >= 3, lab.id + ' 步驟或檢核不足');
     (lab.measures || []).forEach((m) => assert(m.min <= m.max && m.failTip, lab.id + ' 量測設定無效'));
   });
+});
+
+group('今日自動學習課表');
+t('15／30／45／60 分鐘課表皆能正確產出，60 分鐘含中途休息提醒', () => {
+  const baseSt = { done: true, m: { A1: { p: 0.9, n: 5, t: Date.now() }, A2: { p: 0.3, n: 2, t: Date.now() } }, ch: {}, days: {}, act: {} };
+  const s15 = VX.guide.buildSchedule(baseSt, 15);
+  const s30 = VX.guide.buildSchedule(baseSt, 30);
+  const s45 = VX.guide.buildSchedule(baseSt, 45);
+  const s60 = VX.guide.buildSchedule(baseSt, 60);
+  assert.strictEqual(s15.length, 2);
+  assert.strictEqual(s30.length, 4);
+  assert.strictEqual(s45.length, 5);
+  assert.strictEqual(s60.length, 6);
+  assert(s60.some((x) => x.breakBefore), '60 分鐘課表應含中途休息提醒');
+});
+t('自動避開已精通技能，並將超過 7 天未練的已精通技能排入暖身複習', () => {
+  const oldT = Date.now() - 12 * 86400000;
+  const st = { done: true, m: { A1: { p: 0.9, n: 6, t: oldT }, A2: { p: 0.2, n: 1, t: Date.now() } }, ch: {}, days: {}, act: {} };
+  const steps = VX.guide.buildSchedule(st, 30);
+  assert.strictEqual(steps[0].kind, 'warmup');
+  assert(steps[0].gain.includes('A1'), '超過 7 天沒練的 A1 應排進暖身複習');
+  assert(!steps[1].gain.includes('A1'), '核心學習應避開已精通的 A1');
+});
+t('全部技能皆精通時仍能穩定排課不當掉', () => {
+  const m = {};
+  SKILLS.forEach((s) => { m[s.id] = { p: 0.95, n: 10, t: Date.now() }; });
+  const st = { done: true, m, ch: {}, days: {}, act: {} };
+  const steps = VX.guide.buildSchedule(st, 60);
+  assert(steps.length >= 4, '全精通學員也應有完整課表');
+});
+t('同一天維持穩定課表、自動偵測完成進度、支援加碼第 2 輪', () => {
+  const st = { done: true, m: { A1: { p: 0.2, n: 1, t: Date.now() } }, ch: {}, days: {}, act: {} };
+  const p1 = VX.guide.getDailyPlan(st, 15);
+  const p2 = VX.guide.getDailyPlan(st);
+  assert.strictEqual(p1, p2, '同一天應回傳同一份課表');
+  let sum = VX.guide.summarizePlan(st, p1);
+  assert.strictEqual(sum.doneN, 0);
+  assert(!sum.allDone);
+  // 模擬完成所有站點
+  p1.steps.forEach((x) => { p1.done[x.id] = true; });
+  sum = VX.guide.summarizePlan(st, p1);
+  assert(sum.allDone && sum.remainMin === 0);
+  // 加碼 15 分鐘進入第 2 輪
+  const bonus = VX.guide.getDailyPlan(st, 15, true, true);
+  assert.strictEqual(bonus.round, 2);
+  assert.strictEqual(VX.guide.summarizePlan(st, bonus).doneN, 0);
+});
+t('零件與套件百科（PARTS）：涵蓋主機、遙控器、感測器、線材、橡皮筋與基礎／進階套件', () => {
+  const parts = content.PARTS || [];
+  assert(parts.length >= 20, '零件百科條目數不足：' + parts.length);
+  const cats = new Set(parts.map((p) => p.cat));
+  ['core', 'sensor', 'cable', 'elastic', 'mech', 'kit'].forEach((c) => assert(cats.has(c), '缺少分類：' + c));
+  const kits = new Set(parts.map((p) => p.kit));
+  assert(kits.has('basic') && kits.has('adv'), '應同時包含基礎與進階套件分類');
+  parts.forEach((p) => assert(p.id && p.n && p.z && p.tip, '欄位不完整：' + p.n));
 });
 
 

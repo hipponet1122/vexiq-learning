@@ -205,11 +205,11 @@
     const sq = () => { const o = []; for (let i = 0; i < 4; i++) { o.push([1.5, 1.5]); const t = turnRev(90, 1); o.push([-t, t]); } return o; };
     S.steps = sq();
     const rows = h('div', { class: 'ctlrows' }), box = h('div'), res = h('div', { class: 'ctlres' });
-    const numIn = (v, on) => { const i = h('input', { type: 'number', step: '0.05', style: 'width:84px' }); i.value = String(Math.round(v * 1000) / 1000); i.addEventListener('input', () => { const x = parseFloat(i.value); if (isFinite(x)) on(x); }); return i; };
+    const numIn = (v, label, on) => { const i = h('input', { type: 'number', step: '0.05', min: '-100', max: '100', style: 'width:84px', 'aria-label': label }); i.value = String(Math.round(v * 1000) / 1000); i.addEventListener('input', () => { const x = parseFloat(i.value); if (isFinite(x)) on(clamp(x, -100, 100)); }); return i; };
     function drawRows() {
       rows.replaceChildren(h('div', { class: 'ctlrow ctlhead' }, h('span', null, '步驟'), h('span', null, '左輪圈數'), h('span', null, '右輪圈數'), h('span', null, '')),
         ...S.steps.map((st, i) => h('div', { class: 'ctlrow' }, h('span', null, String(i + 1)),
-          numIn(st[0], (x) => { st[0] = x; draw(); }), numIn(st[1], (x) => { st[1] = x; draw(); }),
+          numIn(st[0], '左輪圈數', (x) => { st[0] = x; draw(); }), numIn(st[1], '右輪圈數', (x) => { st[1] = x; draw(); }),
           h('button', { type: 'button', class: 'btn sm', title: '刪除這一步', 'aria-label': '刪除這一步', onclick: () => { S.steps.splice(i, 1); drawRows(); draw(); } }, '✕'))));
     }
     function draw() {
@@ -346,13 +346,16 @@
     const sKd = slider('Kd（前進速度比例）', 0.2, 3, 0.1, P.kd, '', (v) => { P.kd = v; draw(); });
     const cb = h('input', { type: 'checkbox' }); cb.checked = true; cb.setAttribute('aria-label', '使用角度繞回處理');
     cb.addEventListener('change', () => { P.wrap = cb.checked; draw(); });
-    const modeBtn = (k, name) => h('button', { type: 'button', class: 'btn sm', onclick: () => { P.mode = k; draw(); } }, name);
+    const modeBtns = [['blend', '邊走邊轉'], ['turn', '先轉再走']].map(([k, name]) => {
+      const b = h('button', { type: 'button', class: 'btn sm' + (P.mode === k ? ' primary' : ''), onclick: () => { P.mode = k; modeBtns.forEach((x) => x.b.classList.toggle('primary', x.k === k)); draw(); } }, name);
+      return { k, b };
+    });
     draw();
     return h('div', null,
       h('p', null, '知道自己在哪（里程計）之後，就能「走到指定座標」。每一刻算兩件事：目標在哪個方向？還有多遠？再用兩組回授——', h('b', null, '朝向誤差'), '決定怎麼轉，', h('b', null, '距離誤差'), '決定走多快。靠近目標時距離誤差變小，機器人就會自然變慢。'),
       h('div', { class: 'panel ctlctrl' }, sx, sy, sh, sKh, sKd,
         h('label', { class: 'check' }, cb, h('span', null, '使用角度繞回處理（關掉看看會怎樣）')),
-        h('div', { class: 'row gap' }, modeBtn('blend', '邊走邊轉'), modeBtn('turn', '先轉再走'),
+        h('div', { class: 'row gap' }, modeBtns.map((x) => x.b),
           h('button', { type: 'button', class: 'btn sm', onclick: () => { P.tx = -100; P.ty = 500; P.h0 = 10; sx.set(-100); sy.set(500); sh.set(10); draw(); } }, '目標在左前方（朝向 10°）'),
           h('button', { type: 'button', class: 'btn sm', onclick: () => { P.tx = 0; P.ty = -300; P.h0 = 0; sx.set(0); sy.set(-300); sh.set(0); draw(); } }, '目標在正後方'))),
       res, h('div', { class: 'ctlcharts' }, box),

@@ -51,7 +51,7 @@
           h('li', null, '用本站「技能賽練習」記錄分數，用「工程筆記」記下每一次測試。')),
         h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/compete/skills' }, '技能賽練習'), h('a', { class: 'btn', href: '#/notebook' }, '工程筆記'), h('a', { class: 'btn', href: '#/compete/interview' }, '面談練習'))),
       h('div', { class: 'panel' }, h('h3', null, '官方與在地連結'),
-        LINKS.map(([name, url, d]) => h('div', { class: 'wrongitem' }, h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, h('b', null, name + ' ↗')), h('div', { class: 'sub' }, d))))), '🇹🇼 台灣賽事路線', '🇹🇼');
+        LINKS.map(([name, url, d]) => h('div', { class: 'wrongitem' }, h('a', { href: url, target: '_blank', rel: 'noopener noreferrer' }, h('b', null, name + ' ↗')), h('div', { class: 'sub' }, d))))), '台灣賽事路線', '🇹🇼');
   }
   VX.taiwanPage = taiwanPage;
 })();

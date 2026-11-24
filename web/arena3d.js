@@ -385,12 +385,14 @@
     const matchBtn = h('button', { type: 'button', class: 'btn green sm', onclick: () => start60s() }, '🚨 開始 60 秒比賽');
     const saveBtn = h('button', { type: 'button', class: 'btn primary sm', onclick: () => saveScore() }, '💾 存入技能賽紀錄');
 
-    function resetField() {
+    let onFieldMutate = null;
+    function resetField(keepChallenge) {
       bot = { x: 0, z: 7.8, th: 0, armAngle: 0, carry: null }; // th=0 朝向 -Z（球門方向）
       bags.forEach((b) => { b.x = b.ix; b.z = b.iz; b.y = 0.28; b.goal = null; b.mesh.position.set(b.x, b.y, b.z); });
       flying = [];
       score = 0;
       scoredLog = { floor: 0, l1: 0, l2: 0, l3: 0, l4: 0 };
+      if (!keepChallenge && onFieldMutate) onFieldMutate();
       updateHud();
     }
 
@@ -442,6 +444,7 @@
         b.mesh.position.set(b.x, b.y, b.z); updateHud(); return;
       }
       const inG = bags.filter((x) => x.goal === g.id).length;
+      if (onFieldMutate) onFieldMutate();
       const tx = g.x + ((inG % 3) - 1) * 0.58;
       const tz = g.z + (Math.floor(inG / 3) - 0.3) * 0.52;
       const ty = g.h + 0.36;
@@ -538,9 +541,15 @@
       const inp = h('input', { type: 'text', inputmode: 'numeric', placeholder: '輸入總分', style: 'width:120px;margin:0', 'aria-label': '總分' });
       const fb = h('div'), info = h('p', { class: 'sub' }, '按「出題」，場地上會隨機擺好沙包。數一數、算一算，輸入總分！');
       const statEl = h('span', { class: 'sub' }, '累計答對 ' + rec.ok + ' / ' + rec.total + ' 題　·　連勝 ' + rec.streak + ' 題');
+      onFieldMutate = () => {
+        if (cur && !done) {
+          cur = null;
+          info.textContent = '場地已變動，請再按「出題」重新出題。';
+        }
+      };
       function place() {
         clearInterval(matchIv); matchIv = 0; matchState = 'free';
-        resetField();
+        resetField(true);
         const pool = bags.slice();
         const take = (want) => { let i = pool.findIndex((b) => b.col === want); if (i < 0) i = 0; return pool.splice(i, 1)[0]; };
         const lines = [], valids = GOALS.map(() => 0); let ans = 0;
@@ -565,7 +574,7 @@
         });
         if (!ans) { // 至少要有分數可算：把一個符合顏色的沙包放進地板球門
           const g = GOALS[0], b = take('blue'); b.goal = g.id; b.x = g.x; b.z = g.z; b.y = g.h + 0.36; b.mesh.position.set(b.x, b.y, b.z);
-          ans = g.pts; lines.length = 0; lines.push(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：1 個有效 = ' + g.pts + ' 分');
+          ans = g.pts; lines.unshift(g.name + '（' + DOT[g.col] + '／' + g.pts + '分）：1 個有效 = ' + g.pts + ' 分');
         }
         cur = { ans, lines }; done = false; fb.replaceChildren(); inp.value = '';
         phaseEl.textContent = '🎯 算分挑戰：數一數各球門裡的沙包，算出總分！'; updateHud();
@@ -610,7 +619,7 @@
 
     let rafId = 0, lastW = 0, lastH = 0;
     function animate() {
-      if (!document.body.contains(stageWrap)) { cancelAnimationFrame(rafId); clearInterval(matchIv); renderer.dispose(); return; }
+      if (!document.body.contains(stageWrap)) { cancelAnimationFrame(rafId); clearInterval(matchIv); renderer.dispose(); try { renderer.forceContextLoss(); } catch (err) {} return; }
       const cw = stageWrap.clientWidth || 800, ch = stageWrap.clientHeight || 450;
       if (cw !== lastW || ch !== lastH) { lastW = cw; lastH = ch; renderer.setSize(cw, ch, false); camera.aspect = cw / ch; camera.updateProjectionMatrix(); }
 

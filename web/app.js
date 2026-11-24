@@ -537,7 +537,10 @@
       h('h2', null, '這回合答對 ' + S.right + ' / ' + S.n + ' 題' + (S.assistedRight ? '（其中 ' + S.assistedRight + ' 題看提示後想通）' : '')),
       drillBox,
       rows.length ? h('div', { class: 'changes' }, rows.map((r) => h('div', { class: 'chg' }, h('span', null, SK[r.id].name), h('span', { class: r.b >= r.a ? 'up' : 'down' }, (r.b >= r.a ? '▲ ' : '▼ ') + Math.round(r.a * 100) + '% → ' + Math.round(r.b * 100) + '%')))) : null,
-      h('div', { class: 'row gap', style: 'justify-content:center;margin-top:12px' }, h('button', { class: 'btn' + (weakArr.length ? '' : ' primary'), onclick: () => startPractice(S.skill) }, '再練一回合'), h('a', { class: 'btn', href: '#/' }, '回首頁'))
+      h('div', { class: 'row gap', style: 'justify-content:center;margin-top:12px;flex-wrap:wrap' },
+        st && st.done ? h('a', { class: 'btn primary', href: '#/plan' }, '📅 回今日課表（看下一站）') : null,
+        h('button', { class: 'btn' + (weakArr.length || (st && st.done) ? '' : ' primary'), onclick: () => startPractice(S.skill) }, '再練一回合'),
+        h('a', { class: 'btn', href: '#/' }, '回首頁'))
     )));
   }
 
@@ -551,69 +554,158 @@
     window.scrollTo(0, 0);
   }
 
-  /* ---------- 畫面骨架 ---------- */
-  const TABS = [['#/', '🏠', '首頁', ''], ['#/practice', '✏️', '練習', 'practice'], ['#/challenge', '🏁', '挑戰', 'challenge'], ['#/sim', '🖥️', '模擬器', 'sim'], ['#/arena3d', '🏟️', '3D 場地', 'arena3d'], ['#/import', '📤', '上傳存檔', 'import'], ['#/notebook', '📓', '筆記', 'notebook'], ['#/build', '🔧', '組裝', 'build'], ['#/compete', '🏆', '比賽', 'compete'], ['#/cheat', '📋', '速查表', 'cheat'], ['#/resources', '🔗', '資源', 'resources'], ['#/guide', '🧭', '怎麼用', 'guide']];
+  /* ---------- 畫面骨架（5 大學習支柱 + 情境子導覽 + 原生 Popover 全站導覽）---------- */
+  const NAV_GROUPS = [
+    {
+      id: 'learn', href: '#/', ic: '🏠', name: '學習',
+      routes: ['', 'plan', 'practice', 'start', 'skill', 'result'],
+      items: [
+        ['#/', '🏠', '首頁', ''],
+        ['#/plan', '📅', '今日課表', 'plan'],
+        ['#/practice', '✏️', '練習題', 'practice'],
+        ['#/start', '🚀', '起步任務', 'start'],
+      ],
+    },
+    {
+      id: 'code', href: '#/sim', ic: '🖥️', name: '程式',
+      routes: ['sim', 'challenge', 'pathplan', 'control', 'import'],
+      items: [
+        ['#/sim', '🖥️', '模擬器', 'sim'],
+        ['#/challenge', '🏁', '挑戰題庫', 'challenge'],
+        ['#/pathplan', '🗺️', '路徑規劃', 'pathplan'],
+        ['#/control', '🎛️', '控制實驗室', 'control'],
+        ['#/import', '📤', '上傳存檔', 'import'],
+      ],
+    },
+    {
+      id: 'hw', href: '#/build/parts', ic: '🔧', name: '硬體',
+      routes: ['build'],
+      items: [
+        ['#/build/parts', '🧩', '零件與套件百科', 'build/parts'],
+        ['#/build', '🛠️', '實體組裝挑戰', 'build'],
+        ['#/build/lessons', '📘', '機構原理圖解', 'build/lessons'],
+      ],
+    },
+    {
+      id: 'comp', href: '#/compete', ic: '🏆', name: '比賽',
+      routes: ['compete', 'arena3d', 'notebook'],
+      items: [
+        ['#/compete', '🏆', '比賽專區', 'compete'],
+        ['#/arena3d', '🏟️', '3D 練習場', 'arena3d'],
+        ['#/notebook', '📓', '工程筆記', 'notebook'],
+        ['#/compete/taiwan', '🇹🇼', '台灣賽事', 'compete/taiwan'],
+      ],
+    },
+    {
+      id: 'tools', href: '#/cheat', ic: '📚', name: '工具',
+      routes: ['cheat', 'resources', 'guide'],
+      items: [
+        ['#/cheat', '📋', '積木速查', 'cheat'],
+        ['#/resources', '🔗', '學習資源', 'resources'],
+        ['#/guide', '🧭', '怎麼用', 'guide'],
+      ],
+    },
+  ];
   /* 語言切換（中／EN）；選擇存在這台裝置的 localStorage，重新載入後生效 */
   function langBtn(cls) {
     const cur = window.VXI18N ? window.VXI18N.lang : 'zh';
     return h('button', { class: 'langsw ' + (cls || ''), type: 'button', title: 'Language / 語言', 'aria-label': 'Language / 語言', 'data-notrans': '1', onclick: () => window.VXI18N && window.VXI18N.setLang(cur === 'en' ? 'zh' : 'en') },
       h('span', { class: cur === 'zh' ? 'on' : '' }, '中'), h('span', { class: cur === 'en' ? 'on' : '' }, 'EN'));
   }
-  let savedTabsScroll = 0;
-  try { savedTabsScroll = parseFloat(sessionStorage.getItem('vx_tabs_x') || '0') || 0; } catch (e) { /* ignore */ }
   function shell(content, opts) {
     opts = opts || {};
     if (opts.bare) return h('div', null, content);
-    const cur = (location.hash.replace(/^#\/?/, '').split('/')[0]) || '';
+    const segs = location.hash.replace(/^#\/?/, '').split('/');
+    const cur = segs[0] || '';
+    const curSub = segs[1] || '';
+    const fullKey = (cur === 'build' && (curSub === 'parts' || curSub === 'lessons')) ? 'build/' + curSub : (cur === 'compete' && curSub === 'taiwan') ? 'compete/taiwan' : cur;
+    const isLearner = !!(user && user.role === 'learner');
+    const activeGroup = isLearner ? (NAV_GROUPS.find((g) => g.routes.includes(cur)) || NAV_GROUPS[0]) : null;
     const tabs = [];
-    if (user && user.role === 'learner') TABS.forEach(([href, ic, name, key]) => tabs.push(h('a', { class: 'tab' + (key === cur || (key === '' && (cur === '' || cur === 'skill' || cur === 'result')) ? ' on' : ''), href }, h('span', { class: 'ti' }, ic), name)));
-    if (user && user.role === 'coach') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👥'), '學員狀況'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
-    if (user && user.role === 'parent') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent' }, h('span', { class: 'ti' }, '👪'), '家長頁'), h('a', { class: 'tab' + (cur === 'build' ? ' on' : ''), href: '#/build' }, h('span', { class: 'ti' }, '🔧'), '組裝'), h('a', { class: 'tab' + (cur === 'guide' ? ' on' : ''), href: '#/guide' }, h('span', { class: 'ti' }, '🧭'), '怎麼用'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review' }, h('span', { class: 'ti' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources' }, h('span', { class: 'ti' }, '🔗'), '資源'));
-    const tabsEl = h('div', { class: 'tabs' }, tabs);
-    const leftArr = h('button', { type: 'button', class: 'tabs-arr left', 'aria-label': '往左滑動選單', onclick: () => tabsEl.scrollBy({ left: -180, behavior: 'smooth' }) }, '‹');
-    const rightArr = h('button', { type: 'button', class: 'tabs-arr right', 'aria-label': '往右滑動選單', onclick: () => tabsEl.scrollBy({ left: 180, behavior: 'smooth' }) }, '›');
-    const tabsWrap = h('div', { class: 'tabs-wrap at-start' }, leftArr, tabsEl, rightArr);
-    const syncTabsScroll = () => {
-      const maxX = Math.max(0, tabsEl.scrollWidth - tabsEl.clientWidth);
-      const x = tabsEl.scrollLeft;
-      savedTabsScroll = x;
-      try { sessionStorage.setItem('vx_tabs_x', String(Math.round(x))); } catch (e) { /* ignore */ }
-      tabsWrap.classList.toggle('can-scroll', maxX > 6);
-      tabsWrap.classList.toggle('at-start', x <= 4);
-      tabsWrap.classList.toggle('at-end', x >= maxX - 4);
-    };
-    tabsEl.addEventListener('scroll', syncTabsScroll, { passive: true });
-    tabsEl.addEventListener('click', () => {
-      savedTabsScroll = tabsEl.scrollLeft;
-      try { sessionStorage.setItem('vx_tabs_x', String(Math.round(savedTabsScroll))); } catch (e) { /* ignore */ }
-    });
-    const restoreTabs = () => {
-      if (!document.body.contains(tabsEl)) return;
-      const maxX = Math.max(0, tabsEl.scrollWidth - tabsEl.clientWidth);
-      let targetX = Math.max(0, Math.min(maxX, savedTabsScroll));
-      const active = tabsEl.querySelector('.tab.on');
-      if (active && maxX > 6) {
-        const aL = active.offsetLeft, aR = aL + active.offsetWidth;
-        if (aL < targetX + 16) targetX = Math.max(0, aL - 28);
-        else if (aR > targetX + tabsEl.clientWidth - 16) targetX = Math.min(maxX, aR - tabsEl.clientWidth + 28);
-      }
-      tabsEl.scrollLeft = targetX;
-      syncTabsScroll();
-    };
-    requestAnimationFrame(restoreTabs);
+    if (isLearner) {
+      NAV_GROUPS.forEach((g) => {
+        const on = activeGroup && activeGroup.id === g.id;
+        tabs.push(h('a', { class: 'tab' + (on ? ' on' : ''), href: g.href, 'aria-current': on ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, g.ic), g.name));
+      });
+    }
+    if (user && user.role === 'coach') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent', 'aria-current': cur === 'parent' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '👥'), '學員狀況'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review', 'aria-current': cur === 'review' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources', 'aria-current': cur === 'resources' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '🔗'), '資源'));
+    if (user && user.role === 'parent') tabs.push(h('a', { class: 'tab' + (cur === 'parent' ? ' on' : ''), href: '#/parent', 'aria-current': cur === 'parent' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '👪'), '家長頁'), h('a', { class: 'tab' + (cur === 'build' ? ' on' : ''), href: '#/build/parts', 'aria-current': cur === 'build' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '🔧'), '硬體'), h('a', { class: 'tab' + (cur === 'guide' ? ' on' : ''), href: '#/guide', 'aria-current': cur === 'guide' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '🧭'), '怎麼用'), h('a', { class: 'tab' + (cur === 'review' ? ' on' : ''), href: '#/review', 'aria-current': cur === 'review' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '📝'), '題庫審閱'), h('a', { class: 'tab' + (cur === 'resources' ? ' on' : ''), href: '#/resources', 'aria-current': cur === 'resources' ? 'page' : null }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '🔗'), '資源'));
+    const tabsEl = h('nav', { class: 'tabs', 'aria-label': '主要導覽' }, tabs);
+    const tabsWrap = h('div', { class: 'tabs-wrap' }, tabsEl);
+
+    // 全站快速選單（使用原生 Popover API，舊瀏覽器自動退回 class 切換）
+    let menuBtn = null, sitemapPop = null;
+    if (isLearner) {
+      const hasPop = Object.hasOwn(HTMLElement.prototype, 'popover');
+      sitemapPop = h('nav', { id: 'vx-sitemap', class: 'vx-sitemap', 'aria-label': '全部功能選單' },
+        h('div', { class: 'vx-sm-head' },
+          h('b', null, '🧭 全站功能總覽'),
+          h('button', { type: 'button', class: 'btn ghost sm', 'aria-label': '關閉選單', onclick: () => { if (hasPop && sitemapPop.hidePopover) sitemapPop.hidePopover(); else sitemapPop.classList.remove('open'); } }, '✕')),
+        h('div', { class: 'vx-sm-grid' }, NAV_GROUPS.map((g) =>
+          h('div', { class: 'vx-sm-col' },
+            h('div', { class: 'vx-sm-title' }, g.ic + ' ' + g.name),
+            g.items.map(([href, ic, label, key]) => {
+              const on = fullKey === key || (key === '' && (cur === '' || cur === 'skill' || cur === 'result'));
+              return h('a', {
+                class: 'vx-sm-link' + (on ? ' on' : ''), href, 'aria-current': on ? 'page' : null,
+                onclick: () => { if (hasPop && sitemapPop.hidePopover) sitemapPop.hidePopover(); else sitemapPop.classList.remove('open'); },
+              }, h('span', { 'aria-hidden': 'true' }, ic), label);
+            })))));
+      if (hasPop) sitemapPop.setAttribute('popover', 'auto');
+      menuBtn = h('button', {
+        type: 'button', class: 'tab vx-menubtn', 'aria-label': '全部功能選單', 'aria-controls': 'vx-sitemap',
+        popovertarget: hasPop ? 'vx-sitemap' : null,
+        onclick: hasPop ? null : () => sitemapPop.classList.toggle('open'),
+      }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '☰'), '選單');
+    }
+
+    // 帳號與登出整合選單（原生 Popover API，舊瀏覽器自動退回 class 切換）
+    let acctBtn = null, acctPop = null;
+    if (user) {
+      const hasPop = Object.hasOwn(HTMLElement.prototype, 'popover');
+      const closeAcct = () => { if (hasPop && acctPop.hidePopover) acctPop.hidePopover(); else acctPop.classList.remove('open'); };
+      const roleLabel = user.role === 'parent' ? '家長' : user.role === 'coach' ? '教練（唯讀）' : '學員';
+      acctPop = h('div', { id: 'vx-acctmenu', class: 'vx-acctmenu' },
+        h('div', { class: 'vx-acct-head' },
+          h('b', { 'data-notrans': '1' }, user.display || user.name),
+          h('span', { class: 'tag' }, roleLabel)),
+        h('a', { class: 'vx-sm-link', href: '#/me', onclick: closeAcct }, h('span', { 'aria-hidden': 'true' }, '🔑'), '帳號與修改密碼'),
+        h('button', { type: 'button', class: 'vx-sm-link vx-acct-out', onclick: () => { closeAcct(); doLogout(); } }, h('span', { 'aria-hidden': 'true' }, '🚪'), '登出'));
+      if (hasPop) acctPop.setAttribute('popover', 'auto');
+      acctBtn = h('button', {
+        type: 'button', class: 'tab vx-menubtn' + (cur === 'me' ? ' on' : ''),
+        'aria-label': '帳號選單', 'aria-controls': 'vx-acctmenu',
+        popovertarget: hasPop ? 'vx-acctmenu' : null,
+        onclick: hasPop ? null : () => acctPop.classList.toggle('open'),
+      }, h('span', { class: 'ti', 'aria-hidden': 'true' }, '👤'), h('span', { class: 'vx-acct-name' }, h('span', { 'data-notrans': '1' }, user.display || user.name), ' ▾'));
+    }
+
     const bar = h('header', { class: 'topbar' },
       h('a', { class: 'logo', href: '#/' }, h('b', null, 'IQ'), h('span', null, '自學')),
       tabsWrap,
-      user ? h('a', { class: 'tab', href: '#/me' }, h('span', { class: 'ti' }, '👤'), h('span', { 'data-notrans': '1' }, user.display || user.name)) : null,
+      menuBtn,
+      sitemapPop,
       langBtn('top'),
-      user ? h('button', { class: 'tab', style: 'background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-size:.72rem;cursor:pointer', onclick: doLogout }, h('span', { class: 'ti' }, '🚪'), '登出') : null);
+      acctBtn,
+      acctPop);
     const parts = [bar];
+    // 情境子導覽列（讓同支柱下的 3~5 個功能一鍵切換；全螢幕模擬器隱藏以最大化畫布）
+    if (activeGroup && activeGroup.items.length > 1 && !opts.full) {
+      parts.push(h('nav', { class: 'subnav', 'aria-label': activeGroup.name + '子選單' },
+        activeGroup.items.map(([href, ic, label, key]) => {
+          const on = fullKey === key || (key === '' && (cur === '' || cur === 'skill' || cur === 'result'));
+          return h('a', { class: 'subnav-item' + (on ? ' on' : ''), href, 'aria-current': on ? 'page' : null },
+            h('span', { 'aria-hidden': 'true' }, ic), ' ', label);
+        })));
+    }
     let hidePw = false; try { hidePw = sessionStorage.getItem('vx_pwtip') === '1'; } catch (e) { /* ignore */ }
     if (user && user.pw_initial && cur !== 'me' && !hidePw) {
       const bn = h('div', { class: 'pwbanner' }, h('span', null, '🔑 你現在用的是初始密碼，可以改成自己習慣的密碼（不限格式）。'), h('a', { href: '#/me' }, '修改密碼'),
         h('button', { class: 'pwx', title: '先不要', onclick: () => { try { sessionStorage.setItem('vx_pwtip', '1'); } catch (e) { /* ignore */ } bn.remove(); } }, '✕'));
       parts.push(bn);
     }
+    const pb = !opts.full && VX.guide && VX.guide.planBar ? VX.guide.planBar(cur) : null;
+    if (pb) parts.push(pb);
     if (opts.title) parts.push(h('div', { class: 'subbar' }, opts.icon ? h('span', { class: 'ic' }, opts.icon) : null, opts.title));
     let main = h('main', { class: 'content' }, content);
     if (opts.rail) {
@@ -697,7 +789,7 @@
         await loadMe();
         robot.classList.remove('busy'); robot.classList.add('ok'); btn.classList.add('done'); btn.replaceChildren('✓');
         card.classList.add('leaving'); if (window.VXFX) window.VXFX.buzz(15);
-        setTimeout(() => { const next = (user.role === 'parent' || user.role === 'coach') ? '#/parent' : '#/'; if (location.hash === next) render(); else location.hash = next; }, 380);
+        setTimeout(() => { const next = (user.role === 'parent' || user.role === 'coach') ? '#/parent' : (st && st.done ? '#/plan' : '#/'); if (location.hash === next) render(); else location.hash = next; }, 380);
       } catch (err) {
         busy = false; btn.disabled = false; btn.replaceChildren('登入'); robot.classList.remove('busy'); fail(err.message); pw.select();
       }
@@ -736,9 +828,11 @@
       tile('#/sim', '🖥️', '模擬器', '不用機器人也能試跑程式', '#77b2ff', '#5a85bb'),
       tile('#/arena3d', '🏟️', '3D 練習場', '3D 撿沙包投球＋計分音效', '#0ea5e9', '#0369a1'),
       tile('#/pathplan', '🗺️', '路徑規劃器', '點路線自動生積木與 Python', '#10b981', '#047857'),
+      tile('#/control', '🎛️', '控制實驗室', 'PID、里程計、走直線互動調參', '#6366f1', '#4338ca'),
       tile('#/challenge', '🏁', '挑戰題庫', '把程式實際跑在機器人上', '#f1ae34', '#b38136'),
-      tile('#/notebook', '📓', '工程筆記', '學會寫、也真的寫', '#f2cd16', '#b4982e'),
+      tile('#/build/parts', '🧩', '零件與套件百科', '主機、遙控器、線材、橡皮筋圖解', '#ec4899', '#be185d'),
       tile('#/build', '🔧', '實體組裝挑戰', '16 關動手實作＋拍照驗證', '#f2a579', '#b37b5e'),
+      tile('#/notebook', '📓', '工程筆記', '學會寫、也真的寫', '#f2cd16', '#b4982e'),
       tile('#/compete', '🏆', '比賽專區', 'Robot Skills、英文術語、面談', '#5ecd98', '#4a9873'));
     const dailyPuzzle = () => {
       const today = todayStr();
@@ -947,7 +1041,9 @@
       radarSvg(vals, DOMAINS.map((x) => x.short), DOMAINS.map((x) => x.stroke)),
       h('div', { class: 'changes' }, DOMAINS.map((d, i) => h('div', { class: 'chg' }, h('span', null, d.icon + ' ' + d.name), h('span', null, Math.round(vals[i] * 100) + '%')))),
       h('p', null, '先從這些開始：', weak.map((w) => h('a', { class: 'pre', href: '#/skill/' + w.id }, w.name))),
-      h('a', { class: 'btn primary big', href: '#/practice' }, '開始第一回練習 ▶'))));
+      h('div', { class: 'row gap', style: 'justify-content:center;flex-wrap:wrap;margin-top:12px' },
+        h('a', { class: 'btn primary big', href: '#/plan' }, '📅 查看為你排好的今日課表 ▶'),
+        h('a', { class: 'btn', href: '#/practice' }, '直接開始練習')))));
   }
 
   function viewMe() {
@@ -1071,12 +1167,13 @@
     const hash = location.hash.replace(/^#/, '') || '/';
     const [, a, b, c] = hash.split('/');
     if (a === 'about') return VX.routes.about();
+    if (a === 'taiwan') { location.replace('#/compete/taiwan'); return; }
     if (!user) { if (hash !== '/login') history.replaceState(null, '', '#/login'); return viewLogin(); }
     if (hash === '/login') { location.hash = '#/'; return; }
     if (session && !(a === 'practice' || a === 'placement')) session = null;
     if (a === 'parent') { if (user.role !== 'parent' && user.role !== 'coach') { location.hash = '#/'; return; } return viewParent(b ? parseInt(b, 10) : 0); }
     if (user.role === 'coach' && a !== 'me' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
-    if (user.role === 'parent' && a !== 'me' && a !== 'guide' && a !== 'start' && a !== 'resources' && a !== 'review' && a !== 'about') { location.hash = '#/parent'; return; }
+    if (user.role === 'parent' && a !== 'me' && a !== 'guide' && a !== 'start' && a !== 'resources' && a !== 'review' && a !== 'about' && !(a === 'build' && (b === 'parts' || b === 'lessons'))) { location.hash = '#/parent'; return; }
     if (a === 'placement') { if (!session) startPlacement(); return; }
     if (a === 'practice') {
       const cnt = c ? parseInt(c, 10) : 0;

@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Python 語法
-        run: python -m py_compile server.py build_info.py make_seed.py tools/check.py
+        run: python -m py_compile server.py tools/build_info.py tools/make_seed.py tools/check.py
       - name: JavaScript 語法
         run: for f in web/*.js; do node --check "$f" || exit 1; done
       - name: 自動測試（題庫、挑戰解答、模擬引擎、.iqblocks 匯入）
@@ -24,5 +24,5 @@ jobs:
       - name: 後端啟動測試
         run: |
           pip install -r requirements.txt
-          python build_info.py
+          python tools/build_info.py
           DATA_DIR=/tmp/vx python -c "import server; print('import ok')"
