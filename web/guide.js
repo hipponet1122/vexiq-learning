@@ -99,6 +99,19 @@
     { min: 60, label: '60 分鐘', tag: '週末特訓', tip: '適合週末或賽前集訓，含中途 3～5 分鐘喝水休息提醒。' },
   ];
 
+  // 新技能先「學」再「練」：還沒通過小檢查、熟練度又低的技能，課表先排一個教學步驟
+  const lrnDone = (state, id) => !!(state.lrn && state.lrn[id] && state.lrn[id].d);
+  const needLearn = (state, id) => !!(window.VX_LESSONS && window.VX_LESSONS[id]) && !lrnDone(state, id) && pOf(state, id) < 0.45;
+  function learnStep(sk, sid) {
+    const L = window.VX_LESSONS[sk.id];
+    return {
+      id: sid(), kind: 'learn', icon: '📖', title: '先學觀念：' + sk.name, mins: Math.min(10, L.min || 8),
+      why: '這是新的技能。先猜一猜、看懂、動手試，再通過小檢查，接下來的練習題就會順很多。',
+      gain: [sk.id], go: ['#/skill/' + sk.id, '開始學習'],
+      check: { type: 'learn', id: sk.id },
+    };
+  }
+
   function buildScheduleSteps(state, mins, opts) {
     opts = opts || {};
     const m = PLAN_PRESETS.some((p) => p.min === mins) ? mins : 30;
@@ -115,8 +128,13 @@
     let seq = 1;
     const sid = () => 's' + (seq++);
 
+    // 新技能要先學：短課表（15 分鐘）直接用「學＋練」取代暖身，才排得進時間
+    const firstSk = rec[0] || fallbackSkills[0];
+    const learnFirst = !!(firstSk && needLearn(state, firstSk.id));
     // 1. 暖身複習（優先挑超過 7 天沒練的已精通技能；否則自適應綜合暖身）
-    if (staleMastered.length && !opts.extra) {
+    if (m <= 15 && learnFirst) {
+      // 15 分鐘：先學觀念 → 練 5 題，不另外暖身
+    } else if (staleMastered.length && !opts.extra) {
       const stSk = staleMastered[0];
       const dAgo = Math.round(daysSince(state, stSk.id));
       steps.push({
@@ -138,10 +156,11 @@
 
     // 2. 核心課題 A（最優先未精通技能：看重點課文＋5 題實戰）
     const s1 = rec[0] || fallbackSkills[0];
+    if (s1 && needLearn(state, s1.id)) steps.push(learnStep(s1, sid));
     if (s1) {
       const p1 = Math.round(pOf(state, s1.id) * 100);
       steps.push({
-        id: sid(), kind: 'skill', icon: '🎯', title: '核心學習：' + s1.name, mins: 10,
+        id: sid(), kind: 'skill', icon: '🎯', title: '核心學習：' + s1.name, mins: learnFirst ? 6 : 10,
         why: rec[0] ? rec[0].why : '你已經精通全部技能！複習一下維持 100% 實力。',
         gain: [s1.id], lesson: '#/skill/' + s1.id,
         go: ['#/practice/' + s1.id + '/5', '練習這個技能（5 題）'],
@@ -197,6 +216,7 @@
     // 4. 第二個核心技能（45 分鐘以上加入）
     if (m >= 45) {
       const s2 = rec.find((x) => !s1 || x.id !== s1.id) || fallbackSkills.find((x) => !s1 || x.id !== s1.id);
+      if (s2 && needLearn(state, s2.id)) steps.push(learnStep(s2, sid));
       if (s2) {
         const p2 = Math.round(pOf(state, s2.id) * 100);
         steps.push({
@@ -288,6 +308,7 @@
     if (c.type === 'simCh') return !!(state.ch && state.ch[c.id] && (state.ch[c.id].sim || state.ch[c.id].done)) || !!a.simok;
     if (c.type === 'realCh') return !!(state.ch && state.ch[c.id] && state.ch[c.id].done) || !!a.challenge;
     if (c.type === 'buildLab') return !!(state.buildLabs && state.buildLabs[c.id] && state.buildLabs[c.id].done);
+    if (c.type === 'learn') return lrnDone(state, c.id);
     if (c.type === 'note') return !!a.note;
     return false;
   }

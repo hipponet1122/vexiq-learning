@@ -1,0 +1,419 @@
+f2d3cf|Which part does the robot need to "know whether there is a wall ahead"?
+71dbc5|Sensor
+477cf1|Beam
+a3ba31|A motor makes the robot move; a sensor is what lets it "sense" its surroundings.
+eb900c|The robot's brain: the Brain
+a531d1|<p>The Brain is like the robot's <b>brain</b>. The program you write is downloaded here, and the Brain runs it line by line, then commands the motors and sensors.</p><p>The Brain has a <b>screen</b>, <b>buttons</b>, and <b>12 ports</b> (Smart Ports) for plugging in motors and sensors.</p>
+90cde2|Picture it: Brain = brain, Smart Cable = nerves, motors = muscles, sensors = eyes and ears.
+889ea0|The moving part: Smart Motor
+4f8432|<p>A Smart Motor makes <b>wheels turn</b>, <b>arms lift</b> and <b>claws open</b>. What makes it "smart" is its built-in rotation measurement, so a program can tell it to "turn 2 rotations" or "turn to a certain angle".</p>
+2245e0|Faster isn't always better for a motor. Spinning too fast can make the robot slip and be inaccurate.
+5e007c|The sensing part: sensors
+2712ab|<p>Sensors let the robot "know" what's going on:</p><ul><li><b>Distance</b>: how far away is something ahead?</li><li><b>Color</b>: what color does it see?</li><li><b>Gyro</b>: which way is the robot facing, and how many degrees has it turned?</li><li><b>Bumper</b>: did it bump into something?</li><li><b>Touch LED</b>: responds when touched, and can also show colors.</li></ul>
+70816f|Manual driving and parts
+d7fb7b|<p>The <b>Controller</b> lets you drive the robot by hand with joysticks and buttons. Structural parts include <b>beams</b>, <b>pins</b>, <b>connectors</b> and more, used to build the body. Competition rules allow only official VEX IQ parts.</p>
+c1ec15|Not sure what a part is called? Go to "Hardware → Parts & Kit Encyclopedia" to see pictures and 3D models.
+1517db|Matching game: parts and their jobs
+b03e77|Match each part on the left with its correct job on the right.
+2833ec|Runs the program and commands the other parts
+ca09ba|Turns wheels or arms
+787c96|Distance sensor
+6378d0|Measures how far away something ahead is
+6e85af|Knows which way the robot is facing
+62cea3|Bumper switch
+443ce8|Knows whether it hit something
+e5bbb3|The remote used to drive by hand
+1f8352|Which part is in charge of "running the program you wrote"?
+c49b1b|The Brain is the brain — the program is downloaded into it and runs there.
+0eae94|To make the robot "stop when it hits a wall", which sensor is the most direct?
+668791|The Bumper is built to detect whether it hit something. A Distance sensor could work too, but it measures "how much farther to go".
+2180c1|What's the biggest difference between a Smart Motor and an ordinary toy motor?
+7f5d0d|It's bigger
+e4d3a4|It has built-in rotation measurement, so a program can tell it to turn a set number of rotations or angle
+22e481|It's always faster
+6a6285|It needs no wiring
+996f3b|Built-in rotation measurement is what makes "turn 2 rotations" or "turn 90 degrees" so accurate.
+9532dd|Make "My Parts Card"
+877f64|Take out your real kit and get to know the parts you'll use.
+3b2f10|Take out the Brain, a motor, a sensor and a Smart Cable.
+0a240a|Take a photo with your phone and write each part's name and job next to it.
+06c28a|Count: how many ports does your Brain have?
+dd729b|Paste the photo and write down each part's name and job.
+6c2e83|The motor is plugged into Port 3 on the Brain, but the program sets the device to Port 1. What happens?
+ec6207|It works normally anyway
+21aa15|The motor doesn't move (or a different device acts up)
+868fc3|The Brain fixes it automatically
+49c040|The program gets slower
+c419aa|The port number in the program must exactly match the port you actually plugged into.
+6052ab|12 Smart Ports
+d91f94|<p>The Brain has <b>12 Smart Ports</b>, numbered 1–12. Every motor and every sensor plugs into one of them.</p><p>After plugging in, the program has to know "which device is on which port" — this is called <b>configuring devices</b>.</p>
+b22b01|Set up Devices in VEXcode
+ae9167|<p>In VEXcode open <b>Devices</b>, add the motor or sensor you plugged in, pick the <b>same port number</b>, and give it an easy name (like leftMotor).</p><p>Once set up, the matching block category appears — for example, only after you add a distance sensor do you see the distance blocks.</p>
+742e82|Plugged into Port 3 but Devices says Port 1 — the most common reason for "why won't the motor move?"
+1d3f58|When do you need Reverse?
+3c3e62|<p>When two motors are mounted on the left and right of the robot, they are usually mounted <b>facing opposite directions</b>. If the program tells both to go "forward", one side's wheel actually turns backward and the robot just spins in place.</p><p>The fix: set one of the motors to <b>Reverse</b> so "forward" really goes forward on both sides.</p>
+2e40a9|Test carefully first: tell the robot to "drive forward" — if it spins, nine times out of ten you're missing a Reverse.
+f8c0bb|Try it: is Reverse set right?
+337b80|The left and right motors are mounted in opposite directions. Switch each motor's Reverse on or off and see how the robot moves when you press "forward".
+527c3e|Left motor Reverse
+c9744f|No
+0a60ac|Yes
+e4e246|Right motor Reverse
+fdf211|When you press "forward", the robot
+94d3d0|✅ drives straight ahead
+622aef|🔄 spins in place (one side forward, one side backward)
+1c80d6|How to fix it
+da8d46|Nothing to change
+f52258|Just set "one" of the motors to Reverse
+e7954f|It only goes straight when "exactly one" is reversed; if both are reversed it spins too.
+feb011|How many Smart Ports does the Brain have?
+9c83ca|The VEX IQ Brain has 12 Smart Ports.
+da29bb|The left and right motors are mounted in opposite directions and the program tells both to go forward, but the robot spins in place. What's the most likely cause?
+168e0d|The battery is dead
+71ce49|One motor's Reverse isn't set
+e95156|The Brain is broken
+63bff3|The wheels are too big
+01117c|One side going forward and the other backward makes it spin; set one of them to Reverse and it's fixed.
+20fb23|The motor is actually plugged into Port 5. Which port should you pick in Devices?
+372afc|Port 1
+2e9782|Port 5
+3fabb8|Any one will do
+a0d7e5|Port 12
+d50d42|Whichever port it's really plugged into, Devices must pick the same port number.
+a69b75|Wiring debug mini-task
+3babaf|Deliberately get it wrong once so you know what wrong looks like.
+c23ace|Plug a motor into Port 1, pick Port 1 in Devices too, and run it briefly.
+77fa65|Deliberately change Devices to Port 2, run again and watch what happens.
+091cf5|Change it back. Then leave both left and right motors un-reversed and watch how the robot moves.
+0b8a1d|Record three tests: how you set it, how the robot moved, and your conclusion.
+3553d9|🖥️ Try it in the simulator
+f5d44c|The program is written. To make the robot run on its own away from the computer, what must you do first?
+0e0609|Press save
+24f429|Download to the Brain
+869211|Restart
+8f7fd6|Change the battery
+7d714b|The program must first be sent to the Brain before the Brain can run it on its own.
+7bddb2|The program must be downloaded to the Brain
+adede9|<p>A program you write on the computer doesn't run on the robot automatically. You must first <b>Download</b> it to the Brain so the Brain has a copy. After downloading, you can unplug the computer and pick the program on the Brain to run.</p><p>You can connect with a USB cable or Bluetooth.</p>
+10ca42|How to run a program in a match
+b7bdaf|<p>There's no computer at the match. You download the program at home first, then at the field <b>pick the program you want on the Brain and press run</b>. That's how an Autonomous Coding Skills run (1 minute on program alone) begins.</p>
+ae1b5c|Before the match, run the program on the Brain several times to make sure you pick the right one.
+c73b31|Not enough battery, and everything acts strange
+fc8a78|<p>When the battery is low, <b>motors get weaker and behavior becomes unstable</b>: the same program runs accurately today and drifts tomorrow. So always <b>fully charge</b> before testing and before matches.</p>
+1cf2bb|If the same program "suddenly gets better" or "suddenly gets worse", check the battery first, then suspect the program.
+0006dd|From finishing the program to the robot running, what's the correct order? Click in order.
+1c6486|Fully charge the battery first
+840838|Write the program
+da8ab2|Connect the Brain to the computer with a USB cable (or Bluetooth)
+cc17ee|Press Download to download the program to the Brain
+d1abf7|Pick this program on the Brain screen
+ef6356|Press run and the robot goes
+34b545|The program is written but the robot doesn't move. What do you check first?
+7172c2|Whether it was downloaded to the Brain and the right program is selected
+8e88c8|Swap the wheels
+29d7c8|Rewrite the program
+7d0ff4|Use another computer
+6edbcf|Not downloading, or picking the wrong program, is the most common cause.
+75e017|When the battery is very low, what usually happens?
+f83da6|The program gets faster
+aba5d7|Motors get weaker and behavior is unstable
+2ec7af|No effect
+9679b7|Sensors get more accurate
+a6a458|Low power weakens the motors, so test results aren't reliable.
+d48ff3|How do you usually start an autonomous program at a match?
+96cf82|Plug in a computer at the sideline and write it there
+e1c6b5|Pick the already-downloaded program on the Brain, then run it
+7b36ee|Control it directly with a phone
+a2b521|Use the controller joysticks
+0315c5|You can't write programs at the match; download them beforehand.
+e1eac1|Download and run for the first time
+5d1364|Fully charge the battery.
+e4271f|Write a tiny program with just "drive forward for 200 mm".
+06cea6|Download it to the Brain, unplug, then pick it on the Brain and run it.
+122064|Measure how far the robot actually went.
+1b335e|Write down: battery level, program contents, and how far it actually went.
+7ba8dc|🖥️ Simulator
+49f7d4|Which block does a block program start running from?
+33c295|Any block
+fceaa8|"when started"
+cd45e0|The biggest block
+da8b7e|The red block
+c52943|Blocks that aren't attached under "when started" won't run on their own.
+6cf31f|What VEXcode looks like
+4a917c|<p>On the left of VEXcode are the <b>block categories</b> (Drivetrain, Sound, Screen, Sensing, Control…); in the middle is your <b>workspace</b>, where you drag blocks and stack them one after another.</p><p>To use a motor or sensor, first add the device in <b>Devices</b> so the matching block category appears.</p>
+f3a5bf|The program's starting point: when started
+509f36|<p>Blocks must be <b>attached under "when started"</b> to run. A block sitting alone off to the side just sits there and doesn't run.</p><p>Execution goes <b>top to bottom</b>, one block finishing before the next.</p>
+627d81|Dragging blocks out but forgetting to attach them to "when started" is the step beginners miss most.
+b07445|A good habit: Save As
+50e0ee|<p>Want to try a different approach but worried about breaking things? Use <b>Save As</b> and the old version is kept. Then write in your engineering notebook "how this version differs from the last".</p><p>Judges like seeing this too: you tried, you compared, you recorded.</p>
+bfd799|You could name files like: straight_v1, straight_v2_tuned_speed.
+ac676c|Match each VEXcode feature to its purpose.
+35a303|when started
+298ad6|The program starts running from here
+e8fa3b|Devices
+3a40b2|Add motors and sensors and set their ports
+b911c7|Download
+d5fcab|Sends the program to the Brain
+0ea09e|Save As
+d9a906|Keeps the old version for easy comparison
+de5e80|Workspace
+a50a6c|Where you drag blocks and put the program together
+5482fb|A block sits in the workspace but isn't attached under any block. What happens when you press run?
+a29489|It runs
+1e1229|It doesn't run
+1c6151|It runs first
+0e9db1|Blocks not attached under "when started" don't run automatically.
+2feedd|You're using a distance sensor but can't see the distance blocks. What's the most likely reason?
+9135fe|VEXcode is broken
+c12d02|The distance sensor hasn't been added in Devices
+a4fcd1|You need another computer
+60499d|The blocks were deleted
+1784b9|Only after adding the device does its block category appear.
+7859e1|You want to try a new approach but keep the old version. What do you do?
+4ef719|Overwrite it
+e539a8|Delete it and rewrite
+da9ce1|Don't test
+d2f4e2|Save As keeps every version.
+4d5884|Make your first project
+7979ed|Start a new project and add the left and right motors in Devices.
+cbab2f|Write a program with "when started" + "drive forward for 300 mm".
+8de8af|Save As, change the distance to 500, and run again.
+2d01d5|What differs between the two versions: distance, result, and what you learned.
+7332b8|📓 Engineering notebook
+782359|With a brace: barely skews
+cb52ed|Four-sided frame: pushed out of shape
+e5707c|Skewed 
+488fd6| units
+e43749|Push on a four-sided frame and on a triangular frame. Which skews more easily?
+27108e|Neither
+2f8711|A four-sided frame can be pushed into a parallelogram; a triangle can't.
+af9442|Triangles are the strongest
+17e150|<p>The lengths of a triangle's three sides decide its shape, so it <b>doesn't skew</b>. A four-sided frame has fixed side lengths but can still change shape (into a parallelogram), so it is easily pushed out of shape.</p>
+f3fd06|You'll see lots of triangles in bridges, towers, and bicycle frames.
+887660|Add a brace = turn a four-sided frame into two triangles
+12e2ce|<p>Is the robot's chassis or arm wobbly? First find where the "four-sided frame" is and add a <b>diagonal brace</b> — it becomes two triangles and is instantly stable.</p>
+891cd3|Joints and center of gravity
+bf75aa|<ul><li><b>Using only one pin at a joint makes it wobble</b>; fixing at two or more points is steadier.</li><li>Put heavy parts (battery, Brain) <b>low and near the middle</b> so the robot is less likely to tip when turning, accelerating or bumping.</li></ul>
+6b813f|A battery on top and off to one side is the easiest way to tip over when turning.
+a0d984|Push hard on a four-sided frame, then add a brace and compare how much it skews.
+5e7f79|Push strength
+487e9b|Brace added?
+ffeb30|No
+cc4ad2|Yes
+54b7c0|Result
+ecf366|Very stable, barely skews
+62c6a9|Skews a little
+4c7341|Skews a lot
+5bb6b6|With the same force, it skews very little when braced.
+948e7a|The robot's arm keeps wobbling. What should you do first?
+3bc4dc|Change the motor
+b61a93|Find the four-sided spots and add diagonal braces
+b3055a|Take the battery off
+1da663|Use a higher speed
+d0f4e1|A brace turns a four-sided frame into two triangles, making the structure instantly stable.
+86276c|Where should a heavy battery go so the robot tips less easily?
+0460d2|At the very top
+ca76b3|Low and near the middle
+1cb75e|At the very front
+38cf08|At the arm's tip
+a40367|The lower and more central the center of gravity, the steadier.
+b3f8a6|Two beams are joined with only one pin. What happens?
+bf3f7c|Strongest
+55fda2|It turns easily and wobbles
+fe0891|Lighter
+99a359|Completely fixed
+d0621e|One pin is just a pivot; you need two points to hold it fixed.
+18e1dc|Triangle experiment
+d2715a|Build a four-sided frame from 4 beams and 4 pins and push it by hand to see if it skews.
+b2b8d6|Add one brace, push with the same force and compare.
+1dc698|Write how the two felt on a "test record" page.
+89fbce|Paste both photos and write what's different.
+0e647b|🛠️ Hands-on building challenge
+f5ed60|Went 
+ecdeda|When a wheel makes one full turn, about how far does the robot move?
+a17fc9|The wheel's diameter
+93fec6|The wheel's "circumference" (the length around once)
+c27f33|If the wheel doesn't slip, one turn covers a length of ground equal to the "circumference".
+3a6b15|One turn = one circumference
+5c4e80|<p>Picture rolling a wheel along the ground. In one turn it "measures" a stretch of ground exactly as long as the distance around the wheel — that length is the <b>circumference</b>.</p><p><b>Circumference = diameter × 3.14</b> (use 3.14 for π)</p>
+813352|The diameter is "the whole line through the center"; the radius is only half of it.
+447314|Two formulas, convert back and forth
+d1e763|<p><b>Distance = turns × circumference</b><br><b>Turns = distance ÷ circumference</b></p><p>Example: wheel diameter 60 mm, circumference about 188 mm. To go 940 mm: 940 ÷ 188 = 5 turns.</p>
+f53275|Multiplying the radius by 3.14 gives only half the circumference! Convert to diameter first.
+99bfce|"drive forward for □ mm" in the program
+dd7445|<p>When you write 200 mm in a block, VEXcode uses the wheel size you set to convert it into how many turns the motor must make. So <b>if the wheel size is set wrong, the distance will be off</b>.</p>
+8751b5|Change the wheel size and number of turns and see how far the robot goes.
+e7a4a5|Wheel diameter
+fc15b1|Turns
+dc85e9| turns
+a743b1|Circumference (distance per turn)
+d1ebdf|Total distance
+242770|Double the diameter, same turns, and the distance doubles too.
+c7e8f3|Wheel diameter 50 mm, 4 turns. About how far does it go? (use π = 3.14)
+a766b5|Circumference = 50 × 3.14 = 157 mm; 4 turns = 157 × 4 = 628 mm.
+a495c4|To go 628 mm with a wheel circumference of 157 mm, how many turns?
+20a0b9|2 turns
+4694a5|3 turns
+996b42|4 turns
+257864|5 turns
+65b0c1|Turns = 628 ÷ 157 = 4 turns.
+fca54c|You switch to a bigger wheel and still turn it 3 times. What happens?
+504f7d|It goes a shorter distance
+323afa|It goes a longer distance
+d37655|The same distance
+faf4e7|A bigger diameter means a bigger circumference, so one turn goes farther.
+fd7981|Measure the wheel and check the distance
+be9af2|Measure the wheel's diameter (mm) with a ruler and work out the circumference.
+70252b|Compare with your calculation, note the error and think about why it happened.
+da6f86|Write down: diameter, calculated distance, actual distance, the error and possible reasons.
+507671|<p>In reality wheels slip a little and floor friction varies, so the measured distance is usually a bit less than calculated. The most reliable approach in competition: <b>calculate first, then measure for real, and fine-tune using the measurement</b>.</p>
+473c01| teeth
+590aee|A small gear drives a big gear. What does the big gear do?
+951d1b|Turns faster, less force
+61522f|Turns slower, more force
+816383|Turns in the same direction
+e5eb15|Small-drives-big is "reduction": slower, but stronger.
+3a3e29|Two meshing gears turn in opposite directions
+766999|<p>When two gears mesh, if one turns clockwise the other turns counterclockwise. To make two wheels turn the same way, add one more gear in between.</p>
+2a6d54|Small drives big = reduction (slow, strong)
+bf5f65|<p>A 12-tooth small gear driving a 36-tooth big gear: the small gear must turn 3 times for the big gear to turn once. <b>3× slower, about 3× more force</b>. Good for an arm lifting heavy things.</p><p>The other way around, big drives small, is a <b>speed-up</b>: faster, but less force.</p>
+4442b9|Speed and force are like a seesaw: to get more force you give up speed.
+f423f6|One formula for turns
+4c2fb8|<p><b>Driven turns = driving turns × driving teeth ÷ driven teeth</b></p><p>Example: driving 12 teeth turns 6 times, driven 36 teeth: 6 × 12 ÷ 36 = 2 turns.</p>
+9aca17|Don't swap the tooth counts! If "driving ÷ driven" is less than 1, it's slower.
+aa8b3f|Change the two gears' tooth counts and see the driven gear's turns, speed and force.
+e202b6|Driving gear teeth
+f8625b|12 teeth
+ae7178|24 teeth
+4306cf|36 teeth
+e8ead5|60 teeth
+fcde48|Driven gear teeth
+e68678|Driving gear turns
+970af3|Driven gear turns
+7d75ab|Slower by 
+892a7d|×
+a65796|Faster by 
+f75209|Force
+a151ca|Up about 
+79763f|Down to 1/
+d54edd|Small drives big: fewer turns, more force; big drives small: the opposite.
+150e7a|A 12-tooth driving gear turns 9 times and drives a 36-tooth gear. How many times does the driven gear turn?
+b5d22f|27 turns
+ba053b|9 turns
+093bbd|1 turn
+9463aa|9 × 12 ÷ 36 = 3 turns.
+97bdb1|An arm needs to lift something heavy. Which should you use?
+34e63e|Big gear drives small gear (speed-up)
+f0f0ac|Small gear drives big gear (reduction)
+901919|No gears
+79cf02|They're all the same
+d36697|Reduction gives big force — good for lifting.
+8dc65f|Two gears mesh. The driving gear turns clockwise. The driven gear turns?
+e6473b|Clockwise
+bc2cc8|Counterclockwise
+bb56f6|Back and forth
+a6ac53|Two meshing gears turn in opposite directions.
+0376f6|Measure the gear ratio
+97388a|Mesh a 12-tooth gear with a 36-tooth gear.
+3524f4|Turn the 12-tooth gear by hand 3 times and count how many times the 36-tooth turns (it should be 1).
+3b09da|Swap to a 36-tooth driving a 12-tooth and measure again.
+e1931a|Record both setups: driving turns, driven turns, and whether they match your formula.
+7fd9c6|Left wheel 
+210f9f|Right wheel 
+653c0c|The left wheel goes forward and the right wheel backward (same speed). What does the robot do?
+7e1e12|Goes straight
+11f822|Reverses
+a0b7f9|Stops
+2e52c9|Opposite directions on the two sides make it turn in place.
+27ef16|Differential drive: turning by left/right wheel speed
+515d7f|<p>For a robot with drive wheels on the left and right, <b>turning isn't done with a steering wheel but by making the left and right wheel speeds different</b>:</p><ul><li>Same direction, same speed → <b>straight</b></li><li>Opposite directions → <b>turn in place</b></li><li>One side faster, one slower → <b>arcs toward the slower side</b></li></ul>
+cca345|Want a straight line but it drifts?
+665439|<p>If the two sides have different speed or friction, it drifts. This is the most common cause of "won't go straight". Fix: check whether a wheel is stuck, whether both sides have the same Reverse and speed settings, and if needed correct it with the Gyro.</p>
+daed94|Measure first: drive straight 1000 mm — how far did it drift and to which side? Then guess why.
+db1df5|How much to turn, how much the wheels turn
+b48f69|<p>Turning 180° needs <b>twice</b> as much wheel rotation as turning 90°. Omni wheels have low resistance when turning in place and can also slide sideways.</p>
+d7a54f|"Turn 90 degrees" is the angle the robot's body turns, not the angle the wheels turn.
+566cb3|Change the left and right wheel speeds and see how the robot moves.
+8faed9|Left wheel speed
+77560b|Right wheel speed
+6e1985|The robot
+766d11|stays still
+859ab9|drives straight backward
+cf95d6|turns right in place
+1f6061|turns left in place
+7ea97f|arcs right (left wheel is faster)
+a1211c|arcs left (right wheel is faster)
+4e864a|Both wheels equally fast → straight; one positive, one negative → turn in place.
+c59ec8|Left wheel 70%, right wheel 30%. Which way does the robot arc?
+0eebd2|Right (toward the slower right wheel)
+5d22ae|Left (toward the faster left wheel)
+b6b5d2|Turns in place
+76a563|The left wheel is faster and the right is slower, so it arcs toward the slower side (right).
+dff7bf|To turn in place, the left and right wheels should be?
+952082|Same direction, same speed
+1b36af|Opposite directions
+43d84c|Only one side moves
+f36977|Both stopped
+082122|Only opposite directions turn it in place.
+dfd3d9|The wheel rotation needed to turn 180° is how many times that for 90°?
+bfec46|Double the angle, double the rotation.
+dab496|Straight-line drift test
+a86d38|Make the robot "drive forward for 1000 mm".
+780559|Measure how far it drifted and to which side.
+465913|Guess the cause, change just one thing (like checking the wheels or resetting) and test again.
+181baf|Write down what you changed and how the drift changed — three tests is enough.
+ac1ab7|🖥️ Challenge bank
+d3917d|🎛️ Control Lab
+09e3a4|The longer the arm, lifting the same weight is?
+96e35b|Easier
+3d9b79|Harder
+99bc85|The farther the load from the pivot (the longer the lever arm), the harder the motor works.
+1c5e60|Lever arm: farther from the pivot is harder
+60b0b7|<p>The arm's pivot is like a seesaw's fulcrum. The <b>farther the load is from the fulcrum (the longer the lever arm)</b>, the more force is needed. To lift heavy things: <b>keep the arm short</b>.</p>
+359b4c|Trade speed for force with reduction
+413056|<p>A motor driving an arm directly often can't lift. Add a <b>small-drives-big reduction gear set</b> (like 12:36): force goes up, the arm slows down, and it lifts steadily.</p>
+197699|Also set the stopping mode to "hold" so the arm doesn't slowly sink after lifting.
+e9c760|The claw: enough friction
+473bd0|<p>Gripping relies on friction. Smooth plastic slips easily, so use <b>rubber or rubber bands</b> on the claw's contact surfaces for a firmer grip.</p>
+7f0a2d|The design process for mechanisms
+f03aa6|<p>Find a need → think of ideas → build a prototype → test → improve. <b>Don't aim for perfect at once</b> — build it first; testing shows what to change.</p>
+16a4f7|Change the arm length, load weight and reduction ratio and see whether the motor struggles. (Illustrative numbers, not real specs.)
+087031|Arm length
+9070cf|Load weight
+48714c|Reduction ratio
+22b43c|No reduction 1:1
+5ef804|12:36 (3× force)
+1999cb|12:60 (5× force)
+cc8c5c|Force the motor must produce (relative)
+9a3504|Feels
+24d154|😀 Easy
+90833c|😅 A bit hard
+67d067|😫 Can't lift — shorten the arm or add reduction
+e60e24|With reduction gears added, the force needed drops.
+d64a8a|The arm can't lift a heavy load. Which fix works best?
+8cdcf6|Use bigger wheels
+cf633a|Add reduction gears (small drives big)
+ba2afc|Make the arm longer
+a96132|Set the speed to 100%
+901113|Reduction trades speed for force; a longer arm makes it harder.
+160513|After lifting, the arm slowly sinks. What should the program set?
+6cdf61|Speed 100%
+28eec7|Wait 10 seconds
+ce1e63|hold locks the motor so it doesn't sink.
+77a4f5|The claw doesn't grip well. What's the most direct improvement?
+47c8bd|Add rubber or rubber bands to the claw surfaces
+ad8a4e|Polish the claw smooth
+6ec19d|Use a heavier object
+a53667|Move faster
+aebfa5|Enough friction keeps it from slipping.
+320cde|Build a lifting arm
+f6b8da|First, with no gears, lift a heavy object directly with the motor and see if it can.
+0f9c00|Add a 12:36 reduction gear set and try again.
+afbb4f|Set the stopping mode to hold and measure how many seconds it holds.
+a9f5ca|Record: gears or not, whether it lifts, how many seconds it holds. Paste photos too.
+78e63c|Draw a straight line on the floor, turn the wheel by hand 3 times, then measure how far the robot actually went.
+11032b|Set the stopping mode to hold
+5c9ef0	Reverse, turning nose left (left wheel reverses faster)
+e40ddf	Reverse, turning nose right (right wheel reverses faster)
+2b95f2	Veer right (one wheel forward, one backward)
+a596a6	Veer left (one wheel forward, one backward)

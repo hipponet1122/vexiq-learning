@@ -1,0 +1,388 @@
+324b87|Three blocks from top to bottom: forward → turn right → forward. What does the robot do first?
+ce3634|Forward
+6c7947|Turn right
+417bf4|Whatever it feels like
+7b9050|A program runs from top to bottom, one at a time.
+f0d0d2|A program is like a recipe: top to bottom, step by step
+5ffffc|<p>A robot doesn't think for itself; it just follows <b>the order you wrote</b>, finishing one before starting the next. Change the order and the result is completely different.</p>
+ceac5a|Before programming, "be the robot" on paper and walk through it with your finger.
+908221|Order decides the path
+aaad0a|<p>"Forward 200, turn right 90, forward 100" draws an L shape. If you change the order to "turn right 90, forward 100, forward 200", the robot turns the other way right at the start and the path is completely different.</p>
+68735d|The same blocks in a different order send the robot to a different place.
+babdb2|Debug by "being the robot"
+737cd0|<p>When a program doesn't run right, grab paper and pencil, start from the "when started" line, and <b>simulate the robot's position and heading line by line</b>. The first line where it differs from what you expected is where the problem is.</p>
+dff898|Arrange the blocks yourself: swap the order of forward and turn and see how the path changes. (Try "forward 200, turn right 90, forward 100" first.)
+a1f8d5|Change the order and the endpoint changes.
+b11d21|The robot starts facing north. After running, which way does it finally face?
+8f3e81|Turning right 90° changes north to east; going forward keeps it facing east.
+bd62b4|To make the robot draw an L shape, which order is right?
+a0b372|Forward → turn right → forward
+ad89e5|Turn right → forward → forward
+5536ef|Forward → forward → turn right
+404dce|Turn right → turn right → forward
+936a8c|Forward, turn, then forward again makes a corner.
+2f4f38|The program doesn't run right. What's the best first step?
+f01d00|Simulate what the robot does, line by line
+b13e03|Delete everything
+535de8|Turn the speed up
+b18bfc|Simulate every line to find the first line that differs from what you expected.
+f1346c|Be the robot on paper
+ce4d6c|Tape an L-shaped route on the floor.
+b08b14|Write the matching program, and simulate it on paper with your finger first.
+49dbb1|Test in the simulator or on the real robot — does it match your simulation?
+1e92ec|Paste the route and a program screenshot and write how "simulated" and "real" differ.
+70210e|🏁 Challenge bank
+eb6bef|In a turn block, what unit is the "90"?
+9b6cff|Millimeters (distance)
+d0bb65|Degrees (angle)
+81522a|Percent
+840781|A turn is about angle; only forward is about distance.
+83d3ab|Turns use "angle", driving uses "distance"
+fd673e|<p>"drive forward for 200 <b>mm</b>" is a distance; "turn right for 90 <b>degrees</b>" is an angle. Don't mix them up — it's one of the most common mistakes.</p>
+254dc8|If you write "turn 90 mm" or "forward 90 degrees", the robot won't know what to do.
+06fa44|Remember 90, 180, 360
+d83e66|<ul><li><b>90 degrees</b>: a right angle, one corner.</li><li><b>180 degrees</b>: a U-turn.</li><li><b>360 degrees</b>: a full circle, back to the original heading.</li></ul><p>Turning right is <b>clockwise</b> (like a clock's hands) and turning left is <b>counterclockwise</b>. Left and right are judged as if you were sitting on the robot, facing its front.</p>
+6e3411|How many degrees to turn to draw a square or an equilateral triangle?
+a72253|<p>For a square: turn <b>90 degrees</b> at each corner, and 4 corners total exactly 360 degrees. For an equilateral triangle: each corner turns not 60 but <b>120 degrees</b> (360 ÷ 3).</p><p>Trick: <b>the turns add up to 360 degrees, back to the original heading</b>.</p>
+d59269|How many degrees at each corner of a regular hexagon? 360 ÷ 6 = 60 degrees.
+04057b|Make a square with "forward 200" and "turn right". Then try a triangle (turn 120 degrees).
+b69797|To end up facing the starting direction, the turns must total 360 degrees.
+c28075|To draw an equilateral triangle (equal sides), how many degrees at each turn?
+1dadc4|120 degrees
+9a68d9|Exterior angle = 360 ÷ 3 = 120 degrees.
+7f7d36|The robot faces north and turns right 180 degrees. Which way does it face?
+900980|Turning 180 degrees is a U-turn: north becomes south.
+3156ec|In "turn right for 90", what is the 90?
+b0bfb8|90 mm
+380fce|90 seconds
+1a3fa0|The unit of a turn is degrees.
+2cb516|Write a program that draws a square (side 300 mm).
+0d15c1|Test it in the simulator, then run it on the real robot.
+7b8d73|Measure how far it ends from the start and how many degrees the heading is off.
+b56677|Write down the program, the error and possible causes (wheel slip? inaccurate turns?).
+88afa7|Change the drive velocity from 50% to 100%. How far does "drive forward for 1000 mm" go?
+5bd143|The distance is set by the number after "for"; speed only affects how fast.
+a822d5|Speed only affects fast or slow
+ccc2ea|<p>"<b>set drive velocity</b>" decides how fast the robot goes; it doesn't change the distance of "drive forward for □ mm". Higher speed means less time; lower speed means more time.</p>
+f986ca|Wait: pause the program
+f3844c|<p>"<b>wait □ seconds</b>" holds the program on that line until the time passes before the next one. Common uses: let a mechanism finish moving, let a sensor settle, let the robot stop completely before turning.</p>
+966443|Turning while the motors are still spinning easily slips and is inaccurate. Pause before turning and it's more accurate.
+ccb08e|Fast isn't always better
+0bd8dd|<p>Going too fast can cause slipping, bumping and inaccuracy. In competition, find a speed that's "<b>fast enough and steady enough</b>" and <b>the same every time</b>.</p>
+af9634|Want to know which speed is steadiest? Run 5 times each at 30%, 60% and 100% and compare the error.
+7e92a6|Adjust distance and speed to see how much time is needed. (Illustrative: assume 100% speed is about 400 mm per second.)
+b51981|Distance to go
+628d35|Drive velocity
+f077e3| mm (not affected by speed)
+ecad7e|Time needed (about)
+ddf49d|Double the speed, half the time, same distance.
+de7491|Velocity is 50%, drive forward for 1000 mm. If you change it to 100%, the distance?
+19c561|Becomes 2000 mm
+a5bacc|Still 1000 mm
+b94af4|Becomes 500 mm
+603d31|The distance is set by the number after "for".
+d9009f|0.5 seconds
+3d95e1|3 seconds
+dd75a0|6 seconds
+33cf9b|12 seconds
+8349f1|6 × 0.5 = 3 seconds.
+58afba|  wait 0.5 seconds
+850880|Why add a short "wait" before a turn?
+af8345|Let the robot stop completely before turning, which is more accurate
+9d9600|To charge the battery
+ca8b03|Stopping steady before turning reduces error from momentum.
+f147be|Find the steadiest speed
+938d3d|Pick a 1000 mm straight stretch.
+78d90e|Set the speed to 30%, 60% and 100%, run 3 times each, and measure the endpoint error.
+76b847|Make a table and pick the speed that is "fast enough and steady enough".
+b5065d|Paste the table and write which speed you picked and why.
+64c8e7|To draw a square, instead of writing 8 blocks, what's a better way?
+16a9f9|Write a few more
+dc0a9e|Wrap "forward + turn right" in "repeat 4 times"
+1c3216|Write 4 forwards
+25d437|You can't use repeat
+4108c6|A repeat block wraps the same action; the program is shorter and less error-prone.
+d8f9cd|Repeat blocks: no need to write it many times
+c6f64f|<p>Blocks wrapped inside "<b>repeat (4)</b>" run 4 times in order. Wrap [forward 200, turn right 90] inside "repeat 4" and you get a square.</p>
+e39b93|Key: which blocks are wrapped
+c64766|<p>Only blocks <b>indented inside</b> repeat. "Repeat 4: forward 200, turn right 90" is a square; "repeat 4: turn right 90, then <b>(outside the loop)</b> forward 200" is completely different.</p>
+815e47|Count: how many repeats? How many actions inside? How many in total?
+4069ab|Work out the total
+08271b|<p>"Repeat 4: forward 100" = 4 × 100 = 400 mm forward in total. "Repeat 3: forward 100, turn right 120" = an equilateral triangle with sides of 100.</p>
+ccf381|Draw a square with "repeat the whole thing"
+eba114|Keep only the two blocks "forward 200" and "turn right 90", and set "repeat the whole thing" to 4 times.
+c34017|Repeating 4 times comes right back to the start. What about 3 times?
+e79637|Watch the loop step by step
+6f9ccf|Press "Next step" and watch how the count and distance change.
+783dab|i (which round)
+e47720|Total forward
+f0ba8e|Start repeating; get ready to do it 3 times.
+7f52df|Round 1: forward 100.
+5d9b70|Round 2: forward another 100.
+72675b|Round 3: forward another 100, 300 in all. The loop ends.
+b57ce7|In the program below, how many mm does the robot go forward in total?
+94894a|Repeat 4 times, 100 each: 4 × 100 = 400.
+9a8976|Which one draws a complete square?
+ce6e64|Repeat 4: forward 200, turn right 90
+565a7b|Repeat 2: forward 200, turn right 90
+f33d0b|Forward 200 once
+39561a|Each round is "forward + turn right 90", and 4 rounds turn 360 degrees.
+d8230c|What's the biggest benefit of a repeat block?
+014dc4|The program is shorter and less error-prone
+edb8e6|You don't have to write a program
+d48c32|It saves battery
+315cfb|The same action is written only once.
+dc0966|Draw polygons with repeat
+9cd6aa|Write a square with "repeat" (4 times).
+2772c3|Change it to an equilateral triangle (repeat 3 times, turn right 120 degrees).
+d6a3b5|Change it to a regular hexagon (repeat 6 times, turn right 60 degrees).
+18b635|Paste a program screenshot for each shape and write "repeats × turn angle = 360".
+663faf|To make the robot "keep going forward until there's a wall ahead", which do you use?
+e858a2|Repeat 10 times
+3fa163|Wait 5 seconds
+87b37c|When you don't know how far to go and only know the stopping condition, use "until".
+75adf8|"Repeat N times" vs. "until a condition"
+d31412|<p>If you know the <b>count</b>: use "repeat (N)". If you don't know the count and only know <b>when to stop</b>: use "<b>repeat until &lt;condition&gt;</b>" or "<b>wait until &lt;condition&gt;</b>".</p>
+ced313|<p>Blocks inside "<b>forever</b>" run again and again and never finish by themselves. Common uses: keep checking a sensor, keep controlling the robot from the joysticks.</p>
+d98843|Blocks after a "forever" never get reached — because it never ends.
+990e9b|Events: run only when something happens
+1e86fd|<p>Event blocks like "<b>when Controller button is pressed</b>" mean "<b>do it only when something happens</b>": nothing runs normally, and the blocks inside run only when the button is pressed. Like "when started", they are starting points for a program.</p>
+34e370|Button controls for manual driving usually use event blocks.
+2299e2|Press "Next step" and watch how the distance changes and when the loop stops.
+bb1c5b|The program starts. The wall ahead is at 500 mm.
+6f7726|Check the condition: 500 < 100? Not true, keep repeating.
+f26714|Move forward; the distance becomes 400.
+5e1440|Check again: 400 < 100? Not true.
+7de3cf|Forward again; the distance is 200.
+51e6c8|Check: 80 < 100? True! The loop ends.
+c7e24d|Run "stop driving"; the robot stops.
+94a334|As soon as the condition is true the repeat stops, then the blocks after it run.
+f84328|Which situation is the best fit for "repeat until"?
+809d7d|Driving a square exactly 4 times
+8117ea|Driving forward until it hits a wall
+3f0235|Forward 200 mm once
+178489|Wait 3 seconds
+f326da|You don't know how far it will go, only the stopping condition.
+606527|Blocks inside "forever" will?
+e41bd7|Run once
+566d6c|Run 10 times
+444ba2|Run again and again, never ending by themselves
+fd2b63|Not run
+b467b9|Forever means repeating without end.
+6029df|What kind of block is "when Controller E up is pressed"?
+123e3a|An event block: runs when pressed
+2858f9|An operator block
+508b2b|A variable block
+ebdcf3|An event block runs only when something happens, and is also a starting point for a program.
+cd94ef|Stop in front of a wall
+d7aab7|Use "repeat until distance < 150 mm" together with "drive forward".
+4fac94|Test it in the simulator, then on the real robot.
+86f646|Adjust the threshold (150, 100, 200) and see how far from the wall it stops.
+824c53|Record where the robot stops for each threshold and write your conclusion.
+00f268|"If distance < 100 then stop, else forward". When the distance is 300, the robot?
+095e93|Stops
+100a4e|Turns
+1edb0a|300 is not less than 100, the condition is false, so it takes the "else" side.
+54770f|If… then…, else…
+8d3b81|<p><b>if &lt;condition&gt; then …</b>: runs only when the condition is true; <b>else</b>: runs when it's false. Like "<b>if it rains take an umbrella, else don't</b>".</p>
+12852f|Be careful with conditions: < or >
+5f11ae|<p>"Distance <b>&lt;</b> 100" means "distance is less than 100", i.e. very close. "Distance <b>&gt;</b> 100" means still far. Opposite directions, completely different results.</p><p>Use <b>and</b> when both conditions must hold; <b>or</b> when either one is enough.</p>
+6cb9ca|After writing a condition, plug in a concrete number and try it.
+07d45d|Put an if inside a loop so it keeps checking
+ad80d9|<p>One if checks only "once". To make the robot keep watching the distance, put the if inside <b>forever</b> or another repeat block.</p>
+3bd414|Like "forever: if distance < 100 then stop, else forward" — look as you go.
+60b1b3|Press "Next step" and watch how the if decision changes as the distance shrinks.
+f5676a|    stop driving
+c4d662|  else
+49ef7b|Check: 300 < 100? Not true.
+da6908|Do the "else": drive forward.
+ac8a86|After moving, the distance is 150. 150 < 100? Not true.
+fe0a59|Still the "else": keep going forward.
+bc55ac|Distance 80. 80 < 100? True!
+606fef|Do what's inside the "if": stop driving.
+fca8a5|Runs the "if" part only when the condition is true; otherwise the "else" part.
+aa6ad1|The distance sensor reads 150. What does the robot do in the program below?
+4e0d5a|Drive forward
+f51656|150 is not less than 100, the condition is false, so it does the "else".
+b32c14|  stop driving
+6b1e6e|else
+30ca35|To make the robot act only when "both conditions are true", use?
+b7ee5a|or
+e438e4|and
+d66313|and needs both sides to be true.
+4c9ce6|Why put the if inside "forever"?
+89a4cb|To slow the program down
+efeadb|So it keeps checking instead of just once
+203aa9|No reason
+cb045b|An if decides only once; it must be inside a loop to keep deciding.
+c9e9f1|Build a robot that dodges
+d69ea8|Use "forever + if" so the robot goes forward and stops when distance < 150.
+cc0dec|Then change it: when distance < 150, turn right 90 degrees and keep going.
+877afe|Test it on the real robot and see whether it hits the wall.
+c780e9|Write down the distance threshold you set and when it fails.
+24da30|The distance sensor reads 500 mm and you want to stop 200 mm from the wall. How much farther must the robot go?
+61b9c0|It measures "the distance to the object ahead"
+aa2f3f|<p>The distance sensor sends a signal, sees how long it takes to come back, and works out how far the object ahead is, in <b>millimeters (mm)</b>. In a program you can use its <b>value</b> (how many mm it reads), or ask "<b>found an object?</b>" to see if it sees anything.</p>
+152dc6|Decide with a threshold
+b7f10b|<p>A common pattern: "distance &lt; 150 mm" → stop. That 150 is the <b>threshold</b>. Set it too small and the robot can't brake in time and hits; too big and it stops too early.</p>
+dd3db7|A robot that coasts needs a threshold that leaves some braking distance.
+94eeca|It sometimes can't see
+90b131|<p>If you get no reading, first check: <b>is it installed properly, plugged into the right port, and set up in Devices</b>. Objects that are too close, too far, slanted, very dark or very shiny can also be measured inaccurately.</p>
+b81739|If the robot goes 100 mm toward a wall, the distance goes from 350 to about 250 — that's a "difference", not "exactly equal".
+1b95df|Drag the distance and the threshold and see when the condition becomes true.
+362d52|Distance sensor reads
+7fb271|Stopping threshold
+acdaf8|Condition "distance < threshold"
+924d48|True → stop
+1864e1|False → keep going
+34b933|Still above the threshold by
+5ef42b|The distance keeps shrinking; the condition becomes true only the moment it drops below the threshold.
+ee4ea0|The distance reads 500 mm and you want to stop at 200 mm. How much farther to go?
+33e8d5|It reads 350 mm. After moving 100 mm toward the object, it reads about?
+08c0a1|It gets closer as it goes: 350 − 100 = 250.
+e32fc3|The distance sensor never gives a reading. What do you check first?
+939f29|Change the wheels
+9f97ab|Whether it's plugged in properly and the port number in Devices is right
+c8fc76|Increase the speed
+8fa982|Rewrite the whole program
+53b89c|Check wiring and settings first, then suspect other things.
+0663a8|Measure it and see how accurate it is
+aafdac|Put the robot 300 mm from a wall and measure once with a ruler.
+289ee0|See how many mm the sensor reads and compare the error.
+f6580c|Try 500 mm and 150 mm too, and make a table.
+eaa63d|Paste the table and write which distance is most accurate and which least.
+d296f2|To make the robot "stop only when it touches the wall", what's the simplest sensor?
+1b8163|When the bumper is pressed, it means it hit something.
+650e54|Bumper: you only know when it hits
+b3ec49|<p>The Bumper has two states: <b>pressed / not pressed</b>. When the robot hits a wall, the switch is pushed in and the program knows "it's here". Often used to <b>line up against a wall</b> and to <b>stop</b>.</p>
+614b1d|Touch LED
+aa114e|<p>The Touch LED can work as a <b>button</b> (it responds when you touch it) and can also <b>show colors</b> as a signal light so you know which step the program has reached.</p>
+28ff6b|How do you choose versus the distance sensor?
+f38179|<p>To know <b>how much farther</b>: use the distance sensor. To know only <b>whether it touched</b>: use the bumper. To <b>line up against a wall</b>, the bumper is the most accurate, because it really touched.</p>
+fa01a2|Which sensor for which situation?
+fd677f|Match each situation to the best sensor.
+6e9988|Want to know how far the wall ahead is
+e2ebee|Distance sensor
+8c360f|The robot must line up against a wall and stop
+ff30a8|Need to tell red bags from blue bags
+d1d961|Color sensor
+b3cdbd|Need to turn exactly 90 degrees
+7e57b2|Wait until the bumper is pressed
+71c9e5|Watch step by step how the program waits.
+5f924f|Not pressed
+c7df2c|The robot drives forward.
+b1b9db|Waiting… the condition isn't true yet; the program stays on this line.
+21510f|Pressed
+aa7181|It hits the wall, the switch is pressed and the condition becomes true.
+ef654d|Move to the next line: stop driving.
+bdee6b|To line up against a wall and then stop, which is best?
+28ec4c|Touch LED glowing
+145782|The bumper only triggers when it truly touches, so it's the most accurate.
+c40c62|What does "wait until <bumper pressed?>" mean?
+38c5b5|Go on immediately
+4900af|The program stays here until the switch is pressed, then continues
+a69aab|The light stays on
+1a2376|It waits until the condition is true before continuing to the next block.
+655c3e|Works as a button + shows colors
+db1652|Can only measure distance
+4d5657|Can only be a wheel
+80756e|The Touch LED can work as both a button and a signal light.
+aa5b82|Line up against a wall
+5b9ae5|Mount a bumper on the front of the robot.
+4f71b6|Write: drive forward until the bumper is pressed, then stop.
+eb49bb|Run 5 times in a row and see if it stops in the same place.
+e988cb|Record the five stopping positions and write whether they match and why.
+551344|The color sensor sometimes gets the color wrong. What's the most likely cause?
+76033d|The sensor is broken
+1d3e12|Different distance or lighting
+5b3120|The program is wrong
+fb40dc|A color sensor is strongly affected by distance and light.
+9c9baa|It recognizes colors and can measure brightness
+d928ba|<p>The color sensor can identify <b>colors</b> (like red, blue, green) and <b>brightness</b>. In competition it's often used to tell bag colors apart or read color marks on the field.</p>
+d353c2|It hates "a different environment"
+799e0b|<p>If the sensor is <b>too far or too close</b> to the object, or the <b>lighting flickers between bright and dark</b>, the color reading becomes unstable. So: <b>fix the distance, fix the lighting, and test several times</b>.</p>
+a60d73|It was accurate at home but not at the match — often the match lighting is different.
+4bc2ae|A good habit when programming
+2cfc73|<p>When judging colors, <b>don't rely on a single reading</b>. Read several times in a row, or judge using a range. You can also test at the match first, then decide the threshold.</p>
+78773d|When you arrive at the match, the first thing to do is point the sensor at the field and measure.
+83dd5c|Change the distance and the lighting and see whether color recognition stays steady. (Illustrative)
+ba9571|Sensor-to-object distance
+e04d07|Ambient light
+183e19|Steady bright light
+7a13a6|Flickering light
+a7093f|Very dark
+ce87c8|Color recognition stability
+5c9713|👍 Very steady
+fcc109|🙂 Okay
+a13c0b|😕 Easy to get wrong
+b452d5|❌ Unreliable
+9ebfe0|It's most reliable when it's close and the light is steady.
+f5ac35|The color sensor sometimes gets the color wrong. What should be the first step?
+8b03aa|Get a new computer
+6b9e0b|Fix the distance and lighting and test repeatedly
+48b4a2|Turn up the motor speed
+61b00d|Delete the program
+3fab91|Control the environment first to find the variable.
+8c32a1|Which approach makes color recognition steadier?
+c3cfed|Place it any which way each time
+42cdae|Fixed distance, fixed lighting
+3ee60d|Decide from one reading
+6f8dd3|Turn the sensor off
+597553|With fixed conditions, results are reliable.
+27d5c8|The lighting at the match differs from home. What should you do?
+e55a2b|Ignore it
+7ddba5|Test the sensor on the field when you arrive, then decide the threshold
+89c310|Change the color
+fb77cf|Give up on the sensor
+233b32|Testing on site captures the real values.
+1a2478|Measure a color table
+360b3e|Get red, blue and yellow objects.
+bf0fcf|At a fixed distance (say 30 mm), read three times and note the color and brightness values.
+4a3ee0|Move to another place (different lighting), measure again and compare.
+71ad9d|Paste the tables from two places and write the differences and your threshold decision.
+d4beda|When calibrating the Gyro, the robot should?
+599ac7|Keep spinning
+bff7fa|Be moving
+5489d8|Be picked up
+11eaec|Calibration measures a "still" baseline; shaking throws the baseline off.
+6f666e|The Gyro knows where you're facing
+58b3b7|<p>The Gyro measures <b>how many degrees the robot has turned</b>. "Gyro heading" is the current facing angle, ranging from <b>0 to 360 degrees</b>. Turning clockwise (right) makes the value larger.</p>
+541869|0 degrees is the direction the robot faced during calibration.
+981906|Calibration: the robot must be still
+ba95b1|<p>At the start of the program, first "<b>calibrate the Gyro</b>"; the <b>robot must not move</b> then. If it's still wobbling or gets bumped during calibration, the baseline is off and every later turn will be skewed.</p>
+8ef679|Putting it on the floor and running right after power-on, without waiting for calibration to finish, is a common cause of inaccurate turns.
+468e59|Turn to a specified angle
+7e9310|<p>A more accurate way than counting wheel turns: "<b>keep turning until the Gyro heading reaches the target angle</b>, then stop". Even if the wheels slip, the angle stays accurate.</p><p>A small trap: <b>when crossing 0°/360°</b>, for example turning from 350° to 10°, you only need to turn 20°, not 340°.</p>
+a0046b|Current angle
+b4b8c6|Target angle
+15a0f6|Which direction
+d0a4cd|Turn right (clockwise)
+01f886|Turn left (counterclockwise)
+72511d|350° → 10° needs only a 20° right turn. Going the long way means turning 340°.
+ff0d93|When calibrating the Gyro, the robot should?
+74dd3b|Drive forward
+70ce73|The baseline must be measured while still.
+cdf7ac|It's at 350° and must turn to 10°. What's the shortest turn?
+7d7da0|340° to the left
+964ce5|20° to the right
+10dc59|10° to the left
+572fc8|350° to the right
+1a2bcd|It crosses 0°, so only a 20° right turn is needed.
+edf25a|What's the more accurate way to turn?
+1ddce5|Count wheel turns only
+64ba66|Turn until the Gyro angle reaches the target, then stop
+01d0bf|The faster the better
+4a4ae3|Turn randomly
+5cba16|It judges by an angle sensor, so wheel slip doesn't matter.
+471af3|Turn exactly 90 degrees
+5bb7e8|Add "calibrate Gyro" at the start of the program and wait for it to finish.
+cbfb22|Use the Gyro to turn to 90° and check how many degrees it actually turned (use a protractor).
+e7aa61|Compare with a wheels-only turn — which is more accurate?
+983206|Test each method 5 times: a table plus a conclusion.
+f5ef1b|🎛️ Control Lab (heading lock)
+8b0a9e|<p>A gyro has a little <b>drift</b> (the angle slowly creeps over time). So before an important turn you can recalibrate, or, because matches are short, the effect is usually small.</p>
+a471c2|Repeat "wait 0.5 seconds" 6 times. How long does it wait in total?
+d8e632|Repeat 4: turn right 90, then go forward 200 outside the loop
+9c2dbd|The "repeat until" block
+fe8001|"Forever"
+055920|Drag the current angle and the target angle and see which way to turn and how much. (Blue line = now, green line = target)

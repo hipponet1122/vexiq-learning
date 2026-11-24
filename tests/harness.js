@@ -40,6 +40,7 @@ function load() {
   run('sim.js');
   run('iqimport.js');
   run('control.js');
+  ['lessons-a.js', 'lessons-b.js', 'lessons-c.js'].forEach((f) => run(f));
   run('guide.js');
   return { VX, VXEN: win.VXEN, data: win.__data, content: win.__content };
 }

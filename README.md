@@ -8,6 +8,7 @@ A website for upper-elementary to middle-school students to teach themselves **V
 > The interface is available in Traditional Chinese (Taiwan) and English. Teachers, coaches and parents are welcome to help → [`CONTRIBUTING.md`](docs/CONTRIBUTING.md).
 
 ## Features
+- **Learn-before-practice skill lessons**: all 29 skills feature a guided **Guess → Understand → Try It → Quick Check → Hands-On** flow (`web/learn.js` + `web/lessons-a/b/c.js`) with 5 interactive widgets (sliders, robot path builder, step-by-step code tracer, matching, ordering) before jumping into drills; see [`LESSONS.md`](docs/LESSONS.md).
 - **Adaptive practice**: 6 domains, 29 skills, 175 questions (multiple choice / numeric / ordering / find-the-bug); placement quiz, mastery-based practice, and re-practice of missed questions.
 - **Anti-frustration loop**: on a wrong answer the learner gets a hint and a second try; two misses in a skill pop up a 30-second cheat sheet; each round ends with a "practice similar questions" option. In the simulator, repeated failures reveal challenge hints step by step and suggest a follow-up quiz after a pass.
 - **Web simulator** modeled on VEXcode IQ Blocks (English blocks with Chinese tooltips, drag and drop, sensors, My Blocks, undo/redo, Python/C++ code view, Brain screen).

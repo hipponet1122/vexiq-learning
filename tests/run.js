@@ -371,10 +371,12 @@ t('15／30／45／60 分鐘課表皆能正確產出，60 分鐘含中途休息�
   const s30 = VX.guide.buildSchedule(baseSt, 30);
   const s45 = VX.guide.buildSchedule(baseSt, 45);
   const s60 = VX.guide.buildSchedule(baseSt, 60);
-  assert.strictEqual(s15.length, 2);
-  assert.strictEqual(s30.length, 4);
-  assert.strictEqual(s45.length, 5);
-  assert.strictEqual(s60.length, 6);
+  assert.strictEqual(s15.length, 2); // 先學觀念＋練 5 題（不另外暖身）
+  assert.strictEqual(s30.length, 5); // 暖身、先學、練習、動手、筆記
+  assert.strictEqual(s45.length, 7);
+  assert.strictEqual(s60.length, 8);
+  assert(s15.reduce((a, x) => a + x.mins, 0) <= 16, '15 分鐘課表不能排超過時間');
+  assert(s30.reduce((a, x) => a + x.mins, 0) <= 36, '30 分鐘課表不能排太多');
   assert(s60.some((x) => x.breakBefore), '60 分鐘課表應含中途休息提醒');
 });
 t('自動避開已精通技能，並將超過 7 天未練的已精通技能排入暖身複習', () => {
@@ -436,7 +438,7 @@ t('擷取清單內的字串雜湊不衝突', () => {
 });
 [['data-QS', 0], ['data-SKILLS', 0], ['data-DOMAINS', 0], ['data-TAGS', 0], ['content-CHALLENGES', 0], ['content-NB_LESSONS', 0], ['content-NB_KINDS', 0], ['content-BUILD', 0], ['content-PARTS', 0],
   ['content-BUILD_LAB_CATS', 0], ['content-BUILD_LABS', 0],
-  ['content-INTERVIEW', 0], ['content-SEASON', 0], ['server', 0], ['page', 0], ['ui-app', 12], ['ui-modules', 2], ['ui-guide', 0], ['ui-extras', 0], ['ui-about', 0], ['ui-a11y', 0], ['ui-iqimport', 5], ['ui-sim', 70], ['ui-arena3d', 0], ['ui-pathplan', 5], ['ui-control', 0], ['ui-taiwan', 0]].forEach(([a, allow]) => {
+  ['content-INTERVIEW', 0], ['content-SEASON', 0], ['server', 0], ['page', 0], ['ui-app', 12], ['ui-modules', 2], ['ui-guide', 0], ['ui-extras', 0], ['ui-about', 0], ['ui-a11y', 0], ['ui-learn', 0], ['ui-lessons-a', 0], ['ui-lessons-b', 0], ['ui-lessons-c', 0], ['ui-iqimport', 5], ['ui-sim', 70], ['ui-arena3d', 0], ['ui-pathplan', 5], ['ui-control', 0], ['ui-taiwan', 0]].forEach(([a, allow]) => {
   t('英文翻譯齊全：' + a + (allow ? '（容許 ' + allow + ' 句中文積木字樣不翻）' : ''), () => { const m = missing(a); assert(m.length <= allow, '還有 ' + m.length + ' 句沒翻：' + m.slice(0, 3).join(' | ')); });
 });
 t('翻譯過的課文 HTML 標籤跟原文一致（不會把頁面弄壞）', () => {
@@ -466,6 +468,89 @@ t('逐段翻譯：中文句子拼著數字也能翻對，不會翻成一半中�
   cases.forEach((c) => { const r = tr(c); assert(!ZH.test(r), c + ' → ' + r); });
   assert.strictEqual(tr('熟練度 2 顆星（滿分 3 顆）'), 'Mastery 2 stars (out of 3)');
   assert.strictEqual(tr('測試'), '測試'); // 使用者名字不亂翻
+});
+
+
+group('技能教學（先學再練）');
+const LESSONS = (() => {
+  const vm = require('vm'), fs2 = require('fs'), path2 = require('path');
+  const box = { window: {} }; box.window = box; vm.createContext(box);
+  ['lessons-a.js', 'lessons-b.js', 'lessons-c.js'].forEach((f) => vm.runInContext(fs2.readFileSync(path2.join(__dirname, '..', 'web', f), 'utf8'), box));
+  return box.VX_LESSONS;
+})();
+const LAB_TYPES = ['calc', 'walk', 'trace', 'match', 'order'];
+t('29 個技能都有教學內容，沒有多的', () => {
+  assert.strictEqual(JSON.stringify(Object.keys(LESSONS).sort()), JSON.stringify(SKILLS.map((s) => s.id).sort()));
+});
+t('每個教學：看懂 3～4 張卡、小檢查 3 題、動手做、時間合理', () => {
+  Object.entries(LESSONS).forEach(([id, L]) => {
+    assert(L.cards && L.cards.length >= 3 && L.cards.length <= 4, id + ' 卡片數');
+    L.cards.forEach((c) => assert(c.t && c.b, id + ' 卡片缺標題或內容'));
+    assert(L.check && L.check.length === 3, id + ' 小檢查要 3 題');
+    assert(L.doit && L.doit.t && L.doit.steps && L.doit.steps.length >= 2 && L.doit.note, id + ' 動手做');
+    assert(L.min >= 5 && L.min <= 15, id + ' 時間');
+    assert(L.guess && L.guess.opts.length >= 3 && L.guess.a >= 0 && L.guess.a < L.guess.opts.length, id + ' 先猜');
+  });
+});
+t('小檢查與先猜：答案索引有效、選項不重複、有解釋', () => {
+  Object.entries(LESSONS).forEach(([id, L]) => [L.guess].concat(L.check).forEach((q) => {
+    assert(q.q && q.why, id + ' 缺題目或解釋');
+    assert(q.a >= 0 && q.a < q.opts.length, id + ' 答案超界：' + q.q);
+    assert.strictEqual(new Set(q.opts).size, q.opts.length, id + ' 選項重複：' + q.q);
+  }));
+});
+t('互動小工具：類型有效、必要欄位齊全、算式不會出錯', () => {
+  Object.entries(LESSONS).forEach(([id, L]) => {
+    const labs = Array.isArray(L.lab) ? L.lab : [L.lab];
+    labs.forEach((lb) => {
+      assert(LAB_TYPES.includes(lb.type), id + ' 未知小工具 ' + lb.type);
+      if (lb.type === 'calc') {
+        const grid = (p) => p.opts ? p.opts.map((o) => o[0]) : [p.min, p.v, p.max];
+        const combos = lb.params.reduce((acc, p) => acc.flatMap((a) => grid(p).map((x) => Object.assign({}, a, { [p.k]: x }))), [{}]);
+        combos.forEach((v) => {
+          lb.outs.forEach((o) => { const r = o.f(v); assert(r !== undefined && r !== null && !/NaN|undefined|Infinity/.test(String(r)), id + ' 算式結果異常：' + o.l + ' ' + JSON.stringify(v)); });
+          if (lb.viz) assert(!/NaN|undefined/.test(lb.viz(v)), id + ' 圖形異常 ' + JSON.stringify(v));
+        });
+      }
+      if (lb.type === 'trace') lb.steps.forEach((st) => assert(st.line >= 0 && st.line < lb.code.length, id + ' trace 行號超界'));
+      if (lb.type === 'match') assert(lb.pairs.length >= 3 && new Set(lb.pairs.map((p) => p[1])).size === lb.pairs.length, id + ' 連連看');
+      if (lb.type === 'order') assert(lb.steps.length >= 3, id + ' 排順序');
+      if (lb.type === 'walk') assert(Array.isArray(lb.start || []), id + ' walk');
+    });
+  });
+});
+t('教學連結都指向存在的頁面', () => {
+  const ok = /^#\/(build|build\/parts|build\/lessons|sim|challenge|notebook|control|pathplan|arena3d|compete\/(season|skills|taiwan|interview|vocab)|resources)$/;
+  Object.entries(LESSONS).forEach(([id, L]) => (L.doit.links || []).forEach(([, hr]) => assert(ok.test(hr), id + ' 連結：' + hr)));
+});
+t('教學內容的公式與算例正確（抽驗）', () => {
+  const B3 = LESSONS.B3.lab; const v = { a: 12, b: 36, n: 9 };
+  assert.strictEqual(B3.outs[0].f(v), 3); // 9 × 12 ÷ 36
+  const B2 = LESSONS.B2.lab; assert.strictEqual(B2.outs[1].f({ d: 50, n: 4 }), 628);
+  const F1 = LESSONS.F1.lab; assert.strictEqual(F1.outs[0].f({ floor: 2, l1: 1, l2: 1, l3: 0, l4: 0 }), 11);
+  const F2 = LESSONS.F2.lab; assert.strictEqual(F2.outs[0].f({ t: 15, p: 6 }), 4); assert.strictEqual(F2.outs[1].f({ t: 15, p: 6 }), 24);
+  const E7 = LESSONS.E7.lab; assert.strictEqual(E7.outs[0].f({ x: 300, y: 400 }), 500);
+  const D5 = LESSONS.D5.lab; assert.strictEqual(D5.outs[0].f({ cur: 350, tg: 10 }), 20); assert.strictEqual(D5.outs[1].f({ cur: 350, tg: 10 }), '右轉（順時針）');
+  const E6 = LESSONS.E6.lab; assert.strictEqual(E6.outs[0].f({ l: 300, r: 500 }), 400);
+  const B4 = LESSONS.B4.lab.outs[0].f;
+  assert(/往右/.test(B4({ l: 70, r: 30 })));
+  assert(/向左/.test(B4({ l: -80, r: -20 })));
+  assert(/向右/.test(B4({ l: 20, r: -80 })));
+});
+t('小檢查的標準答案與教學內容一致（抽驗）', () => {
+  const ans = (id, i) => LESSONS[id].check[i].opts[LESSONS[id].check[i].a];
+  assert.strictEqual(ans('B3', 0), '3 圈'); assert.strictEqual(ans('B2', 0), '628 mm'); assert.strictEqual(ans('C2', 0), '120 度');
+  assert.strictEqual(ans('D2', 0), '300 mm'); assert.strictEqual(ans('F1', 0), '11'); assert.strictEqual(ans('F2', 1), '24');
+});
+t('教學進度怎麼影響練習與課表（learn.js 的判斷）', () => {
+  const guide = VX.guide;
+  assert(guide && guide.plan, 'guide.plan 不存在');
+  const st = { done: true, m: {}, seen: {}, days: {} };
+  const p1 = guide.plan(st).today.tasks.map((x) => x.t).join('|');
+  assert(/先學觀念/.test(p1), '新技能的課表要先排「先學觀念」：' + p1);
+  const st2 = { done: true, m: {}, seen: {}, days: {}, lrn: Object.fromEntries(Object.keys(LESSONS).map((k) => [k, { d: '2026-11-24', s: 5, c: 3, w: 0 }])) };
+  const p2 = guide.plan(st2).today.tasks.map((x) => x.t).join('|');
+  assert(!/先學觀念/.test(p2), '都學過就不該再排：' + p2);
 });
 
 console.log(`\n${pass} 通過、${fail} 失敗`);

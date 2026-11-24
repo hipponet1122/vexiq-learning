@@ -820,7 +820,7 @@
         return h('a', { class: 'skill' + (lock ? ' lock' : '') + (mastered(s.id) ? ' mastered' : ''), href: '#/skill/' + s.id, style: 'background:' + dm.color + ';border-color:' + dm.stroke },
           h('div', { class: 'sn' }, h('span', { class: 'lamp ' + skSt, title: skTitle }), (lock ? '🔒 ' : '') + s.name),
           h('div', { class: 'stars' }, '★'.repeat(stars(p)) + '☆'.repeat(3 - stars(p))),
-          h('div', { class: 'scnt' }, '已練 ' + seenN + '/' + sqs.length + ' 題'),
+          h('div', { class: 'scnt' }, (VX.learn && VX.learn.has(s.id) ? (VX.learn.learned(s.id) ? '📖✓ ' : '📖 ') : '') + '已練 ' + seenN + '/' + sqs.length + ' 題'),
           h('div', { class: 'mbar' }, h('div', { style: 'width:' + Math.round(p * 100) + '%' })));
       }))));
     const tile = (href, ic, name, desc, c, sc) => h('a', { class: 'tile', href, style: 'background:' + c + ';border-color:' + sc }, h('span', { class: 'ti' }, ic), name, h('small', null, desc));
@@ -883,8 +883,9 @@
         h('div', { class: 'row' }, h('span', { class: 'stars' }, '★'.repeat(stars(p)) + '☆'.repeat(3 - stars(p))), h('span', null, ' 熟練度 ' + Math.round(p * 100) + '%')),
         h('div', { class: 'mbar big' }, h('div', { style: 'width:' + Math.round(p * 100) + '%;background:' + dm.stroke })),
         pre.length ? h('p', { class: 'sub' }, '先備技能：', pre) : null,
-        h('div', { class: 'lesson', html: s.lesson }),
-        h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/practice/' + id }, '練習這個技能（5 題）')))
+        (VX.learn && VX.learn.has(id)) ? VX.learn.view(s, p) : h('div', null,
+          h('div', { class: 'lesson', html: s.lesson }),
+          h('div', { class: 'row gap' }, h('a', { class: 'btn primary', href: '#/practice/' + id }, '練習這個技能（5 題）'))))
     )));
   }
 
@@ -1131,6 +1132,7 @@
         d.tags.length ? d.tags.map((t) => h('div', { class: 'chg' }, h('span', null, TAGS[t.tag] || t.tag), h('span', null, t.n + ' 次'))) : h('p', { class: 'sub' }, '還沒有資料')),
       h('div', { class: 'panel' }, h('h3', null, '最近答錯的題目'),
         wrongs.length ? wrongs.map((r) => { const q = QBY[r.qid]; return h('div', { class: 'wrongitem' }, h('div', { class: 'wq' }, '【' + SK[q.s].name + '】' + q.q), q.code ? blocksEl(q.code) : null, h('div', { class: 'wc' }, '他的答案：' + (r.choice || '-')), h('div', { class: 'wa' }, '解釋：' + q.why)); }) : h('p', { class: 'sub' }, '沒有錯題')),
+      h('div', { id: 'plearn' }),
       user.role === 'coach' ? null : h('div', { id: 'pguide' }),
       h('div', { id: 'pweekly' }),
       h('div', { id: 'pnotes' }),
@@ -1149,6 +1151,7 @@
           try { await api('/api/parent/learner/' + uid + '/delete', {}); toast('已刪除學員'); location.hash = '#/parent'; viewParent(); } catch (e) { msg.className = 'errmsg'; msg.textContent = e.message; }
         } }, '🗑 永久刪除這位學員')))
     )));
+    if (VX.learn && VX.learn.parentPanel) VX.learn.parentPanel(document.getElementById('plearn'), ps);
     if (VX.parentNotes) VX.parentNotes(uid, user.role === 'coach');
     if (VX.guide && VX.guide.parentCard && user.role !== 'coach') VX.guide.parentCard(document.getElementById('pguide'), ps, d);
     if (VX.weekly) VX.weekly(document.getElementById('pweekly'), ps, d);
@@ -1178,6 +1181,7 @@
     if (a === 'practice') {
       const cnt = c ? parseInt(c, 10) : 0;
       if (!st.done && !(b && SK[b])) { location.hash = '#/placement'; return; }
+      if (b && SK[b] && !session && VX.learn && VX.learn.needLesson(b)) { toast('先把這個技能的教學看完、通過小檢查，再練習會更輕鬆'); location.hash = '#/skill/' + b; return; }
       if (!session) startPractice(b || null, cnt > 0 ? cnt : 0);
       return;
     }

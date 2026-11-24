@@ -128,12 +128,39 @@
       h('h2', null, '✍️ 開始寫一頁'),
       h('div', { class: 'tiles' }, Object.entries(NB_KINDS).map(([k, v]) => h('a', { class: 'tile', href: '#/notebook/new/' + k, style: 'background:#f2cd16;border-color:#b4982e' }, h('span', { class: 'ti' }, v.icon), v.name))),
       h('h2', null, '我的筆記（' + notes.length + '）'),
-      notes.length ? notes.map((n) => { const sc = checkScore(n); return h('a', { class: 'card', href: '#/notebook/edit/' + n.id, style: 'margin:8px 0;display:block' },
-        h('b', { 'data-notrans': '1' }, n.title), h('div', { class: 'sub' }, KIND_NAME(n.kind) + '　·　' + fmt(n.updated), sc != null ? '　·　自評 ' + sc + '%' : '', n.fb ? (n.fb_seen ? '　💬 有留言' : '　🔔 新留言') : '')); }) : h('p', { class: 'sub' }, '還沒有筆記。選一種開始寫第一頁吧！')), '工程筆記', '📓');
+      notes.length ? notes.map((n) => {
+        const sc = checkScore(n);
+        return h('div', { class: 'card', style: 'margin:8px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap' },
+          h('a', { href: '#/notebook/edit/' + n.id, style: 'flex:1;min-width:180px;color:inherit;text-decoration:none' },
+            h('b', { 'data-notrans': '1' }, n.title),
+            h('div', { class: 'sub' }, KIND_NAME(n.kind) + '　·　' + fmt(n.updated), sc != null ? '　·　自評 ' + sc + '%' : '', n.fb ? (n.fb_seen ? '　💬 有留言' : '　🔔 新留言') : '')),
+          h('button', { type: 'button', class: 'btn ghost sm', onclick: async () => {
+            if (!confirm('確定要刪掉這頁筆記嗎？')) return;
+            try { await api('/api/notes/' + n.id + '/delete', {}); toast('已刪除 ✔'); viewNotebook(); } catch (e) { toast(e.message); }
+          } }, '🗑 刪除'));
+      }) : h('p', { class: 'sub' }, '還沒有筆記。選一種開始寫第一頁吧！')), '工程筆記', '📓');
   }
 
   function editor(note, kind, chid) {
     const K = NB_KINDS[kind];
+    if (!K) {
+      // 技能賽紀錄（skills）或面談回答（interview）沒有 NB_KINDS 表單，改顯示檢視頁並提供刪除
+      const fbBox = note && note.fb ? h('div', { class: 'fb-box' }, h('b', null, '💬 家長留言（' + fmt(note.fb_ts) + '）'), h('div', null, note.fb)) : null;
+      if (note && note.fb && !note.fb_seen) api('/api/notes/' + note.id + '/seen', {}).catch(() => {});
+      return paint(h('div', null, h('a', { class: 'back', href: '#/notebook' }, '‹ 回筆記'),
+        h('div', { class: 'panel' },
+          h('h2', null, KIND_NAME(kind)),
+          h('h3', { 'data-notrans': '1', style: 'margin-top:4px' }, note ? note.title : ''),
+          fbBox,
+          note ? noteReadonly(note) : null,
+          h('div', { class: 'row gap', style: 'margin-top:14px' },
+            kind === 'skills' ? h('a', { class: 'btn', href: '#/compete/skills' }, '去技能賽紀錄頁') : null,
+            kind === 'interview' ? h('a', { class: 'btn', href: '#/compete/interview' }, '去面談練習頁') : null,
+            note ? h('button', { type: 'button', class: 'btn danger', onclick: async () => {
+              if (!confirm('確定要刪掉這頁筆記嗎？')) return;
+              try { await api('/api/notes/' + note.id + '/delete', {}); toast('已刪除 ✔'); location.hash = '#/notebook'; } catch (e) { toast(e.message); }
+            } }, '🗑 刪除') : null))), '工程筆記', '📓');
+    }
     const data = note ? JSON.parse(JSON.stringify(note.data || {})) : { f: {}, c: [] };
     data.f = data.f || {}; data.c = data.c || [];
     const ch = chid && CHALLENGES.find((x) => x.id === chid);

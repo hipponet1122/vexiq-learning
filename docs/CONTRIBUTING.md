@@ -8,6 +8,7 @@ Coaches, teachers, parents and students are all welcome! You do not need to writ
 | Type | Description |
 |---|---|
 | 🧪 Question review | Check the questions, answers and explanations in `web/data.js` for correctness and clarity for kids (most needed!) |
+| 📖 Lesson review | Check the 29 skill lessons (guide: [`LESSONS.md`](LESSONS.md)) — are the explanations right and easy for a 6th grader? |
 | 📅 Season update | Update `SEASON` in `web/content.js` and the season questions in `web/data.js` from the latest official Game Manual |
 | 🐛 Bug fixes | Simulator, `.iqblocks` import, UI |
 | 🌏 Content | New challenges, build lessons, term cards, judge-interview questions |

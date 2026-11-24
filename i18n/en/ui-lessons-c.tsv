@@ -1,0 +1,371 @@
+67c374|After "set score to 0", then "change score by 1", what is score?
+876331|"Set to 0" → 0; "change by 1" adds 1 to the existing number → 0 + 1 = 1.
+7df6a8|A variable = a box with a name
+2643e8|<p>A variable is a <b>box with a name</b> that holds <b>a number that can change</b>. Give the box a name (like score or distance), and the program can later "open it and look" or "replace it with a new number".</p><p>Like a scoreboard: it starts at 0 and grows with each point.</p>
+67588c|Two common blocks: set and change
+8dfe30|<ul><li><b>set score to (0)</b>: swap the box's contents straight to 0. (set)</li><li><b>change score by (1)</b>: <b>add</b> 1 to the existing number. (change)</li></ul>
+82a421|"Change by 1" is not "become 1"! It adds 1 to the existing number. To make it exactly 1, use "set to".
+33e77b|Variables can go inside blocks
+ade6cd|<p>A variable can go into a block's number slot, such as "drive forward for (d) mm". Each time you change d, the distance the robot goes changes too. You only edit one place instead of many lines.</p>
+3ba88e|When you want to adjust a distance in a match, just change the variable instead of hunting for numbers.
+159a66|Press "Next step" and see what variable d becomes at each step.
+7c2a0b|Set d = 100.
+88e850|Forward d = 100 mm.
+21e00b|Change by 50: d adds 50 to its current 100 and becomes 150 (not 50).
+e7f421|Forward d = 150 mm. Total traveled 100 + 150 = 250 mm.
+7458e6|"Change by" adds on; it doesn't replace.
+a479bb|score starts at 0. After "change score by 1" three times in a row, what is score?
+7e9a9d|To make score exactly 10, which do you use?
+e0f370|change score by 10
+48986a|set score to 10
+f5ba72|"Set to" is what replaces it directly with that number.
+504a20|d = 100. After "change d by (50)", d is?
+3f8af4|Adjust distance with a variable
+079127|Make a variable d and set it to 300.
+ca54b5|"drive forward for d" — see how far it goes in the simulator.
+8ce2c3|Change only the value of d (say 500), leave other blocks alone, and see whether the path follows.
+9e572d|Write down which number you changed and how the result changed. That's the benefit of variables.
+215b8e|How many millimeters is 1 centimeter?
+c2aff7|Make units consistent first
+7e738b|<p>VEXcode distances are usually in <b>millimeters (mm)</b>. If a problem gives centimeters, convert first: <b>1 cm = 10 mm</b>. Example: 30 cm = 300 mm.</p>
+75728f|Calculating without making units consistent is the most common reason for wrong answers.
+c49da4|Arithmetic and comparison
+6900af|<p><b>+ − × ÷</b> can help you work out distance and time. <b>Time = distance ÷ speed</b>. Comparison blocks include &lt; (less than), &gt; (greater than), = (equal), and the result is "true" or "false".</p>
+abd0f3|Combine conditions with and / or
+fe980a|<ul><li><b>A and B</b>: true only if both are true.</li><li><b>A or B</b>: true if either one is true.</li></ul><p>Example: "distance &lt; 200 <b>and</b> bumper pressed" — it stops only when both happen together.</p>
+a88af7|Change the distance and the speed to work out the time; also try the unit conversion. (Illustrative: speed in mm/second)
+b24935|Distance (cm)
+3d6450| mm/sec
+0f2a27|Distance in millimeters
+5a9f5a|Time needed (distance ÷ speed)
+993a21|Convert centimeters to millimeters first, then divide by the speed.
+ce8c5c|How many millimeters is 25 centimeters?
+1424b0|Distance 600 mm, speed 200 mm/sec. How many seconds?
+579d86|2 seconds
+528c89|4 seconds
+2ed996|120000 seconds
+e5cf7c|600 ÷ 200 = 3 seconds.
+f22c2d|When is "A and B" true?
+ae2fca|Whenever A is true
+ded550|Whenever B is true
+289dd6|When both A and B are true
+3ef7d8|When neither A nor B is true
+4abda3|Calculate, then verify
+c4a387|Measure a 40 cm stretch.
+886585|Work out the millimeters and the time at 200 mm/sec.
+61c3a9|Write the program, run it, time it with a stopwatch and compare with your calculation.
+961afb|Write down the calculation, the measurement, the error and the reasons.
+d4387d|The same group of blocks is used 5 times in a program. What's the best way to tidy up?
+5249bb|Copy it 5 times
+697ffa|Make it a "My Block" and call it 5 times
+1eb26c|Don't use it
+3080fb|Delete it
+106a85|Wrapped in a My Block, you edit one place and all 5 places take effect.
+84428c|My Blocks: wrap a group of actions
+530e5d|<p>A "<b>My Block</b>" lets you wrap a commonly used group of blocks into one new block, give it an easy name, and call it directly. For example, wrap [forward 200 → turn right 90] as "walk one side".</p><p>You can make one by pressing "Make a Block" in the My Blocks category.</p>
+e9ff04|Benefits: reuse, change in one place
+16e5e0|<p>The program gets shorter and easier to read. More importantly: when you need to change something (say the angle is inaccurate), <b>you only edit inside the block once</b> and every place that calls it takes effect — nothing gets missed.</p>
+31297a|Programs get tuned a lot before a match; My Blocks let you edit one place only.
+43a9a7|Parameters: a different number each time
+6f2bc2|<p>Add a <b>parameter</b> (such as distance) to a My Block, and the same block can go a different distance each time: "walk one side (200)", "walk one side (400)".</p>
+a73c73|Don't forget to give the parameter a value when calling, or the block won't know how far to go.
+6081cd|Press "Next step" and watch "walk one side" get called twice with different parameters.
+81f9db|  walk one side (200)
+2b1035|  walk one side (400)
+fa5fbf|The program starts at "when started".
+390729|Call walk one side, parameter distance = 200.
+d97092|Enter the block: forward 200 mm.
+ae7aae|Turn right 90 degrees and return to where it was called.
+b7aa5e|Second call, distance = 400.
+753dab|Same block, this time forward 400 mm.
+b734db|Turn right 90 degrees. Done.
+fce3b1|One block, two calls, different distances.
+70304d|What's the biggest benefit of a My Block?
+82e606|Reuse; change one place and everything takes effect
+d920f7|You don't need to write a program
+629d21|It makes the battery last longer
+f30cd5|Wrapped up, you maintain a single copy.
+54e4f1|To let "walk one side" go a different distance each time, what do you add?
+8a3583|More repeats
+64aae2|A parameter (such as distance)
+950dae|More sensors
+e0128e|A parameter lets the same block take a different number.
+c4d375|You find the angle in "walk one side" must change from 90 to 88. With a My Block, how many places do you edit?
+296081|Every call
+7cf704|Only once inside the block
+1c2332|Rewrite everything
+01589a|It can't be changed
+112915|Just change the definition, and every call updates automatically.
+5fe784|Make a "walk one side"
+4cb513|Make the My Block "walk one side": forward + turn right 90.
+43577c|Call it 4 times to draw a square.
+e0cf05|Then add a parameter distance and draw one square with 200 and one with 400.
+4a1283|Paste a block screenshot and explain how much shorter the program got with My Blocks.
+b47be9|The robot isn't running accurately. What's the best first step?
+f8da0b|Observe and record exactly where it's inaccurate
+a09897|Change a number at random
+1fa680|Just change the battery
+11ad4d|Only when you see clearly what's happening can you find the cause.
+8867c4|Five steps of debugging
+288d5a|<ol><li><b>Observe</b>: what exactly is wrong? (How many mm off? How many degrees?)</li><li><b>Guess the cause</b>: what could it be?</li><li><b>Change only one thing at a time</b></li><li><b>Retest</b>: test several times, don't trust one run.</li><li><b>Record</b>: write it in the engineering notebook.</li></ol>
+eef470|If you change many things at once, you won't know which one worked.
+da05af|Engineering notebook: what judges value most
+e530f7|<p>Problems, ideas, tests, results and improvements should all have <b>dates and records</b>. At a match, judges look at your thinking process, not only the robot's performance.</p>
+b27dcb|Match strategy: make it steady first, then add more
+650125|<p>First get <b>one scoring action</b> to be "the same every time", then add a second, then a third. Don't write everything before testing — when something breaks you won't know where to look.</p>
+89306d|A steady 10 points beats an unsteady 30.
+0a1516|The robot keeps drifting when it should go straight. What's the right debugging order?
+caac5d|Observe: measure how far and which way it drifts
+1dd0b4|Guess the cause: left and right wheel speed or friction differ?
+76c5da|Change only one thing at a time
+aad73e|Retest, several times
+78136b|Write the result in the engineering notebook
+77eeb8|Why change only one thing at a time?
+b9b78f|It's faster
+93987a|So you know which change actually worked
+44bc3e|With more variables you can't separate the causes.
+d4d276|One test result is great. Is that enough?
+2a0050|Yes, it's finished
+336f6f|Test several more times to confirm it's steady
+2acf7b|Go straight to the match
+55b305|No need to record
+4fa13a|One run might be luck; several consistent runs make it steady.
+fa80fb|What's the best order for strategy?
+cea2eb|Write everything first, then test
+ebbb94|Make one scoring action steady first, then add the next
+674f57|Don't test
+ab5343|Adding step by step makes breakage easy to find.
+50d6d9|Make a full debugging record
+56c389|Pick an inaccurate action (such as straight-line drift).
+f1bd72|Use the five debugging steps: two rounds, changing only one thing per round.
+cd8f22|Paste the table into your engineering notebook.
+c835a1|Fill it in as five columns: observation, cause, change, result, conclusion.
+b3e0ec|A robot often drifts slowly when it should go straight. What's a better fix?
+bd35c7|Ignore it
+36ab37|Measure heading with the Gyro and correct when it drifts (feedback)
+b18405|Go faster
+766435|Feedback means "measure, notice the drift, correct", repeated again and again.
+668689|Why does it drift?
+8d3eff|<p>The left and right motors and wheels can't have exactly the same speed, so it slowly drifts as it goes. The drift <b>builds up as it goes</b>.</p>
+c804c4|Feedback: measure, compare, correct
+fbee2a|<p>Use the Gyro to measure the current heading and compare with the target: <b>error = target − current</b>. Then adjust the difference between the left and right wheel speeds according to the error to pull the robot back. This must be done <b>inside a repeat</b> all the time.</p>
+aeec78|P control: correction = Kp × error
+affbba|<p>The simplest approach: the correction is proportional to the error. A big error gives a big correction; a small error gives a small one. <b>Kp</b> decides how strong the correction is.</p><ul><li>Kp too small: can't pull it back, still drifts.</li><li>Kp just right: returns to the line smoothly.</li><li>Kp too big: <b>swings left and right (oscillation)</b>.</li></ul>
+77279e|Go to "Code → Control Lab" and drag Kp to see how the path changes.
+a64567|Adjust Kp and the error to see how strong the correction is. (Illustrative: correction = Kp × error)
+7aa5da|Heading error (degrees)
+597274|Correction (left–right wheel speed difference)
+62b0a3|Too small: corrects slowly, may not pull it back
+dda0ee|Too big: likely to swing left and right (oscillate)
+d7c492|About right; corrects smoothly
+572609|The bigger the error, the bigger the correction; with zero error there's nothing to correct.
+3b357b|How is the P-control correction calculated?
+9d82c2|Kp + error
+45e8f8|Kp × error
+d8ebbe|Kp ÷ error
+3f69e2|Just Kp
+c3410e|Correction = Kp × error.
+4c13aa|If Kp is too big, the robot will?
+0e3828|Go straighter
+9b00af|Slow down
+0f424e|It overcorrects and oscillates.
+fae881|What are the steps of feedback?
+c4caf7|Go in blindly
+4aee83|Measure, compare with the target, correct, repeat
+a290db|Correct only once
+cd8bc9|Just go faster
+52f500|Feedback is continuous "measure → compare → correct".
+dfdaf0|Tune Kp in the Control Lab
+ebfe51|Open the PID tab in the "Control Lab".
+96f5d0|Set Kp very small, just right, and very large, and look at the path each time.
+5045f8|Draw what "Kp too small, just right, too large" each look like in your notebook.
+c581d8|Paste three screenshots and describe each one's problem.
+8c5542|<p>Advanced PID: add <b>I</b> (handles a small error that is always there) and <b>D</b> (brakes when the error changes too fast). In a match, P control alone often already improves things a lot.</p>
+2ab8f6|The left and right wheels each go the same distance. The robot is?
+f4cf3c|Equal distances on both sides means straight.
+fe25ae|Odometry: estimate position from how much the wheels turned
+e6de25|<p>Odometry uses <b>how many turns the wheels made</b> to work out "how far the robot went and how much it turned", with no extra sensor.</p>
+0b3f2d|Two formulas
+03ba00|<p><b>Forward = (left wheel distance + right wheel distance) ÷ 2</b><br><b>Turn angle = (right − left) ÷ wheel track</b> (radians)</p><p>Equal on both sides = straight; the right wheel going farther = turning left.</p>
+8698f2|Errors build up
+20b95d|<p>Wheel slip, an uneven mat and tiny wheel-diameter errors — these small errors <b>add up at every step</b>, so the longer it goes, the less accurate it is. That's why it's often paired with the Gyro to correct heading.</p>
+14eeed|Don't assume the computed position is always right; the error only grows.
+f5ceb1|Change how far each wheel goes and see how far the robot moves and how many degrees it turns. (Illustrative wheel track 100 mm)
+369473|Left wheel distance
+482b1e|Right wheel distance
+069d94|Forward (left + right) ÷ 2
+0a3a18|° (positive = left)
+73882e|Equal on both sides turns 0 degrees; a farther right wheel turns left.
+970adc|The left wheel goes 300 mm and the right 500 mm. About how far does the robot go forward?
+5a4f3e|The right wheel goes farther than the left. The robot turns?
+d2aff1|Left
+4d9c32|Right
+a4c8e6|The right wheel goes more, so the front turns left.
+da0fb0|Why does odometry get less accurate the longer it runs?
+68c0d4|The battery runs lower
+3d4521|Small errors build up step by step
+25155c|The wheels get lighter
+2402ca|The program breaks
+b37c1a|Each step's small error is added to the next.
+27118b|See how errors build up
+855632|Open the "Odometry" tab in the Control Lab and adjust the wheel-diameter error.
+f218e0|See how big the error is after 1 meter and after 5 meters.
+23d8cc|Think: when should you correct with the Gyro?
+38c0c2|Write down how far off it is after 5 meters with a 1% wheel-diameter error.
+e75529|To drive to a certain coordinate, which two things must you work out first?
+edb9d3|Color and brightness
+37dbad|Target direction and distance
+284bb5|Battery and time
+e06250|Wheel size
+a26765|Knowing which direction and how far, you can reach the target.
+0af43f|Two things: direction and distance
+aab11d|<p>Given the difference between the target and your position, Δx and Δy: <b>distance = √(Δx² + Δy²)</b>; the <b>target direction</b> is an angle worked out from Δx and Δy.</p>
+8551a6|Two feedback loops
+2935de|<p>The <b>heading error</b> decides how to turn; the <b>distance error</b> decides how fast to go (naturally slowing as it gets close).</p>
+972fb4|Turn first then go, or turn while going?
+d64f98|<ul><li><b>Turn first, then go</b>: the path is a straight line, easy to predict.</li><li><b>Turn while going</b>: faster, and the path is an arc.</li></ul>
+f5221c|When working out the heading error, watch for "angle wrap-around": if the error is over 180° subtract 360°, or the robot will take the long way around.
+7e557a|Target x (right is positive)
+aa0c96|Target y (up is positive)
+be4fcb|Target direction (clockwise from up)
+1adb10|The distance to (300, 400) is exactly 500 mm (a 3-4-5 right triangle).
+33416e|The target is at Δx = 300, Δy = 400. What's the distance?
+359970|The heading error works out to 270°. What's actually the shorter turn?
+615689|Turn left 90°
+9fb614|Turn right 270°
+d46db1|Don't turn
+aaa4c2|Turn right 90°
+829737|270° is the same as −90°, and turning left 90° is shorter.
+1e4dd2|What's the feature of "turn first, then go"?
+8bc339|The path is an arc
+bbfc30|The path is a straight line, easy to predict
+462a04|No angle calculation needed
+df3c5e|Aim the direction first, then go straight.
+6cd2d4|Drive to a coordinate
+14b042|Go to the "Go to a coordinate" tab in the Control Lab.
+db4dbb|Change the target point and switch "turn first, then go / turn while going" and watch the path.
+5c8ee1|Record each method's path and time.
+f1e4a7|Compare the pros and cons of the two methods.
+f2747f|🗺️ Path Planner
+da1e91|Which goal level scores the most points?
+e6ecf5|Floor
+2ac4a0|One bag in L4 is worth 16 points, the most (but it takes only yellow).
+c0d89d|Bags into goals score points
+2e458c|<p>In Level Up you put bags into goals, and higher goals score more:</p><ul><li><b>Floor: 1 point</b></li><li><b>L1: 3 points</b></li><li><b>L2: 6 points</b></li><li><b>L3: 12 points</b></li><li><b>L4: 16 points</b> (yellow bags only)</li></ul>
+ce5fa7|Color rules
+5fc192|<p>A bag must be <b>the same color as the goal, or yellow</b>, to score on the floor and L1–L3. <b>L4 takes only yellow</b>. If the same bag counts at several levels, only the highest level counts.</p>
+4c1f82|A bag touching a robot doesn't score; a bag on the floor goal must be completely inside the goal area.
+af0fdb|When scoring happens
+98737d|<p>Scoring is done after the match ends and everything has stopped, judged by a referee's eyes. So on the last trip remember to move the robot away from the bag.</p>
+813958|Go to "Compete → This Season Level Up" for the 3D scoring challenge.
+68bf84|Change the number of bags at each level and see the total score.
+a6929c|Floor (1 point)
+bf220f|L1 (3 points)
+5aaee7|L2 (6 points)
+ee6ddb|L3 (12 points)
+41559a|L4 yellow (16 points)
+d4230f|Share from high levels
+d049d0|% from L3 and L4
+a850be|One L3 equals 12 floor bags!
+643880|2 floor bags, 1 L1 and 1 L2 — what's the total?
+b5fedc|A blue bag can score in which goal?
+174dd5|L3 of the red goal
+e0a854|L2 of the blue goal
+835ec5|Any of them
+47069d|It must match the goal's color (or be yellow). A blue bag scores only in the blue goal.
+15fe79|The same bag counts at both L1 and L2. Only what counts?
+162741|L1's 3 points
+a97017|The highest level (L2's 6 points)
+9424ae|Both count
+0cea09|Only the highest level counts.
+233019|Scoring in the 3D practice field
+c70f01|Open the "Scoring Challenge" in the 3D practice field.
+200952|Do 5 questions and note where you went wrong (color? level? touching the robot?).
+ce0d35|Do 5 more and see if you improved.
+17df6a|Write down the two rules you get wrong most easily.
+ef2dcc|🎯 This Season Level Up
+67ef01|When comparing scores, compare "points per trip" or "total score"?
+ee487a|Points per trip
+c68708|Total score (trips × points per trip)
+ecc44f|No need to compare
+59ba66|Any
+7353e0|Higher levels give more points per trip but each trip takes longer, so look at the total.
+dc23b3|One trip = one scoring chance
+781fee|<p>The robot carries only one bag at a time, so <b>one trip</b> is one scoring chance. In a 60-second match, how many trips it can make depends on how many seconds one trip takes.</p>
+f31d37|Two formulas
+ce714b|<p><b>Max trips = 60 seconds ÷ seconds per trip</b> (round down)<br><b>Score = trips × points per bag</b></p><p>Example: 12 seconds per trip gives at most 5 trips; at 3 points each, 15 points total.</p>
+cad318|Compare totals, not single trips
+3961ce|<p>12 points for one L3 bag is tempting, but if one trip takes 30 seconds, 60 seconds allows only 2 trips = 24 points; with L1 at 10 seconds a trip, 6 trips × 3 points = 18 points. Use <b>measured seconds</b> to work it out.</p>
+ed7619|The seconds in a problem are just assumptions. How long your robot really takes, you have to measure yourself.
+8aad8b|Enter how many seconds one trip takes and how many points per bag to see what 60 seconds can score.
+658f92|Seconds per trip
+d51550|Points per bag
+f33da1|Floor 1 point
+b62dab|L1 3 points
+1dee1b|L2 6 points
+14d0bb|L3 12 points
+d32c11|L4 16 points
+a506e5|Max trips in 60 seconds
+38283a| trips
+573d09|Switch levels and see which total is highest. Note: higher levels usually take longer per trip.
+c4e4f6|One trip takes 15 seconds. At most how many trips in 60 seconds?
+4fd49b|4 trips, 6 points per bag — what's the total?
+4d5e35|L3 takes 30 seconds per trip (12 points); L1 takes 10 seconds per trip (3 points). In 60 seconds, which total is higher?
+2ccfa0|L3: 24 points
+d9c00c|L1: 18 points
+59cf8f|Can't be worked out
+c2ef6e|L3: 2 trips × 12 = 24; L1: 6 trips × 3 = 18. L3 is higher, but you still have to go by measured seconds!
+6e8143|Measure how many seconds one trip takes
+a5bfeb|Pick a scoring action (for example, putting a bag in the floor goal).
+4c803f|Time it 5 times with a stopwatch and take the average seconds.
+c17aa2|Use the formula to work out the 60-second total and compare two different levels.
+83ba20|Paste the table of five times and your score prediction.
+b40bec|🏁 Skills practice
+2be61d|At most how many Smart Motors may a robot use?
+997905|8
+8441b3|No limit
+c10e8c|At most 6 (extras count too, even if not connected).
+03b283|Match formats
+580978|<p><b>Teamwork</b>: two robots together for 1 minute, no autonomous period, and at about 30 seconds the two drivers swap controllers.<br><b>Driving Skills</b>: one robot, 1 minute of manual driving.<br><b>Autonomous Coding Skills</b>: 1 minute <b>on the program alone</b>, no controller. Ranking is the sum of the driving and autonomous scores.</p>
+477f6b|Robot rules
+73642a|<ul><li>Size: must fit within <b>11" × 20" × 15"</b>.</li><li>Motors: at most <b>6</b> Smart Motors.</li><li>Only official VEX IQ parts.</li><li>Pass <b>inspection</b> before every match.</li></ul>
+6eae82|Extra motors count even if not connected. Check item by item with the manual before the match.
+01f220|The manual is the standard
+1eecdd|<p>Rules are updated every year and may have addenda. <b>When in doubt, go by the official manual and the season's announcements</b>, not memory.</p>
+db3922|The highlights are organized in "Compete → This Season Level Up", along with a link to the official manual.
+ea68f0|Match each format to its feature.
+5c540a|Two robots together, no autonomous period
+9f3dc6|Driving Skills
+e6d284|One robot, 1 minute of manual driving
+ab479c|Autonomous Coding Skills
+4d4055|1 minute on the program alone, no controller
+4d65ec|Robot size
+6daac7|Fits within 11" × 20" × 15"
+02a3fb|Number of motors
+2e31d8|At most 6 (extras count too)
+e6e5ab|In Autonomous Coding Skills, how does the robot move?
+65aeff|With the controller
+74a5db|By the program alone
+a3a6e1|Half and half
+599963|Pushed by hand
+9cd598|Autonomous Coding Skills doesn't allow the controller.
+ceb6d8|Does Teamwork have an autonomous period?
+c26b66|No, fully manual
+1c2a21|Only the first 10 seconds
+007cfd|Teamwork has no autonomous period.
+995682|A robot carries 7 motors, one of them not connected. Is that allowed?
+eaa9c5|Yes
+ec23b0|No, at most 6 (not connected still counts)
+dee71a|Up to the referee's mood
+f7798c|As long as it isn't connected
+2ad965|Extras count too.
+4f7962|Make a "pre-match self-check list"
+1b6eae|Open the official manual (there's a link on the site).
+26618c|List four items: size, motors, parts, inspection.
+460e8d|Actually measure and count on the real robot.
+7d503c|Make it a table, paste it into your notebook, and mark "confirmed".
+f19ec5|🇹🇼 Taiwan competitions
+546c6f|My Block: walk one side (distance)
+8ea088|Drag the target coordinates and see the distance and the angle to turn. (The robot is at the origin, facing 0° = up)
+b31495|walk one side (200)
+66acf9|walk one side (400)
